@@ -11,4 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: echo running docker image CI
+      run: |
+        gem install dpl
+        dpl --provider=heroku --app=<login>-simplewebapp --api-key=<heroku_api_key>
+
