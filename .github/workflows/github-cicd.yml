@@ -6,7 +6,21 @@ on:
       - main
 
 jobs: 
-  build:
+  build: 
+    runs-on: ubontu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - run: | 
+        echo in build stage
+
+  test: 
+    runs-on: ubontu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - run: |
+        echo in test stage
+
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
