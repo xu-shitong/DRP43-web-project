@@ -15,4 +15,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: using dpl to deploy to heroku
       run: |
-        dpl --provider=heroku --app=drp43-website --api-key=${{ secrets.HEROKU_API_KEY }}
+        heroku git:remote -a drp43-website
+        git push heroku main
+        
