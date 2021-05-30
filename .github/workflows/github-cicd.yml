@@ -12,9 +12,3 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "drp43-website" #Must be unique in Heroku
           heroku_email: "tonyshengxue@outlook.com"
-
-      - uses: actions/checkout@v2
-      - name: execute
-        run: |
-          export FLASK_ENV=app.py
-          flask run
