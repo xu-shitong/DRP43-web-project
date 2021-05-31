@@ -19,7 +19,11 @@ jobs:
     needs: build
     steps: 
       - uses: actions/checkout@v1
-      - run: pytest
+      - name: Installing pytest
+        run: pip install -r requirements.txt
+        
+      - name: Executing pytest
+        run: pytest
 
   deploy:
     runs-on: ubuntu-latest
