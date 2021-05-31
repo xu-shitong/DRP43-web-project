@@ -1,9 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script>
+    var x = 0;
+    function addOne() {
+      x++;
+      document.getElementById("p_id").innerHTML = x;
+    }
+  </script>
 
 </head>
 <body>
   <p>hello world</p>
+
+  <p id="p_id"></p>
+  <button type="button" onclick="addOne()">+</button>
 </body>
 </html>
