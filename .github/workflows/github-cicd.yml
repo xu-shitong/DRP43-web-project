@@ -11,8 +11,8 @@ jobs:
     steps: 
       - uses: actions/checkout@v1
       - run: | 
-        echo "in building stage"
-        pip install -r requirements.txt
+          echo "in building stage"
+          pip install -r requirements.txt
 
   test: 
     runs-on: ubuntu-latest
