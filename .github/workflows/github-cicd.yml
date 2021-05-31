@@ -9,11 +9,14 @@ jobs:
   build: 
     runs-on: ubuntu-latest
     steps: 
-      - shell: bash
-      - run: pip install requirements.txt
+      - uses: actions/checkout@v1
+      - run: | 
+        echo "in building stage"
+        pip install requirements.txt
 
   test: 
     runs-on: ubuntu-latest
+    needs: build
     steps: 
       - run: pytest
 
