@@ -19,8 +19,6 @@ db.create_all()
 
 @app.route('/')
 def hello_world():
-    flash("flash message")
-    flash("flash message 2")
     return render_template("index.html")
 
 
