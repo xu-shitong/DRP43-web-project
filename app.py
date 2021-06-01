@@ -6,7 +6,7 @@ import pymysql
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://146.169.41.172:3306/accounts'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = "123"
+# app.config['SECRET_KEY'] = "123"
 db = SQLAlchemy(app)
 pymysql.install_as_MySQLdb()
 
