@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import Account, db
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint('new_auth_name', __name__, url_prefix='/auth')
 
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -23,8 +23,9 @@ def register():
             new_one = Account(username=username, password=password)
             db.session.add(new_one)
             db.session.commit()
-        # flash(error)
-        return jsonify(result="Success")
+            return jsonify(result="Success")
+            
+        flash(error)
     return render_template('account.html')
 
 
@@ -53,4 +54,8 @@ def login():
 
 def validateKey(username):
     record = Account.query.filter_by(username=username).first()
+    print(username)
+    print(Account.query.filter_by(username=username))
+    print(record)
+    print(record is None)
     return record is None

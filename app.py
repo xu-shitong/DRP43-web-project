@@ -1,9 +1,10 @@
 from flask import Flask, render_template
+from flask.helpers import flash
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://localhost:3306/accounts'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://146.169.41.172:3306/accounts'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "123"
 db = SQLAlchemy(app)
@@ -18,7 +19,9 @@ db.create_all()
 
 @app.route('/')
 def hello_world():
-    return "hello world"
+    flash("flash message")
+    flash("flash message 2")
+    return render_template("index.html")
 
 
 import auth
