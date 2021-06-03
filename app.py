@@ -2,11 +2,19 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pymysql
+import os
+
+DATABASE_ACCOUT = os.environ["DATABASE_ACCOUT"]
+DATABASE_PASSWORD = os.environ["DATABASE_PASSWORD"]
+DATABASE_DOMAIN_NAME = os.environ["DATABASE_DOMAIN_NAME"]
+DATABASE_NAME = os.environ["DATABASE_NAME"]
+APP_CONFIG_KEY = os.environ["APP_CONFIG_KEY"]
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://bff5b393aedee6:04f15a4d@us-cdbr-east-04.cleardb.com:3306/heroku_92098d73533075a'
+app.config['SQLALCHEMY_DATABASE_URI'] \
+  = 'mysql://' + DATABASE_ACCOUT + ':' + DATABASE_PASSWORD + '@' + DATABASE_DOMAIN_NAME + ':3306/' + DATABASE_NAME
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = "123"
+app.config['SECRET_KEY'] = APP_CONFIG_KEY
 db = SQLAlchemy(app)
 pymysql.install_as_MySQLdb()
 

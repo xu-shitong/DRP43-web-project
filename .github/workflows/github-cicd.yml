@@ -33,6 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        env: 
+          DATABASE_ACCOUT: ${{secrets.DATABASE_ACCOUT}}
+          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          DATABASE_DOMAIN_NAME: ${{secrets.DATABASE_DOMAIN_NAME}}
+          DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+          APP_CONFIG_KEY: ${{secrets.APP_CONFIG_KEY}}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "drp43-website" #Must be unique in Heroku
