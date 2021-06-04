@@ -24,8 +24,7 @@ jobs:
         
       - name: Executing pytest
         run: |
-          # pytest
-          echo skip tests
+          pytest
 
   deploy:
     runs-on: ubuntu-latest
