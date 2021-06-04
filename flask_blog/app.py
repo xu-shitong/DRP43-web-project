@@ -17,6 +17,7 @@ def setDatabase(app, test=False):
     app.config['SQLALCHEMY_DATABASE_URI'] \
         = 'mysql://' + DATABASE_ACCOUNT + ':' + DATABASE_PASSWORD + '@' \
           + DATABASE_DOMAIN_NAME + ':3306/' + DATABASE_NAME
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://localhost:3306/accounts'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = APP_CONFIG_KEY
     db = SQLAlchemy(app)
