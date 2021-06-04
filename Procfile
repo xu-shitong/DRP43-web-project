@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath flask_blog.app:app
+web: gunicorn --pythonpath 'DRP43-web-project' flask_blog.app:app
