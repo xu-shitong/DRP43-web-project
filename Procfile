@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath flask_blog.app
+web: cd flask_blog && gunicorn app:app
