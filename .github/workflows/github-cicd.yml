@@ -25,11 +25,11 @@ jobs:
       - name: Executing pytest
         run: pytest
         env: 
-          DATABASE_ACCOUNT: ${{secrets.DATABASE_ACCOUNT}}
-          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          DATABASE_DOMAIN_NAME: ${{secrets.DATABASE_DOMAIN_NAME}}
-          DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-          APP_CONFIG_KEY: ${{secrets.APP_CONFIG_KEY}}
+          DATABASE_ACCOUNT: zhangziheng
+          DATABASE_PASSWORD:
+          DATABASE_DOMAIN_NAME: "106.52.101.201"
+          DATABASE_NAME: accounts
+          APP_CONFIG_KEY: 123
 
   deploy:
     runs-on: ubuntu-latest
