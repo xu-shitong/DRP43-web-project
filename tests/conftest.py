@@ -1,6 +1,6 @@
 import pytest
 import sys
-sys.path.extend(['../'])
+# sys.path.extend(['../'])  
 from flask_blog.app import getApp, getDatabase
 
 
