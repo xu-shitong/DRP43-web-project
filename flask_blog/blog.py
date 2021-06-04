@@ -1,8 +1,8 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
-from app import Account, Blog, db
-from auth import login_required
+from flask_blog.app import Account, Blog, db
+from flask_blog.auth import login_required
 from werkzeug.exceptions import abort
 
 # from auth import login_required

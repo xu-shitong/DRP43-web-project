@@ -2,7 +2,7 @@ import functools
 from flask import (Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import Account, db
+from flask_blog.app import Account, db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
