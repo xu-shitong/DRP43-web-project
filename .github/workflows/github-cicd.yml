@@ -25,11 +25,11 @@ jobs:
       - name: Executing pytest
         run: pytest
         env: 
-          HD_DATABASE_ACCOUNT: ${{secrets.DATABASE_ACCOUNT}}
-          HD_DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          HD_DATABASE_DOMAIN_NAME: ${{secrets.DATABASE_DOMAIN_NAME}}
-          HD_DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-          HD_APP_CONFIG_KEY: ${{secrets.APP_CONFIG_KEY}}
+          DATABASE_ACCOUNT: ${{secrets.DATABASE_ACCOUNT}}
+          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          DATABASE_DOMAIN_NAME: ${{secrets.DATABASE_DOMAIN_NAME}}
+          DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+          APP_CONFIG_KEY: ${{secrets.APP_CONFIG_KEY}}
 
   deploy:
     runs-on: ubuntu-latest
