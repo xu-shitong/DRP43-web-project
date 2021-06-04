@@ -33,13 +33,13 @@ def test_login_view(client, auth):
     assert client.get('/auth/login').status_code == 200
 
 
-def test_login_session_update(client, auth):
-    response = auth.login()
-    with client:
-        client.get('/')
-        # TODO: check userid when new database can be set for testing
-        # assert session['user_id'] == 1
-        assert g.user.username == 'test1'
+# def test_login_session_update(client, auth):
+#     response = auth.login()
+#     with client:
+#         client.get('/')
+#         # TODO: check userid when new database can be set for testing
+#         # assert session['user_id'] == 1
+#         assert g.user.username == 'test1'
 
 
 @pytest.mark.parametrize(('username', 'password', 'message'),(
@@ -50,9 +50,9 @@ def test_login_validate_input(auth, username, password, message):
     assert message in response.data
 
 
-def test_logout(client, auth):
-    auth.login()
-    with client:
-        auth.logout()
-        assert 'user_id' not in session
+# def test_logout(client, auth):
+#     auth.login()
+#     with client:
+#         auth.logout()
+#         assert 'user_id' not in session
 
