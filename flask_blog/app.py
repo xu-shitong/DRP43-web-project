@@ -61,6 +61,8 @@ import flask_blog.auth as auth
 app.register_blueprint(auth.bp)
 import flask_blog.blog as blog
 app.register_blueprint(blog.bp)
+import flask_blog.main_page as main
+app.register_blueprint(main.bp)
 app.add_url_rule('/', endpoint='index')
 
 
