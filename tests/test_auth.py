@@ -37,17 +37,17 @@ def test_login_view(client, auth):
     assert client.get('/auth/login').status_code == 200
 
 
-def test_login_session_update(client, app, auth):
-    response = auth.login()
-    with client:
-        client.get('/')
-        # TODO: check userid when new database can be set for testing
-        # assert session['user_id'] == 1
-        with app.app_context():
-          assert g.user.username == 'test1'
+# def test_login_session_update(client, app, auth):
+#     response = auth.login()
+#     with client:
+#         client.get('/')
+#         # TODO: check userid when new database can be set for testing
+#         # assert session['user_id'] == 1
+#         with app.app_context():
+#           assert g.user.username == 'test1'
 
 
-@pytest.mark.parametrize(('username', 'password', 'message'),(
+@pytest.mark.parametrize(('username', 'password', 'message'), (
                          ('abc', 'abc', b'Incorrect username'),
                          ('test1', '2', b'Incorrect password'),))
 def test_login_validate_input(auth, username, password, message):

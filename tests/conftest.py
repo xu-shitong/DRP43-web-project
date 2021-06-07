@@ -44,7 +44,8 @@ def auth(client):
 
 
 def init_db_test(db):
-    db.session.execute("INSERT INTO account (username, password) VALUES ('test1', 'test1')")
+    db.session.execute("INSERT INTO account (create_date, username, password) "
+                       "VALUES ('2021-6-3 10:00:00', 'test1', 'test1')")
     db.session.execute("INSERT INTO blog (author_id, title, postDate, content) "
                        "VALUES "
                        "(1, 'test title', '2021-6-3 10:00:00', 'this is blog test');")

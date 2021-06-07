@@ -39,7 +39,8 @@ def test_only_authors_can_modify_post(app, client, auth):
     # then check if first user 'test1' can modify blog of 'test2'
     with app.app_context():
         db = getDatabase()
-        db.session.execute("INSERT INTO account (username, password) VALUES ('test2', 'test2')")
+        db.session.execute("INSERT INTO account (create_date, username, password) "
+                           "VALUES ('2021-6-3 10:00:00', 'test2', 'test2')")
         db.session.execute("INSERT INTO blog (author_id, title, postDate, content) "
                            "VALUES (2, 'test title 2', '2021-6-3 10:00:00', 'this is blog test2')")
         db.session.commit()
