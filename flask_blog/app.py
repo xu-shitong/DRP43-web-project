@@ -30,7 +30,7 @@ db = setDatabase(app)
 
 def initDatabase(new=False):
     from flask_blog.db import completeClassInit
-    completeClassInit()
+    db = completeClassInit()
     if new:
         db.drop_all()
     db.create_all()
