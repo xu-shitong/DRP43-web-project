@@ -1,2 +1,19 @@
 {% extends 'timeline_base.html' %}
 
+{% block content %}
+  <form method="post">
+      <label for="note_id">note_id</label>
+      <input name="note_id" id="note_id" value="{{ request.form['note_id'] }}" required>
+      <input type="submit" value="open">
+  </form>
+{% endblock %}
+
+{#{% block content %}#}
+{#  <form method="post">#}
+{#    <label for="title">Title</label>#}
+{#    <input name="title" id="title" value="{{ request.form['title'] }}" required>#}
+{#    <label for="body">Body</label>#}
+{#    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>#}
+{#    <input type="submit" value="Save">#}
+{#  </form>#}
+{#{% endblock %}#}

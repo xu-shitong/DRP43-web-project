@@ -23,7 +23,7 @@ class Note(db.Model):
     author_id = db.Column(db.INT, db.ForeignKey('account.id'), nullable=False)
     note_name = db.Column(db.VARCHAR(50), nullable=False)
     create_date = db.Column(db.DATETIME, nullable=False, default=datetime.utcnow())
-    references = db.Column(db.INT, nullable=False)
+    refs = db.Column(db.INT, nullable=False)
 
 
 class HistoryNode(db.Model):
