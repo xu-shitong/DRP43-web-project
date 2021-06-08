@@ -1,7 +1,6 @@
 {% extends "timeline_base.html" %}
 {% block content %}
-
-    <hr>
+  <hr>
 
   <div class="container">
       <form action="process.php" method="POST">
@@ -19,20 +18,23 @@
         <br>
         <div>
           <label>Title:</label>
-          <input type="email" name="email">
+          <input type="text" name="title">
         </div>
         <br>
         <div>
-          <label>Happend during:</label>
+          <label>Happened during:</label>
           <select name="gender">
             {#Todo: Selectors should be accessible from the database#}
             <option value="male">Invention of the first computer.</option>
             <option value="male">Invention of the first cellphone.</option>
           </select>
         </div>
+        <div>
+          <p>Description:</p>
+            <textarea name="body" id="body" cols="40" rows="10">{{ request.form["body"] }}</textarea>
+        </div>
         <br>
-        <br>
-          <input type="submit" name="submit" value="Submit">
+          <input type="submit" name="submit" value="Submit event">
       </form>
     </div>
 {% endblock content %}
