@@ -38,6 +38,16 @@ def initDatabase(new=False):
 
 
 db = initDatabase()
+sql_query1 = "INSERT INTO account (create_date, username, password) " \
+             "VALUES ('2021-6-3 10:00:00', 'test1', 'test1')"
+sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs) " \
+             "VALUES (1, 'first note', '2021-6-3 10:00:00', 0)"
+sql_query3 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
+             "VALUES ('1', 'first node', '20200101', '20200102', 'content')"
+# db.session.execute(sql_query1)
+# db.session.execute(sql_query2)
+# db.session.execute(sql_query3)
+# db.session.commit()
 
 
 @app.route('/hello')
