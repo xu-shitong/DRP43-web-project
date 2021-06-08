@@ -16,11 +16,16 @@ class HNode {
    *   title: title of node, also used as PK for node
    *   parent: the node is detail of what other history node
    */
-  constructor(start, end, title, content, x, y, width, height) {
+  constructor(start, end, title, content, 
+    parent_id, node_id,
+    x, y, width, height) {
     this.start = start;
     this.end = end;
     this.title = title;
     this.content = content;
+
+    this.parent_id = parent_id;
+    this.node_id = node_id;
 
     this.x = x;
     this.y = y;
@@ -52,14 +57,14 @@ class HNode {
   /* if been clicked, display the information in description below */
   clicked() {
     if (this.mouseHovering()) {
+      console.log(`is main page = ${IS_MAIN_PAGE}`)
       if (IS_MAIN_PAGE) {
         document.getElementById("description_id").innerHTML
           = `<h2>${this.title}</h2>\n
             <p>${this.content}</p>`;
       } else {
         // TODO: the page is edit page, should re-render page with previous node information instead
-        document.getElementById("description_id").innerHTML
-          = "";
+        document.getElementById("node_id").value = this.node_id;
       }
     }
   }
@@ -119,6 +124,8 @@ function setup() {
         end, 
         node["title"], 
         node["content"],
+        node["parent_id"],
+        node["node_id"],
         (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan, 
         layerNum * NODE_HEIGHT + layerBase, 
         (CANVAS_WIDTH * (end - start)) / totPeriodSpan, 

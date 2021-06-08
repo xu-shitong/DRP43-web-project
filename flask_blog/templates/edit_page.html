@@ -1,0 +1,42 @@
+{% extends "timeline_base.html" %}
+{% block content %}
+  <hr>
+
+  <div class="container">
+      <form action="/edit" method="POST">
+        <label>Displaying event with id:</label>
+        <input id="node_id" type="text" name="node_id" readonly>
+
+        <div>
+          <label>Time period:</label>
+          <input id="start" type="number" name="start" required>
+          <label>to</label>
+          <input id="end" type="number" name="end">
+        </div>
+        <br>
+        <!-- <div>
+          <label for="img">Select image:</label>
+          <input type="file" id="img" name="img" accept="image/*">
+        </div> -->
+        <br>
+        <div>
+          <label>Title:</label>
+          <input id="title" type="text" name="title" required>
+        </div>
+        <br>
+        <div>
+          <label>Happened during:</label>
+          <select id="parent" name="parent" required>
+            <option value="1">Invention of the first computer.</option>
+            <option value="2">Invention of the first cellphone.</option>
+          </select>
+        </div>
+        <div>
+          <p>Description:</p>
+            <textarea name="body" id="body" cols="40" rows="10" required></textarea>
+        </div>
+        <br>
+          <input type="submit" name="submit" value="Submit event">
+      </form>
+    </div>
+{% endblock content %}
