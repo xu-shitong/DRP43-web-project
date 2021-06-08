@@ -1,3 +1,4 @@
+import itertools
 from flask_blog.db import Account, HistoryNode, Note
 from html import entities
 import re
@@ -132,7 +133,8 @@ def edit_page(id):
 
 
   note = fetchNote(noteId=id)
-  return render_template("edit_page.html", note=json.dumps(note))
+  summary = itertools.chain.from_iterable(note["nodes"])
+  return render_template("edit_page.html", note=json.dumps(note), summary=summary)
 
 # respond to submit of edit page's update
 @bp.route("/edit", methods=["POST"])
@@ -151,6 +153,7 @@ def submit_note():
 
   node_id = request.form["node_id"]
 
+  # TODO: if allow user update event's parent, might result loop in trees, cause event unable to be displayed
   # update database
   sql_query = f'UPDATE history_node ' \
               f'SET title="{title}", ' \
@@ -163,8 +166,9 @@ def submit_note():
   db.session.execute(sql_query)
   db.session.commit()
   note = fetchNote(session["note_id"])
+  summary = itertools.chain.from_iterable(note["nodes"])
 
-  return render_template("/edit_page.html", note=json.dumps(note))
+  return render_template("/edit_page.html", note=json.dumps(note), summary=summary)
 
 # respond to submit of new note name
 @bp.route("/submit_note_name", methods=["POST"])

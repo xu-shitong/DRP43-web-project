@@ -111,11 +111,12 @@ function initialiseNote(note_temp) {
   let totPeriodSpan = note_end - note_start;
   
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
-  let layerBase = 0; // record accumulated height of already processed layers, equal to total_height every end of outer loop
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
   Array.prototype.forEach.call(note["nodes"], l => {
     let sublayerAlloc = nonOverlapGenerator(l);
     let i = 0;
+    let subLayerCount = 0; // record accumulated layer num of already processed layers
+
     Array.prototype.forEach.call(l, node => {
       let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
       let newNode = new HNode(
@@ -126,17 +127,18 @@ function initialiseNote(note_temp) {
         node["parent_id"],
         node["node_id"],
         (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan, 
-        layerNum * NODE_HEIGHT + layerBase, 
+        layerNum * NODE_HEIGHT + total_height, 
         (CANVAS_WIDTH * (end - start)) / totPeriodSpan, 
         NODE_HEIGHT
       );
 
       nodeCollections.push(newNode);
-      total_height += NODE_HEIGHT;
+      subLayerCount = Math.max(subLayerCount, layerNum);
       i++;
     });
-    layerBase += total_height;
+    total_height += (subLayerCount + 2) * NODE_HEIGHT;  // plus 1 for interval between sublayer, 1 for layerNum start from 0
   });
+  total_height -= NODE_HEIGHT; // leave only one interval at bottum of timeline
 }
 
 /* initialise canvas */

@@ -29,8 +29,10 @@
         <div>
           <label>Happened during:</label>
           <select id="parent" name="parent" required>
-            <option value="1">Invention of the first computer.</option>
-            <option value="2">Invention of the first cellphone.</option>
+            <option value="0">root node</option>
+            {% for node in summary %}
+              <option value="{{node['node_id']}}">{{ node["title"] }}</option>
+            {% endfor %}
           </select>
         </div>
         <div>
