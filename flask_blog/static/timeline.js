@@ -6,6 +6,7 @@ const HOVER_TITLE_SIZE = 15;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
+let total_height;
 
 class HNode {
 
@@ -74,6 +75,7 @@ class HNode {
 let nodeCollections = []; // collection of nodes displayed in canvas
 
 /* generate a list of integer, represent what level each corrisponding element in LIST should be */
+// TODO: algorithm require node sort in START time order, remove this restriction by sorting
 function nonOverlapGenerator(list) {
   let layers = [];
   let result = []
@@ -99,19 +101,16 @@ function nonOverlapGenerator(list) {
   return result;
 }
 
-/* initialise canvas */
-function setup() {
-  /** STEP1: deciding metadata of timeline */
-  const NODE_HEIGHT = 10; // each node in timeline take up 10px height
-  note = document.getElementById("canvas").getAttribute('note');
-  note = JSON.parse(note); // note is dictionary containing {"start" "end" "nodes"}
+function initialiseNote(note_temp) {
+  console.log(note_temp)
+  note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
   note_start = note["start"];
   note_end = note["end"];
   IS_MAIN_PAGE = note["is_main_page"];
 
   let totPeriodSpan = note_end - note_start;
   
-  let total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
+  total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   let layerBase = 0; // record accumulated height of already processed layers, equal to total_height every end of outer loop
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
   Array.prototype.forEach.call(note["nodes"], l => {
@@ -138,8 +137,14 @@ function setup() {
     });
     layerBase += total_height;
   });
+}
 
-  cnv = createCanvas(WIN_WIDTH, MAX_WIN_HEIGHT);
+/* initialise canvas */
+function setup() {
+  /** STEP1: deciding metadata of timeline */
+  note_temp = document.getElementById("canvas").getAttribute('note');
+  initialiseNote(note_temp);
+  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT);
   cnv.parent("canvas");
   // TODO: center the canvas to top center of page
   // TODO: draw a timeline scale at bottom of canvas
