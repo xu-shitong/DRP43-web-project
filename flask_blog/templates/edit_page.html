@@ -1,39 +1,38 @@
 {% extends "timeline_base.html" %}
 {% block content %}
 
-    <br>
-    <br>
     <hr>
-    <br>
-    <br>
 
-  <form action="process.php" method="POST">
-    <div>
-      <label>Time period:</label>
-      <input type="date" name="timePeriod">
-      <label>to</label>
-      <input type="date" name="timePeriod">
+  <div class="container">
+      <form action="process.php" method="POST">
+        <div>
+          <label>Time period:</label>
+          <input type="date" name="timePeriod">
+          <label>to</label>
+          <input type="date" name="timePeriod">
+        </div>
+        <br>
+        <div>
+          <label for="img">Select image:</label>
+          <input type="file" id="img" name="img" accept="image/*">
+        </div>
+        <br>
+        <div>
+          <label>Title:</label>
+          <input type="email" name="email">
+        </div>
+        <br>
+        <div>
+          <label>Happend during:</label>
+          <select name="gender">
+            {#Todo: Selectors should be accessible from the database#}
+            <option value="male">Invention of the first computer.</option>
+            <option value="male">Invention of the first cellphone.</option>
+          </select>
+        </div>
+        <br>
+        <br>
+          <input type="submit" name="submit" value="Submit">
+      </form>
     </div>
-    <br>
-    <div>
-      <label for="img">Select image:</label>
-      <input type="file" id="img" name="img" accept="image/*">
-    </div>
-    <br>
-    <div>
-      <label>Title:</label>
-      <input type="email" name="email">
-    </div>
-    <br>
-      <label>Happend during:</label>
-      <select name="gender">
-        {#Todo: Selectors should be accessible from the database#}
-        <option value="male">Invention of the first computer.</option>
-        <option value="male">Invention of the first cellphone.</option>
-      </select>
-    </div>
-    <br>
-    <br>
-      <input type="submit" name="submit" value="Submit">
-  </form>
 {% endblock content %}

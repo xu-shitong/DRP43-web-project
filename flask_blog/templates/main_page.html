@@ -1,2 +1,6 @@
-{% extends 'timeline_base.html' %}
-
+{% extends "timeline_base.html" %}
+{% block content %}
+    <a class="linkButton" href="{{ url_for("edit_page.edit") }}">
+        <button type="button">Edit timeline</button>
+    </a>
+{% endblock content %}
