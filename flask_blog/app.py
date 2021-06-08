@@ -28,14 +28,16 @@ def setDatabase(app, test=False):
 db = setDatabase(app)
 
 
-def getDatabase(new=False):
+def initDatabase(new=False):
+    from flask_blog.db import completeClassInit
+    completeClassInit()
     if new:
         db.drop_all()
     db.create_all()
     return db
 
 
-db = getDatabase()
+db = initDatabase()
 
 
 @app.route('/hello')
@@ -53,7 +55,7 @@ app.add_url_rule('/', endpoint='index')
 
 
 def getApp():
-    return app;
+    return app
 
 
 if __name__ == '__main__':

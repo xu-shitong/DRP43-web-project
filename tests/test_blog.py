@@ -1,5 +1,5 @@
 import pytest
-from flask_blog.app import getDatabase
+from flask_blog.app import initDatabase
 
 
 def test_index_view(client, auth):
@@ -38,7 +38,7 @@ def test_only_authors_can_modify_post(app, client, auth):
     # first add a second user 'test2' and a new blog by 'test2'
     # then check if first user 'test1' can modify blog of 'test2'
     with app.app_context():
-        db = getDatabase()
+        db = initDatabase()
         db.session.execute("INSERT INTO account (create_date, username, password) "
                            "VALUES ('2021-6-3 10:00:00', 'test2', 'test2')")
         db.session.execute("INSERT INTO blog (author_id, title, postDate, content) "
@@ -64,6 +64,6 @@ def test_delete(client, auth, app):
     assert response.headers['Location'] == 'http://localhost/'
 
     with app.app_context():
-        db = getDatabase()
+        db = initDatabase()
         post = db.session.execute('SELECT * FROM blog WHERE id=1').fetchone()
         assert post is None

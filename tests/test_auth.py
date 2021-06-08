@@ -1,6 +1,6 @@
 import pytest
 from flask import g, session
-from flask_blog.app import getDatabase
+from flask_blog.app import initDatabase
 
 
 def test_register_view(client):
@@ -17,7 +17,7 @@ def test_register_view(client):
 def test_register_post_database_update(client, app):
     response = client.post('/auth/register', data={'username': 'aa', 'password': 'aa'})
     with app.app_context():
-        assert getDatabase().session.execute("SELECT * FROM account WHERE username='aa'") \
+        assert initDatabase().session.execute("SELECT * FROM account WHERE username='aa'") \
                    .fetchone() is not None
     # getDatabase().session.execute("DELETE FROM account WHERE username='aa'")
     # getDatabase().session.commit()

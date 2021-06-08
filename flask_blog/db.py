@@ -34,3 +34,7 @@ class HistoryNode(db.Model):
     end_date = db.Column(db.INT, nullable=True)
     content = db.Column(db.Text, nullable=False)
     parent_node_id = db.Column(db.INT, nullable=True)
+
+
+def completeClassInit():
+    return db

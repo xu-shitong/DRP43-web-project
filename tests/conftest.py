@@ -1,7 +1,7 @@
 import pytest
 import sys
 # sys.path.extend(['../'])  
-from flask_blog.app import getApp, getDatabase
+from flask_blog.app import getApp, initDatabase
 
 
 @pytest.fixture
@@ -11,7 +11,7 @@ def app():
     with app.app_context():
         print("in app_context")
         # initialise database
-        init_db_test(getDatabase(True))
+        init_db_test(initDatabase(True))
     yield app
 
 
