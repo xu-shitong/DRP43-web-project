@@ -30,7 +30,7 @@ db = setDatabase(app)
 
 def initDatabase(new=False):
     from flask_blog.db import completeClassInit
-    completeClassInit()
+    db = completeClassInit()
     if new:
         db.drop_all()
     db.create_all()
@@ -61,6 +61,8 @@ import flask_blog.blog as blog
 app.register_blueprint(blog.bp)
 import flask_blog.main_page as main
 app.register_blueprint(main.bp)
+import flask_blog.edit_page as edit
+app.register_blueprint(edit.bp)
 app.add_url_rule('/', endpoint='index')
 
 

@@ -6,6 +6,7 @@ const HOVER_TITLE_SIZE = 15;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
+let total_height;
 
 class HNode {
 
@@ -16,11 +17,16 @@ class HNode {
    *   title: title of node, also used as PK for node
    *   parent: the node is detail of what other history node
    */
-  constructor(start, end, title, content, x, y, width, height) {
+  constructor(start, end, title, content, 
+    parent_id, node_id,
+    x, y, width, height) {
     this.start = start;
     this.end = end;
     this.title = title;
     this.content = content;
+
+    this.parent_id = parent_id;
+    this.node_id = node_id;
 
     this.x = x;
     this.y = y;
@@ -52,14 +58,14 @@ class HNode {
   /* if been clicked, display the information in description below */
   clicked() {
     if (this.mouseHovering()) {
+      console.log(`is main page = ${IS_MAIN_PAGE}`)
       if (IS_MAIN_PAGE) {
         document.getElementById("description_id").innerHTML
           = `<h2>${this.title}</h2>\n
             <p>${this.content}</p>`;
       } else {
         // TODO: the page is edit page, should re-render page with previous node information instead
-        document.getElementById("description_id").innerHTML
-          = "";
+        document.getElementById("node_id").value = this.node_id;
       }
     }
   }
@@ -69,6 +75,7 @@ class HNode {
 let nodeCollections = []; // collection of nodes displayed in canvas
 
 /* generate a list of integer, represent what level each corrisponding element in LIST should be */
+// TODO: algorithm require node sort in START time order, remove this restriction by sorting
 function nonOverlapGenerator(list) {
   let layers = [];
   let result = []
@@ -94,24 +101,22 @@ function nonOverlapGenerator(list) {
   return result;
 }
 
-/* initialise canvas */
-function setup() {
-  /** STEP1: deciding metadata of timeline */
-  const NODE_HEIGHT = 10; // each node in timeline take up 10px height
-  note = document.getElementById("canvas").getAttribute('note');
-  note = JSON.parse(note); // note is dictionary containing {"start" "end" "nodes"}
+function initialiseNote(note_temp) {
+  console.log(note_temp)
+  note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
   note_start = note["start"];
   note_end = note["end"];
   IS_MAIN_PAGE = note["is_main_page"];
 
   let totPeriodSpan = note_end - note_start;
   
-  let total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
-  let layerBase = 0; // record accumulated height of already processed layers, equal to total_height every end of outer loop
+  total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
   Array.prototype.forEach.call(note["nodes"], l => {
     let sublayerAlloc = nonOverlapGenerator(l);
     let i = 0;
+    let subLayerCount = 0; // record accumulated layer num of already processed layers
+
     Array.prototype.forEach.call(l, node => {
       let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
       let newNode = new HNode(
@@ -119,20 +124,29 @@ function setup() {
         end, 
         node["title"], 
         node["content"],
+        node["parent_id"],
+        node["node_id"],
         (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan, 
-        layerNum * NODE_HEIGHT + layerBase, 
+        layerNum * NODE_HEIGHT + total_height, 
         (CANVAS_WIDTH * (end - start)) / totPeriodSpan, 
         NODE_HEIGHT
       );
 
       nodeCollections.push(newNode);
-      total_height += NODE_HEIGHT;
+      subLayerCount = Math.max(subLayerCount, layerNum);
       i++;
     });
-    layerBase += total_height;
+    total_height += (subLayerCount + 2) * NODE_HEIGHT;  // plus 1 for interval between sublayer, 1 for layerNum start from 0
   });
+  total_height -= NODE_HEIGHT; // leave only one interval at bottum of timeline
+}
 
-  cnv = createCanvas(WIN_WIDTH, MAX_WIN_HEIGHT);
+/* initialise canvas */
+function setup() {
+  /** STEP1: deciding metadata of timeline */
+  note_temp = document.getElementById("canvas").getAttribute('note');
+  initialiseNote(note_temp);
+  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT);
   cnv.parent("canvas");
   // TODO: center the canvas to top center of page
   // TODO: draw a timeline scale at bottom of canvas
@@ -140,6 +154,7 @@ function setup() {
   Array.prototype.forEach.call(nodeCollections, node => {
     node.display();
   });
+  console.log(note_temp)
 }
 
 function draw() {

@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, request, jsonify
 from flask.templating import render_template
 from flask_blog.app import db
+from flask_blog.utils import fetchNote, defaultNote
 import json
 bp = Blueprint("main_page", __name__)
 
@@ -19,43 +20,43 @@ def main():
     """
     note = {"is_main_page": True,
           "start": 100, "end": 150, 
-          "nodes": [[{"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"}, 
+          "nodes": [[{"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"},
                     {"start": 110, "end": 130, "title": "event 2", "content": "content of event 2"}, 
                     {"start": 120, "end": 140, "title": "event 3", "content": "content of event 3"}],
                     [{"start": 100, "end": 150, "title": "event 4", "content": "content of event 4"}]]
           }
 
-    if request.method == 'POST':
-        print("here")
-        note_id = request.form["note_id"]
-        print(note_id)
-        return_ = find_a_note(int(note_id))
-        return return_
     find_all_notes = "SELECT note.id, note_name, username FROM account JOIN note " \
                      "ON account.id=note.author_id "
     notes = db.session.execute(find_all_notes).fetchall()
     fields = ['note id', 'note name', 'username']
     return_json_notes = ([(dict(zip(fields, note))) for note in notes])
     print(return_json_notes)
+    if request.method == 'POST':
+        print("here")
+        note_id = request.form["note_id"]
+        print(note_id)
+        note = fetchNote(int(note_id))
+        return render_template("main_page.html", note=json.dumps(note), notes=return_json_notes)
     # if len(request.args) > 0:
     #     note_id = request.args.get('note_id', 0, type=int)
     #     note_ = find_a_note(note_id)
     #     print(note_)
     #     return jsonify(note=note_)
     #     # return render_template("main_page.html", note=json.dumps(note), notes=return_json_notes)
-    return render_template("main_page.html", note=json.dumps(note), notes=return_json_notes)
+    return render_template("main_page.html", note=json.dumps(defaultNote()), notes=return_json_notes)
 
 
 def find_a_note(note_id):
     find_all_nodes_sql = \
-        f"SELECT title, start_date, end_date, content FROM history_node " \
+        f"SELECT history_node.id, title, start_date, end_date, content, parent_node_id FROM history_node " \
         f"WHERE note_id={note_id} ORDER BY parent_node_id DESC"
     history_nodes = db.session.execute(find_all_nodes_sql).fetchall()
-    fields = ["title", "start_date", "end_date", "content"]
+    fields = ["node_id", "title", "start_date", "end_date", "content", "parent_id"]
     dicts = [(dict(zip(fields, history_node))) for history_node in history_nodes]
 
     find_start_sql = f"SELECT min(start_date) FROM history_node WHERE note_id={note_id}"
-    find_end_sql = f"SELECT max(start_date) FROM history_node WHERE note_id={note_id}"
+    find_end_sql = f"SELECT max(end_date) FROM history_node WHERE note_id={note_id}"
     (start,) = db.session.execute(find_start_sql).first()
     (end,) = db.session.execute(find_end_sql).first()
     return_fields = ["is_main", "start", "end", "nodes"]
@@ -65,7 +66,7 @@ def find_a_note(note_id):
 
 @bp.route("/main/<int:id>")
 def render_a_note(id):
-    note = find_a_note(id)
+    note = fetchNote(id)
     find_all_notes = "SELECT note.id, note_name, username FROM account JOIN note " \
                      "ON account.id=note.author_id "
     notes = db.session.execute(find_all_notes).fetchall()
@@ -73,7 +74,7 @@ def render_a_note(id):
     notes = ([(dict(zip(fields, note))) for note in notes])
     print(note)
     print(notes)
-    return render_template('main_page.html', note=note, notes=notes)
+    return render_template('main_page.html', note=json.dumps(note), notes=notes)
 
 # @bp.route('/create', methods=['GET', 'POST'])
 # @login_required
