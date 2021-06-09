@@ -6,14 +6,21 @@
   <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
   <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
   <script src="/static/timeline.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
 </head>
 <body>
-  <div id="canvas" note="{{ note }}" node="{{ node }}"></div>
+  <div class="container">
+    <div id="canvas" note="{{ note }}" node="{{ node }}" align="center"></div>
 
   <!-- display image and description, format shown in main_page_example -->
-  <div id="image_id"></div>
-  <div id="description_id"></div>
-  {% block content %} {% endblock %}
+    <div id="image_id"></div>
+    <div id="description_id"></div>
+    {% block content %} {% endblock %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -4,43 +4,50 @@
 
   <div class="container">
       <form action="/edit" method="POST">
-        <label>Displaying note with id:</label>
-        <input id="note_id" type="text" name="note_id" readonly>
-        <label>Displaying event with id:</label>
-        <input id="node_id" type="text" name="node_id" readonly>
 
-        <div>
-          <label>Time period:</label>
-          <input id="start" type="number" name="start" required>
-          <label>to</label>
-          <input id="end" type="number" name="end">
+        <div class="input-group mb-3">
+          <span class="input-group-text">Displaying note with id:</span>
+          <input id="note_id" type="text" name="note_id" class="form-control" readonly>
         </div>
-        <br>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">Displaying event with id:</span>
+          <input id="node_id" type="text" name="node_id" class="form-control" readonly>
+        </div>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">From</span>
+          <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20200101" required>
+          <span class="input-group-text">To</span>
+          <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20200102">
+        </div>
+
         <!-- <div>
           <label for="img">Select image:</label>
           <input type="file" id="img" name="img" accept="image/*">
         </div> -->
-        <br>
-        <div>
-          <label>Title:</label>
-          <input id="title" type="text" name="title" required>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Title:</span>
+          <input id="title" type="text" name="title" class="form-control" placeholder="e.g. Roman Empire" required>
         </div>
-        <br>
-        <div>
-          <label>Happened during:</label>
-          <select id="parent" name="parent" required>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">Happened during</span>
+          <select id="parent" name="parent" class="form-control" required>
             <option value="0">root node</option>
             {% for node in summary %}
               <option value="{{node['node_id']}}">{{ node["title"] }}</option>
             {% endfor %}
           </select>
         </div>
-        <div>
-          <p>Description:</p>
-            <textarea name="body" id="body" cols="40" rows="10" required></textarea>
+
+        <div class="input-group">
+          <span class="input-group-text">Description:</span>
+            <textarea name="body" id="body" class="form-control" required></textarea>
         </div>
+
         <br>
-          <input type="submit" name="submit" value="Submit event">
+          <input type="submit" name="submit" value="Submit event" class="btn btn-primary">
       </form>
     </div>
 {% endblock content %}
