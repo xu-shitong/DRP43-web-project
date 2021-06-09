@@ -90,3 +90,13 @@ def fetchNote(noteId):
 
 def defaultNote():
   return {"is_in_main": False, "start": 0, "end": 0, "nodes": []}
+
+
+note = {"is_main_page": True,
+          "start": 100, "end": 150,
+          "nodes": [[{"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"},
+                    {"start": 110, "end": 130, "title": "event 2", "content": "content of event 2"},
+                    {"start": 120, "end": 140, "title": "event 3", "content": "content of event 3"}],
+                    [{"start": 100, "end": 150, "title": "event 4", "content": "content of event 4"}]]
+          }
+
