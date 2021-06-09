@@ -7,7 +7,7 @@ bp = Blueprint("main_page", __name__)
 
 
 @bp.route("/main", methods=['GET', 'POST'])
-def main():
+def main(): 
     """ TODO: note should be retrieved from database,
           IS_MAIN_PAGE: boolean field, tell js whether it is main page or edit page
           START is the minimum of START variable in nodes,
