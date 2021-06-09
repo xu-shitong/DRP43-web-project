@@ -13,11 +13,12 @@
 </head>
 <body>
   <div class="container">
-    <div id="canvas" note="{{ note }}" node="{{ node }}" align="center"></div>
+    <div id="canvas" note="{{ note }}" align="center"></div>
 
-  <!-- display image and description, format shown in main_page_example -->
-    <div id="image_id"></div>
-    <div id="description_id"></div>
+    <!-- displaying id of note -->
+    <div id="note_name">showing note: {{ note_name }}</div>
+    <div id="note_id">id: {{ note_id }}</div>
+
     {% block content %} {% endblock %}
   </div>
 

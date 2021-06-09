@@ -58,14 +58,19 @@ class HNode {
   /* if been clicked, display the information in description below */
   clicked() {
     if (this.mouseHovering()) {
-      console.log(`is main page = ${IS_MAIN_PAGE}`)
       if (IS_MAIN_PAGE) {
         document.getElementById("description_id").innerHTML
           = `<h2>${this.title}</h2>\n
             <p>${this.content}</p>`;
       } else {
-        // TODO: the page is edit page, should re-render page with previous node information instead
+        // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
+        document.getElementById("start").value = this.start;
+        document.getElementById("end").value = this.end;
+        document.getElementById("title").value = this.title;
+        document.getElementById("parent").value = this.parent_id;
+        document.getElementById("body").value = this.content;
+        
       }
     }
   }
@@ -102,11 +107,10 @@ function nonOverlapGenerator(list) {
 }
 
 function initialiseNote(note_temp) {
-  console.log(note_temp)
   note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
   note_start = note["start"];
   note_end = note["end"];
-  IS_MAIN_PAGE = note["is_main_page"];
+  IS_MAIN_PAGE = note["is_in_main"];
 
   let totPeriodSpan = note_end - note_start;
   
