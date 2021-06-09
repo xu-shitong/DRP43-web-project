@@ -1,12 +1,24 @@
 {% extends 'timeline_base.html' %}
-
 {% block content %}
+  <script src="/static/main.js"></script>
   <form method="post">
       <label for="note_id">note_id</label>
       <input name="note_id" id="note_id" value="{{ request.form['note_id'] }}" required>
       <input type="submit" value="open">
   </form>
+  <p id="t">There are totally {{ length }} notes</p>
+  <div id="length" value="{{ length }}"></div>
+  <ul id="notes list">
+    {% for _note in notes %}
+        <li><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}"> {{ _note['note name'] }}</a></li>
+    {% endfor %}
+  </ul>
+  <form>
+    <input type="submit" value="Submit">hello
+  </form>
 {% endblock %}
+
+function
 
 {#{% block content %}#}
 {#  <form method="post">#}

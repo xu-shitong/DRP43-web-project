@@ -154,3 +154,9 @@ function mousePressed() {
     node.clicked();
   });
 }
+
+// function click_for_note() {
+
+
+
+// }
