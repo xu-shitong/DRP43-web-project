@@ -37,17 +37,29 @@ def initDatabase(new=False):
     return db
 
 
-db = initDatabase()
+db = initDatabase(True)
 sql_query1 = "INSERT INTO account (create_date, username, password) " \
-             "VALUES ('2021-6-3 10:00:00', 'test1', 'test1')"
+             "VALUES ('2021-6-3 10:00:00', 'Amy', 'Amy')"
 sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs) " \
-             "VALUES (1, 'first note', '2021-6-3 10:00:00', 0)"
+             "VALUES (1, 'The Tang Dynasty', '2021-6-3 10:00:00', 0)"
 sql_query3 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
-             "VALUES ('1', 'first node', '20200101', '20200102', 'content')"
-# db.session.execute(sql_query1)
-# db.session.execute(sql_query2)
-# db.session.execute(sql_query3)
-# db.session.commit()
+             "VALUES ('1', 'Flourishment Age of Kaiyuan Era', '712', '741', 'content')"
+sql_query4 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
+             "VALUES ('1', 'Government of Zhenguan', '627', '649', 'society developed quickly')"
+sql_query5 = "INSERT INTO note (author_id, note_name, create_date, refs) " \
+             "VALUES (1, 'The Qin Dynasty', '2021-6-3 10:00:00', 0)"
+sql_query6 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
+             "VALUES ('2', 'Building Great Wall', '-214', '-170', 'large labour force to build Great World')"
+sql_query7 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
+             "VALUES ('1', 'The Tang Dynasty establishment and destory', '618', '907', 'content')"
+db.session.execute(sql_query1)
+db.session.execute(sql_query2)
+db.session.execute(sql_query3)
+db.session.execute(sql_query4)
+db.session.execute(sql_query5)
+db.session.execute(sql_query6)
+db.session.execute(sql_query7)
+db.session.commit()
 
 
 @app.route('/hello')
