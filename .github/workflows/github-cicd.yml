@@ -34,7 +34,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    # needs: test
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
@@ -43,8 +43,13 @@ jobs:
           heroku_app_name: "drp43-website" #Must be unique in Heroku
           heroku_email: "tonyshengxue@outlook.com"
         env: 
-          HD_DATABASE_ACCOUNT: ${{secrets.DATABASE_ACCOUNT}}
-          HD_DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          HD_DATABASE_DOMAIN_NAME: ${{secrets.DATABASE_DOMAIN_NAME}}
-          HD_DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-          HD_APP_CONFIG_KEY: ${{secrets.APP_CONFIG_KEY}}
+          # HD_DATABASE_ACCOUNT: ${{secrets.DATABASE_ACCOUNT}}
+          # HD_DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          # HD_DATABASE_DOMAIN_NAME: ${{secrets.DATABASE_DOMAIN_NAME}}
+          # HD_DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+          # HD_APP_CONFIG_KEY: ${{secrets.APP_CONFIG_KEY}}
+          HD_DATABASE_ACCOUNT: zhangziheng
+          HD_DATABASE_PASSWORD: 
+          HD_DATABASE_DOMAIN_NAME: "106.52.101.201"
+          HD_DATABASE_NAME: accounts
+          HD_APP_CONFIG_KEY: 123
