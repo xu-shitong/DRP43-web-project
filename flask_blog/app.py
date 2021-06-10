@@ -61,7 +61,7 @@ db.session.execute(sql_query6)
 db.session.execute(sql_query7)
 db.session.commit()
 
-
+ 
 @app.route('/hello')
 def hello_world():
     return "Hello World"
