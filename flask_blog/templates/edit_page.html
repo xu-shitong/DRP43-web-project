@@ -1,14 +1,20 @@
 {% extends "timeline_base.html" %}
 {% block content %}
+  <script>
+    function clearInputs() {
+      document.getElementById("node_id").value = "";
+      document.getElementById("start").value = "";
+      document.getElementById("end").value = "";
+      document.getElementById("title").value = "";
+      document.getElementById("parent").value = 0;
+      document.getElementById("body").value = "";
+    }
+  </script>
+
   <hr>
 
   <div class="container">
       <form action="/edit" method="POST">
-
-        <div class="input-group mb-3">
-          <span class="input-group-text">Displaying note with id:</span>
-          <input id="note_id" type="text" name="note_id" class="form-control" readonly>
-        </div>
 
         <div class="input-group mb-3">
           <span class="input-group-text">Displaying event with id:</span>
@@ -47,7 +53,11 @@
         </div>
 
         <br>
-          <input type="submit" name="submit" value="Submit event" class="btn btn-primary">
+          <input type="submit" name="submit" value="Update/Submit event" class="btn btn-primary">
+      
+        <a href="/main/{{ note_id }}" class="btn btn-primary">finish editing note</a>
+        <button type="button" class="btn btn-primary" onclick="clearInputs()">reset edit</button>
+        
       </form>
     </div>
 {% endblock content %}

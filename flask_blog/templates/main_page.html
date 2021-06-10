@@ -1,5 +1,10 @@
 {% extends 'timeline_base.html' %}
 {% block content %}
+
+  <!-- display image and description, format shown in main_page_example -->
+  <div id="image_id"></div>
+  <p id="description_id"></p>
+
   <br>
   <form method="post" class="form-inline">
     <label for="note_id" class="fw-lighter">note_id</label>
@@ -10,7 +15,7 @@
   <hr>
   <div class="container">
         <div class="bg-muted">
-            <p id="t" class="fw-lighter" align="center">There are totally {{ notes | length }} notes</p>
+            <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
             <div id="length" value="{{ length }}"></div>
             <ul id="notes list">
             {% for _note in notes %}
@@ -20,6 +25,11 @@
         </div>
   </div>
   <hr>
+
+  <!-- button redirect to edit page -->
+  {% if note_id %}
+    <a href="/edit/{{ note_id }}" class="btn btn-primary">edit this note</a>
+  {% endif %}
 
 {% endblock %}
 
