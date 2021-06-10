@@ -37,7 +37,7 @@ def initDatabase(new=False):
     return db
 
 
-db = initDatabase(True)
+db = initDatabase()
 # sql_query1 = "INSERT INTO account (create_date, username, password) " \
 #              "VALUES ('2021-6-3 10:00:00', 'Amy', 'Amy')"
 # sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs) " \
