@@ -22,7 +22,7 @@ def display_notes(note_id=None):
         note_name = None
         if note_info:
             note_name = note_info["note_name"]
-    else :
+    else:
         # no note_id given, return empty note content and name 
         note = defaultNote(is_in_main=True)
         note_name = None
