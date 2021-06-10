@@ -63,6 +63,8 @@ import flask_blog.main_page as main
 app.register_blueprint(main.bp)
 import flask_blog.edit_page as edit
 app.register_blueprint(edit.bp)
+import flask_blog.search_page as search
+app.register_blueprint(search.bp)
 app.add_url_rule('/', endpoint='index')
 
 

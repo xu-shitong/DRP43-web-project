@@ -5,6 +5,11 @@
   <div id="image_id"></div>
   <p id="description_id"></p>
 
+
+  <!-- redirect to search page, search using keywords -->
+  <a href="{{ url_for('search_page.search') }}" >search</a>
+
+  <!-- let user search a particular note with id -->
   <br>
   <form method="post" class="form-inline">
     <label for="note_id" class="fw-lighter">note_id</label>
@@ -12,6 +17,8 @@
     <input type="submit" value="open" class="btn btn-primary">
   </form>
   <br>
+
+  <!-- display all available notes -->
   <hr>
   <div class="container">
         <div class="bg-muted">
@@ -25,6 +32,25 @@
         </div>
   </div>
   <hr>
+
+  <!-- pop up input window for input new note name -->
+  <button id="new_note" onclick="display_create()">new note</button>
+  <div id="create_note_form" style="display: none;">
+    <label for="new_note_name">note name:</label>
+    <input name="new_note_name" id="note_name_id" required>
+  </div>
+  <button id="submit_note_name" onclick="redirect_create()">create</button>
+  <script>
+    function display_create() {
+      document.getElementById("create_note_form").style.display = "block";
+    }
+
+    function redirect_create() {
+      note_name = document.getElementById("note_name_id").value
+      console.log(note_name)
+      $.post("/new_note/"+note_name)
+    }
+  </script>
 
   <!-- button redirect to edit page -->
   {% if note_id %}

@@ -1,3 +1,4 @@
+from flask_blog.db import Note
 from flask import Blueprint, flash, request, jsonify
 from flask.templating import render_template
 from flask_blog.app import db
@@ -45,4 +46,11 @@ def main():
 def render_a_note(id):
     return display_notes(id)
 
-
+@bp.route("/new_note/<note_name>", methods=["POST"])
+def new_note(note_name):
+    # TODO: require login function to perform create note
+    note = Note(note_name=note_name)
+    print(note_name)
+    # db.session.execute(sql_query3)
+    # db.session.commit()
+    return
