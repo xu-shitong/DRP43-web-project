@@ -13,10 +13,10 @@ app = Flask(__name__)
 
 
 def setDatabase(app, test=False):
-    # app.config['SQLALCHEMY_DATABASE_URI'] \
-    #     = 'mysql://' + DATABASE_ACCOUNT + ':' + DATABASE_PASSWORD + '@' \
-    #       + DATABASE_DOMAIN_NAME + ':3306/' + DATABASE_NAME
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://zhangziheng:@106.52.101.201:3306/accounts'
+    app.config['SQLALCHEMY_DATABASE_URI'] \
+        = 'mysql://' + DATABASE_ACCOUNT + ':' + DATABASE_PASSWORD + '@' \
+          + DATABASE_DOMAIN_NAME + ':3306/' + DATABASE_NAME
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://zhangziheng:@106.52.101.201:3306/accounts'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = APP_CONFIG_KEY
     # app.config['SECRET_KEY'] = "123"
@@ -28,16 +28,16 @@ def setDatabase(app, test=False):
 db = setDatabase(app)
 
 
-# def initDatabase(new=False):
-#     from flask_blog.db import completeClassInit
-#     if new:
-#         db.drop_all()
-#     completeClassInit()
-#     db.create_all()
-#     return db
+def initDatabase(new=False):
+    from flask_blog.db import completeClassInit
+    if new:
+        db.drop_all()
+    completeClassInit()
+    db.create_all()
+    return db
 
 
-# db = initDatabase(True)
+db = initDatabase()
 # sql_query1 = "INSERT INTO account (create_date, username, password) " \
 #              "VALUES ('2021-6-3 10:00:00', 'Amy', 'Amy')"
 # sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs) " \

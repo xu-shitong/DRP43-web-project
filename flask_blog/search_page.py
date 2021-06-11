@@ -13,16 +13,17 @@ def search():
   # method is post, find the note user searching for
   info = request.form["search_info"]
   
-  if (info.startswith('-') and info[1:].isdigit()) or info.isdigit():
-    # if search info is a number, treat as time
-    time = int(info)
-    sql_query = "SELECT * from history_node " \
-               f"WHERE start_date <= {time} " \
-               f"OR end_date >= {time}"
+  # # TODO: record start and end time in note database
+  # if (info.startswith('-') and info[1:].isdigit()) or info.isdigit():
+  #   # if search info is a number, treat as time
+    
+    
+  # info is a string, search titles to find a note title contain the info  
+  if info:
+    sql_query = "SELECT * from note " \
+                f"WHERE note_name LIKE '%{info}%'"
+    notes = db.session.execute(sql_query).fetchall()
   else :
-    # info is a string, search titles to find a note title contain the info
-    sql_query = "SELECT * from history_node " \
-                f"WHERE title LIKE '%{info}%'"
+    notes = []
   
-  notes = db.session.execute(sql_query).fetchall()
   return render_template("search_page.html", notes=notes)
