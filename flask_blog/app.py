@@ -40,14 +40,14 @@ def initDatabase(new=False):
 db = initDatabase()
 # sql_query1 = "INSERT INTO account (create_date, username, password) " \
 #              "VALUES ('2021-6-3 10:00:00', 'Amy', 'Amy')"
-# sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs) " \
-#              "VALUES (1, 'The Tang Dynasty', '2021-6-3 10:00:00', 0)"
+# sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs, is_public) " \
+#              "VALUES (1, 'The Tang Dynasty', '2021-6-3 10:00:00', 0, 0)"
 # sql_query3 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
 #              "VALUES ('1', 'Flourishment Age of Kaiyuan Era', '712', '741', 'content')"
 # sql_query4 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
 #              "VALUES ('1', 'Government of Zhenguan', '627', '649', 'society developed quickly')"
-# sql_query5 = "INSERT INTO note (author_id, note_name, create_date, refs) " \
-#              "VALUES (1, 'The Qin Dynasty', '2021-6-3 10:00:00', 0)"
+# sql_query5 = "INSERT INTO note (author_id, note_name, create_date, refs, is_public) " \
+#              "VALUES (1, 'The Qin Dynasty', '2021-6-3 10:00:00', 0, 1)"
 # sql_query6 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \
 #              "VALUES ('2', 'Building Great Wall', '-214', '-170', 'large labour force to build Great World')"
 # sql_query7 = "INSERT INTO history_node (note_id, title, start_date, end_date, content) " \

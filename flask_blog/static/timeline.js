@@ -68,13 +68,52 @@ class HNode {
         document.getElementById("start").value = this.start;
         document.getElementById("end").value = this.end;
         document.getElementById("title").value = this.title;
-        document.getElementById("parent").value = this.parent_id;
         document.getElementById("body").value = this.content;
         
+        // display all node not of child of the current node
+        let parent_input = document.getElementById("parent_input")
+        
+        let innerHTML = ""
+        
+        let tree = note["tree"]
+        let allNodes = Object.keys(tree)
+        let childList = [this.node_id]
+
+        while (childList.length > 0) {
+          let childId = childList[0]
+          childList.shift()
+
+          // if child has not been removed from all Nodes, remove it
+          allNodes = allNodes.filter((id) => {return id != childId})
+
+          // add all grand child in nodeList, to be remove
+          let childs = tree[`${childId}`]["child"]
+          Array.prototype.forEach.call(childs, id => {
+            childList.push(id)
+          })
+        }
+
+        Array.prototype.forEach.call(allNodes, id => {
+          innerHTML += `<option value='${id}'>${tree[`${id}`]['title']}</option>`
+        })
+        parent_input.innerHTML = innerHTML;
+
+        // display previous select result
+        document.getElementById("parent_input").value = this.parent_id;
+
       }
     }
   }
 
+}
+
+function initSelectBox() {
+  parent_input = document.getElementById("parent_input")
+  parent_input = ""
+  Object.entries(note["tree"]).forEach(([key, value]) => {
+    console.log(key, value);
+    parent_input.innerHTML += `<option value='${key}'>${value["title"]}</option>`
+  });
 }
 
 let nodeCollections = []; // collection of nodes displayed in canvas

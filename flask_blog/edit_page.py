@@ -1,4 +1,6 @@
 import itertools
+
+from sqlalchemy import sql
 from flask_blog.db import Account, HistoryNode, Note
 from html import entities
 import re
@@ -7,6 +9,7 @@ from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
 from flask_blog.utils import dbDummyInit, fetchNote, getNoteInfo
+from flask_blog.auth import login_required
 import json
 
 bp = Blueprint("edit_page", __name__)
@@ -14,14 +17,15 @@ bp = Blueprint("edit_page", __name__)
 # fetch note data from database, render edit page
 def rerender_edit_page(id):
     note = fetchNote(noteId=id, is_in_main=False)
-    summary = itertools.chain.from_iterable(note["nodes"])
-    return render_template("edit_page.html", note=json.dumps(note), summary=summary, note_id=id, note_name=session["note_name"])
+
+    # tree = itertools.chain.from_iterable()
+    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"])
 
 
 # on enter edit page, id is note_id
 @bp.route("/edit/<int:id>", methods=["GET", "POST"])
+@login_required
 def edit_page(id):
-    session.clear()
     session["note_id"] = id
     note_info = getNoteInfo(id)
 
@@ -30,16 +34,25 @@ def edit_page(id):
     if note_info:
       # if successfully fetched note, set session note name
       session["note_name"] = note_info["note_name"]
-    
-
-    # # Dummy initialisation of database, only for test purpose
-    # dbDummyInit()
 
     return rerender_edit_page(id)
 
 # respond to submit of edit page's update
 @bp.route("/edit", methods=["POST"])
+@login_required
 def submit_note():
+    node_id = request.form["node_id"]
+    user_id = session["user_id"]
+
+    # check if user has permission to edit the note
+    sql_query = f'SELECT id, is_public, author_id '\
+                f'FROM note '\
+                f'WHERE id = {session["note_id"]}'
+    note = db.session.execute(sql_query).fetchone()
+    if (not user_id == note["author_id"]) and (note["is_public"] == 0):
+        flash("you cannot edit this note, report how you enter this website")
+        return rerender_edit_page(note_id=session["note_id"])
+
     startTime = int(request.form["start"])
     endTime_temp = request.form["end"]
     if endTime_temp == None:
@@ -52,10 +65,8 @@ def submit_note():
 
     description = request.form["body"]
 
-    node_id = request.form["node_id"]
     if node_id:
       # node id present, user is updating a node
-      # TODO: if allow user update event's parent, might result loop in trees, cause event unable to be displayed
       # update database
       sql_query = f'UPDATE history_node ' \
                   f'SET title="{title}", ' \
@@ -75,12 +86,23 @@ def submit_note():
 
     return rerender_edit_page(session["note_id"])
 
-# respond to delete of a node
-# TODO: delete a node from note
-@bp.route("/edit_delete/<int:id>")
-def submit_note_name(id):
-    
-    sql_query = f"DELETE FROM history_node WHERE id={id}"
+# respond to delete of a note
+@bp.route("/delete_note", methods=["POST"])
+def delete_note():
+    # verify note is owned by user, only owner of note can delete note
+    owner = Note.query.filter_by(id=session['note_id']).first()
+    print(owner)
+    print(session)
+    if not (session["user_id"] == owner.author_id):
+      # cannot delete note
+      return "you are not owner of the note, only creater of note can delete it"
+
+    sql_query = f"DELETE FROM history_node WHERE note_id={session['note_id']}"
     db.session.execute(sql_query)
     db.session.commit()
-    return rerender_edit_page(session["note_id"])
+    sql_query = f"DELETE FROM note WHERE id={session['note_id']}"
+    db.session.execute(sql_query)
+    db.session.commit()
+
+    # return no error message
+    return ""
