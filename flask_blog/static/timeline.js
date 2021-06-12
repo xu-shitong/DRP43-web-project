@@ -3,6 +3,7 @@ const CANVAS_WIDTH = 700;
 const MAX_WIN_HEIGHT = 600;
 const NODE_HEIGHT = 15; // each node in timeline take up 10px height
 const HOVER_TITLE_SIZE = 15;
+const TIMELINE_HEIGHT = 20;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
@@ -45,27 +46,34 @@ class HNode {
   /* display, if mouse hovering on it, show title by the side of block */
   display() {
     // TODO: if text length is smaller than rect length, show title in the middle of rect
+    fill(255, 0, 0, 100);
     rect(this.x, this.y, this.width, this.height);
     if (this.mouseHovering()) {
       // TODO: put title in text box with background colour, so that the displayed text is clearer
-      // TODO: 设置text的图层为最高层，防止别的node的矩形框覆盖text内容
-      textSize(HOVER_TITLE_SIZE);
       // +10 in x to avoid text overlap with mouse arrow
-      text(this.title, mouseX+10, mouseY+HOVER_TITLE_SIZE);
+      fill(0);
+      line(mouseX+10, mouseY+HOVER_TITLE_SIZE, mouseX+20, mouseY+HOVER_TITLE_SIZE+10);
+      ellipse(mouseX+20, mouseY+HOVER_TITLE_SIZE+10, 2, 2);
+      text(this.title, mouseX+25, mouseY+HOVER_TITLE_SIZE+15);
     }
   }
 
   /* if been clicked, display the information in description below */
   clicked() {
     if (this.mouseHovering()) {
-      console.log(`is main page = ${IS_MAIN_PAGE}`)
       if (IS_MAIN_PAGE) {
         document.getElementById("description_id").innerHTML
           = `<h2>${this.title}</h2>\n
             <p>${this.content}</p>`;
       } else {
-        // TODO: the page is edit page, should re-render page with previous node information instead
+        // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
+        document.getElementById("start").value = this.start;
+        document.getElementById("end").value = this.end;
+        document.getElementById("title").value = this.title;
+        document.getElementById("parent").value = this.parent_id;
+        document.getElementById("body").value = this.content;
+        
       }
     }
   }
@@ -102,11 +110,10 @@ function nonOverlapGenerator(list) {
 }
 
 function initialiseNote(note_temp) {
-  console.log(note_temp)
   note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
   note_start = note["start"];
   note_end = note["end"];
-  IS_MAIN_PAGE = note["is_main_page"];
+  IS_MAIN_PAGE = note["is_in_main"];
 
   let totPeriodSpan = note_end - note_start;
   
@@ -146,7 +153,7 @@ function setup() {
   /** STEP1: deciding metadata of timeline */
   note_temp = document.getElementById("canvas").getAttribute('note');
   initialiseNote(note_temp);
-  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT);
+  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT+TIMELINE_HEIGHT);
   cnv.parent("canvas");
   // TODO: center the canvas to top center of page
   // TODO: draw a timeline scale at bottom of canvas
@@ -158,10 +165,12 @@ function setup() {
 }
 
 function draw() {
-  background(200, 200, 200);
+  background(255);
+  textSize(HOVER_TITLE_SIZE);
   Array.prototype.forEach.call(nodeCollections, node => {
     node.display();
   });
+  drawArrow(0,total_height+NODE_HEIGHT,WIN_WIDTH,TIMELINE_HEIGHT);
 }
 
 function mousePressed() {
@@ -170,8 +179,28 @@ function mousePressed() {
   });
 }
 
+function drawArrow(x,y,w,h) {
+  fill(0,255,0,100);
+  var i = h / 3;
+  var j = w - h;
+  rect(x, y + i, j, i);
+  triangle(x+j, y, x+w, y+h/2, x+j, y+h);
+  var totalTime = note['end'] - note['start'];
+  var pointNum = 10;
+  var unitTime = totalTime / pointNum;
+  var unitLength = WIN_WIDTH / pointNum;
+  for (var k = 0; k < 10; k++) {
+    fill(255, 0, 0);
+    ellipse(x+k*unitLength, y+h/2, 5, 5);
+    var year = note['start'] + k*unitTime;
+    fill(0);
+    text(int(year), x+k*unitLength, y);
+  }
+}
+
 // function click_for_note() {
 
 
 
 // }
+
