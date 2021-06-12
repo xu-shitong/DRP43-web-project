@@ -56,31 +56,3 @@ def main():
 @bp.route("/main/<int:id>", methods=['GET', 'POST'])
 def render_a_note(id):
     return display_notes(id)
-
-@bp.route("/new_note/<note_name>", methods=["POST"])
-@login_required
-def new_note(note_name):
-    # TODO: check user has not created a note of same name
-    sql_query = "SELECT id, note_name FROM note "\
-               f"WHERE note_name = '{note_name}' " \
-               f"AND author_id = {session['user_id']} "
-    prevNote = db.session.execute(sql_query).fetchone()
-    if prevNote:
-      # name conflict with previous note
-      print("conflict occure")
-      print(prevNote["id"])
-      # TODO: change response to turple of note info
-      return json.dumps({"href": prevNote["id"], "note_name": prevNote["note_name"]})
-
-
-    note = Note(note_name=note_name, author_id=session["user_id"], refs=0)
-    print(note_name)
-    db.session.add(note)
-    db.session.commit()
-
-    # fetch the note_id just added
-    sql_query = "SELECT id FROM note "\
-               f"WHERE author_id = {session['user_id']} "\
-               f"AND note_name = '{note_name}'"
-    response = db.session.execute(sql_query).fetchone()
-    return json.dumps(response["id"])

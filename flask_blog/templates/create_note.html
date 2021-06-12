@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form method="POST">
+  <div>
+    <label for="new_note_name">note name:</label>
+    <input name="new_note_name" id="note_name_id" required>
+  </div>
+
+  <div>
+    <span>publicity: </span>
+    <select id="publicity" name="publicity" required>
+      <option value='0'>private</option>
+      <option value='1'>open for reference</option>
+      <option value="2">open for edit</option>
+    </select>
+  </div>
+
+  <input type="submit" name="submit" value="create" class="btn btn-primary">
+</form>
+
+{% if href %}
+  <p id="add_note_err">note name already used, do you want to edit this note</p>
+  <a id="prev_note" href="/edit/{{ href }}">{{ note_name }}</a>
+  
+{% endif %}
+
+<!-- <script>
+
+  function redirect_create() {
+    note_name = document.getElementById("note_name_id").value
+    console.log(note_name)
+    $.post(
+      "/new_note/"+note_name, 
+      success=function(_response){
+        console.log(_response)
+        response = JSON.parse(_response)
+        console.log(typeof(response))
+        if (_response[0] == '{') {
+          console.log(response)
+          document.getElementById("add_note_err").style.display="block"
+          document.getElementById("prev_note").style.display="block"
+          let prev_note_link = document.getElementById("prev_note")
+          prev_note_link.href = "../edit/"+response["href"]
+          prev_note_link.innerText = response["note_name"]
+        } else {
+          window.location.href = '../edit/'+_response;
+        }
+      }
+    )
+  }
+</script> -->
+
+{% endblock %}
