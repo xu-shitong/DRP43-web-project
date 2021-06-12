@@ -1,9 +1,10 @@
 const WIN_WIDTH = 720;
 const CANVAS_WIDTH = 700;
 const MAX_WIN_HEIGHT = 600;
-const NODE_HEIGHT = 15; // each node in timeline take up 15px height
 const HOVER_TITLE_SIZE = 14;
 const HOVER_DIV_WIDTH = 150;
+const NODE_HEIGHT = 15; // each node in timeline take up 10px height
+const TIMELINE_HEIGHT = 20;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
@@ -62,6 +63,7 @@ class HNode {
 
   /* display, if mouse hovering on it, show title by the side of block */
   display() {
+    fill(255, 0, 0, 100);
     rect(this.x, this.y, this.width, this.height);
     let text_width = textWidth(this.title);
 
@@ -221,7 +223,7 @@ function setup() {
   /** STEP1: deciding metadata of timeline */
   note_temp = document.getElementById("canvas").getAttribute('note');
   initialiseNote(note_temp);
-  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT);
+  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT+TIMELINE_HEIGHT);
   cnv.parent("canvas");
   // TODO: center the canvas to top center of page
   // TODO: draw a timeline scale at bottom of canvas
@@ -235,10 +237,12 @@ function setup() {
 function draw() {
   // refresh page every 1 second
   if(frameCount % 30 == 0){
-    background(200, 200, 200);
+    background(255);
+    textSize(HOVER_TITLE_SIZE);
     Array.prototype.forEach.call(nodeCollections, node => {
       node.display();
     });
+    drawArrow(0,total_height+NODE_HEIGHT,WIN_WIDTH,TIMELINE_HEIGHT);
   }
 }
 
@@ -246,4 +250,23 @@ function mousePressed() {
   Array.prototype.forEach.call(nodeCollections, node => {
     node.clicked();
   });
+}
+
+function drawArrow(x,y,w,h) {
+  fill(0,255,0,100);
+  var i = h / 3;
+  var j = w - h;
+  rect(x, y + i, j, i);
+  triangle(x+j, y, x+w, y+h/2, x+j, y+h);
+  var totalTime = note['end'] - note['start'];
+  var pointNum = 10;
+  var unitTime = totalTime / pointNum;
+  var unitLength = WIN_WIDTH / pointNum;
+  for (var k = 0; k < 10; k++) {
+    fill(255, 0, 0);
+    ellipse(x+k*unitLength, y+h/2, 5, 5);
+    var year = note['start'] + k*unitTime;
+    fill(0);
+    text(int(year), x+k*unitLength, y);
+  }
 }
