@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+  <!-- let user search a particular note -->
+  <br>
+  <form method="post" class="form-inline">
+    <label for="search_info" class="fw-lighter">search for note:</label>
+    <input name="search_info">
+    <input type="submit" value="search">
+  </form>
+  <br>
+
+  <!-- display all available notes -->
+  <hr>
+  <div class="container">
+    {% if notes %}
+    <div class="bg-muted">
+      <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
+      <ul id="notes list">
+      {% for _note in notes %}
+        <li><a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+      <p id="t" class="fw-lighter" align="center">no notes are found</p>
+    {% endif %}
+  </div>
+  <hr>
+  <div class="container">
+    <div class="bg-muted">
+        <h3 id="t" class="fw-lighter" align="center">Hot notes</h3>
+        <div id="length" value="{{ length }}"></div>
+    </div>
+    <div class="container">
+        <ul class="list-unstyled">
+        {% for _note in hot_notes %}
+          <li align="center"><a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-primary"> {{ _note['note_name'] }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+  </div>
+  <hr>
+  
+</body>
+</html>

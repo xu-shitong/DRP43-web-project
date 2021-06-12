@@ -1,10 +1,16 @@
 {% extends 'timeline_base.html' %}
 {% block content %}
 
+
   <!-- display image and description, format shown in main_page_example -->
   <div id="image_id"></div>
   <p id="description_id"></p>
 
+
+  <!-- redirect to search page, search using keywords -->
+  <a href="{{ url_for('search_page.search') }}" >search</a>
+
+  <!-- let user search a particular note with id -->
   <br>
   <form method="post" class="form-inline">
     <label for="note_id" class="fw-lighter">note_id</label>
@@ -12,6 +18,8 @@
     <input type="submit" value="open" class="btn btn-primary">
   </form>
   <br>
+
+  <!-- display all available notes -->
   <hr>
   <div class="container">
         <div class="bg-muted">
@@ -26,8 +34,13 @@
   </div>
   <hr>
 
+  <!-- pop up input window for input new note name -->
+  {% if g.user %}
+     <a href="/create_note">create note</a>
+  {% endif %}
+  
   <!-- button redirect to edit page -->
-  {% if note_id %}
+  {% if note_id and g.user %}
     <a href="/edit/{{ note_id }}" class="btn btn-primary">edit this note</a>
   {% endif %}
 

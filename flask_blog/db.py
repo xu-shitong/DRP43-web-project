@@ -24,6 +24,7 @@ class Note(db.Model):
     note_name = db.Column(db.VARCHAR(50), nullable=False)
     create_date = db.Column(db.DATETIME, nullable=False, default=datetime.utcnow())
     refs = db.Column(db.INT, nullable=False)
+    is_public = db.Column(db.INT, nullable=False, default=0)
 
 
 class HistoryNode(db.Model):
@@ -33,7 +34,7 @@ class HistoryNode(db.Model):
     start_date = db.Column(db.INT, nullable=False)
     end_date = db.Column(db.INT, nullable=True)
     content = db.Column(db.Text, nullable=False)
-    parent_node_id = db.Column(db.INT, nullable=True)
+    parent_node_id = db.Column(db.INT, nullable=False)
 
 
 def completeClassInit():

@@ -3,24 +3,32 @@
   <script>
     function clearInputs() {
       document.getElementById("node_id").value = "";
+      document.getElementById("node_id_copy").value = "";
       document.getElementById("start").value = "";
       document.getElementById("end").value = "";
       document.getElementById("title").value = "";
-      document.getElementById("parent").value = 0;
+      document.getElementById("parent_input").value = 0;
       document.getElementById("body").value = "";
+
+      // set select box as all nodes are available for user to select
+      // function implemented in timeline.js
+      initSelectBox()
     }
+
+    window.onload = clearInputs;
   </script>
 
   <hr>
 
   <div class="container">
-      <form action="/edit" method="POST">
+      <form action="/update_event" method="POST">
 
-        <div class="input-group mb-3">
-          <span class="input-group-text">Displaying event with id:</span>
-          <input id="node_id" type="text" name="node_id" class="form-control" readonly>
+        <!-- text box, for sending node id to backend, never display to user -->
+        <div>
+          <input id="node_id" type="text" name="node_id" readonly>
         </div>
 
+        <!-- time period input box -->
         <div class="input-group mb-3">
           <span class="input-group-text">From</span>
           <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" required>
@@ -28,36 +36,72 @@
           <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100">
         </div>
 
+        <!-- image input box -->
         <!-- <div>
           <label for="img">Select image:</label>
           <input type="file" id="img" name="img" accept="image/*">
         </div> -->
+
+        <!-- title input box -->
         <div class="input-group mb-3">
           <span class="input-group-text">Title:</span>
           <input id="title" type="text" name="title" class="form-control" placeholder="e.g. Roman Empire" required>
         </div>
 
+        <!-- select parent node box -->
         <div class="input-group mb-3">
           <span class="input-group-text">Happened during</span>
-          <select id="parent" name="parent" class="form-control" required>
-            <option value="0">root node</option>
-            {% for node in summary %}
-              <option value="{{node['node_id']}}">{{ node["title"] }}</option>
-            {% endfor %}
+          <select id="parent_input" name="parent" class="form-control" required>
+            <option value='0'>root node</option>
           </select>
         </div>
 
+        <!-- description input box -->
         <div class="input-group">
           <span class="input-group-text">Description:</span>
             <textarea name="body" id="body" class="form-control" required></textarea>
         </div>
 
+        <!-- submit button -->
         <br>
           <input type="submit" name="submit" value="Update/Submit event" class="btn btn-primary">
-      
-        <a href="/main/{{ note_id }}" class="btn btn-primary">finish editing note</a>
-        <button type="button" class="btn btn-primary" onclick="clearInputs()">reset edit</button>
-        
+
       </form>
-    </div>
+
+      <!-- delete history event -->
+      <form action="/delete_event" method="POST">
+        <div>
+          <input id="node_id_copy" type="text" name="node_id" readonly>
+        </div>
+
+        <!-- delete event button -->
+        <input type="submit" name="submit" value="delete event">
+      </form>
+
+      <!-- back to main page -->
+      <a href="/main/{{ note_id }}" class="btn btn-primary">finish editing note</a>
+      
+      <!-- clear button -->
+      <button type="button" class="btn btn-primary" onclick="clearInputs()">reset edit</button>
+      
+      <!-- delete note -->
+      <button id="delete_note_id" onclick="delete_note()">delete note</button>
+      <script>
+        function delete_note() {
+          $.post(
+            "/delete_note",
+            success=(error) => {
+              if (error) {
+                // has error, display and terminate delete
+                alert(error)
+              } else {
+                // else, backend has deleted note, jump to frontend
+                alert("deleted note successfully, jumping back to main page")
+                window.location.href="../main"
+              }
+            }
+          )
+        }
+      </script>
+  </div>
 {% endblock content %}

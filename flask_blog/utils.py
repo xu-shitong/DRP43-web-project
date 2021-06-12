@@ -34,6 +34,13 @@ def fetchNote(noteId, is_in_main):
   # record which layer the node are allocated
   idLayerMap = {}
 
+  # record what are the immediate child of the node
+  tree = {0: {"title": "root node", "child": []}}
+  # {0: {title, [id, ...]}, 
+  #  id: {title, [id, ...]}
+  #  id:
+  # }
+
   unallocedEntities = entities
   prevLen = 0 # initialise as 0 to avoid conflict with empty unalloc length
   while prevLen != len(unallocedEntities):
@@ -63,6 +70,11 @@ def fetchNote(noteId, is_in_main):
           note["nodes"] = [[new_one]]
 
         idLayerMap[new_one["node_id"]] = 0
+
+        # add node in tree, with no child node
+        tree[entity["id"]] = {"title": entity["title"], "child": []}
+        # add node as child of node 0, the root node
+        tree[0]["child"].append(entity["id"])
       else :
         # find the parent of this node, put it in the layer below its parent
         if entity["parent_node_id"] in idLayerMap:
@@ -77,6 +89,11 @@ def fetchNote(noteId, is_in_main):
             note["nodes"].append([new_one])
 
           idLayerMap[new_one["node_id"]] = parentLayer+1
+
+          # add node in tree, with no child node
+          tree[entity["id"]] = {"title": entity["title"], "child": []}
+          # add node as child of its parent in tree
+          tree[entity["parent_node_id"]]["child"].append(entity["id"])
         else:
           # parent has not been added to note, put the elem back to end of entities
           unallocedEntities.append(entity)
@@ -89,6 +106,7 @@ def fetchNote(noteId, is_in_main):
       if unallocedEntities:
         print(f"remaining entities are not added in note: {unallocedEntities}")
 
+  note["tree"] = tree
   print(note)
   return note
 
