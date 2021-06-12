@@ -1,4 +1,5 @@
 import itertools
+from flask.helpers import url_for
 
 from sqlalchemy import sql
 from flask_blog.db import Account, HistoryNode, Note
@@ -34,11 +35,15 @@ def edit_page(id):
     if note_info:
       # if successfully fetched note, set session note name
       session["note_name"] = note_info["note_name"]
+    
+    # fetch note data from database, render edit page
+    note = fetchNote(noteId=id, is_in_main=False)
 
-    return rerender_edit_page(id)
+    # tree = itertools.chain.from_iterable()
+    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"])
 
 # respond to submit of edit page's update
-@bp.route("/edit", methods=["POST"])
+@bp.route("/update_event", methods=["POST"])
 @login_required
 def submit_note():
     node_id = request.form["node_id"]
@@ -51,7 +56,8 @@ def submit_note():
     note = db.session.execute(sql_query).fetchone()
     if (not user_id == note["author_id"]) and (note["is_public"] == 0):
         flash("you cannot edit this note, report how you enter this website")
-        return rerender_edit_page(note_id=session["note_id"])
+        url = url_for("edit_page.edit_page", id=session["note_id"])
+        return redirect(url)
 
     startTime = int(request.form["start"])
     endTime_temp = request.form["end"]
@@ -84,7 +90,28 @@ def submit_note():
 
     db.session.commit()
 
-    return rerender_edit_page(session["note_id"])
+    url = url_for("edit_page.edit_page", id=session["note_id"])
+    return redirect(url)
+
+@bp.route("/delete_event", methods=["POST"])
+def delete_event():
+    node_id = request.form["node_id"]
+    sql_query = f"DELETE FROM history_node WHERE id={node_id}"
+    db.session.execute(sql_query)
+    db.session.commit()
+
+    # if deleted a parent node, all immediate child of node become child of root node
+    sql_query = 'UPDATE history_node ' \
+                'SET parent_node_id="0" ' \
+                f'WHERE parent_node_id="{node_id}"'
+    succeed = db.session.execute(sql_query)
+    db.session.commit()
+    print(succeed)
+    if succeed:
+      flash("deleted a parent node, all child moved to root")
+
+    url = url_for("edit_page.edit_page", id=session["note_id"])
+    return redirect(url)
 
 # respond to delete of a note
 @bp.route("/delete_note", methods=["POST"])

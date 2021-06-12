@@ -65,6 +65,7 @@ class HNode {
       } else {
         // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
+        document.getElementById("node_id_copy").value = this.node_id;
         document.getElementById("start").value = this.start;
         document.getElementById("end").value = this.end;
         document.getElementById("title").value = this.title;
@@ -108,8 +109,10 @@ class HNode {
 }
 
 function initSelectBox() {
+  note_temp = document.getElementById("canvas").getAttribute('note');
+  note = JSON.parse(note_temp);
   parent_input = document.getElementById("parent_input")
-  parent_input = ""
+  parent_input.innerHTML = ""
   Object.entries(note["tree"]).forEach(([key, value]) => {
     console.log(key, value);
     parent_input.innerHTML += `<option value='${key}'>${value["title"]}</option>`
