@@ -97,19 +97,23 @@ def submit_note():
 @bp.route("/delete_event", methods=["POST"])
 def delete_event():
     node_id = request.form["node_id"]
-    sql_query = f"DELETE FROM history_node WHERE id={node_id}"
-    db.session.execute(sql_query)
-    db.session.commit()
 
-    # if deleted a parent node, all immediate child of node become child of root node
-    sql_query = 'UPDATE history_node ' \
-                'SET parent_node_id="0" ' \
-                f'WHERE parent_node_id="{node_id}"'
-    succeed = db.session.execute(sql_query)
-    db.session.commit()
-    print(succeed)
-    if succeed:
-      flash("deleted a parent node, all child moved to root")
+    if node_id :
+      sql_query = f"DELETE FROM history_node WHERE id={node_id}"
+      db.session.execute(sql_query)
+      db.session.commit()
+
+      # if deleted a parent node, all immediate child of node become child of root node
+      sql_query = 'UPDATE history_node ' \
+                  'SET parent_node_id="0" ' \
+                  f'WHERE parent_node_id="{node_id}"'
+      succeed = db.session.execute(sql_query)
+      db.session.commit()
+      print(succeed)
+      if succeed:
+        flash("deleted a parent node, all child moved to root")
+    else :
+      flash("you didn't select a node to delete")
 
     url = url_for("edit_page.edit_page", id=session["note_id"])
     return redirect(url)
