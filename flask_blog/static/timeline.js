@@ -225,9 +225,7 @@ function setup() {
   initialiseNote(note_temp);
   cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT+TIMELINE_HEIGHT);
   cnv.parent("canvas");
-  // TODO: center the canvas to top center of page
-  // TODO: draw a timeline scale at bottom of canvas
-
+  
   Array.prototype.forEach.call(nodeCollections, node => {
     node.display();
   });
