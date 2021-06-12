@@ -1,4 +1,5 @@
 from flask.globals import session
+from flask.helpers import url_for
 from flask_sqlalchemy.utils import sqlalchemy_version
 from werkzeug.utils import redirect
 from flask_blog.auth import login_required
@@ -30,11 +31,12 @@ def display_notes(note_id=None):
         # fetch note content, if fetch fail, fetchNote will return default note
         note = fetchNote(note_id, is_in_main=True)
 
-        # fetch note name, if user gave a bad note id, note name set to None
+        # fetch note name, if user gave a bad note id, redirect to 404
         note_info = getNoteInfo(note_id)
-        note_name = None
         if note_info:
             note_name = note_info["note_name"]
+        else:
+            return render_template("error/404.html", message=f"note with id: {note_id} not found")
     else:
         # no note_id given, return empty note content and name 
         note = defaultNote(is_in_main=True)

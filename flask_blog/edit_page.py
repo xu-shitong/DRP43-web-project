@@ -30,11 +30,12 @@ def edit_page(id):
     session["note_id"] = id
     note_info = getNoteInfo(id)
 
-    # if user give bad note id, set note name to None
-    session["note_name"] = None
     if note_info:
       # if successfully fetched note, set session note name
       session["note_name"] = note_info["note_name"]
+    else:
+      # if user give bad note id, set note name to None
+      return render_template("error/404.html", message=f"note with id: {id} not found")
     
     # fetch note data from database, render edit page
     note = fetchNote(noteId=id, is_in_main=False)
