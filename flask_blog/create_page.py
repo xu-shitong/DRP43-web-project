@@ -1,5 +1,6 @@
 from flask.globals import session
 from flask.templating import render_template
+from werkzeug.utils import redirect
 from flask_blog.app import db
 from flask_blog.db import Note
 from flask_blog.auth import login_required
@@ -36,6 +37,6 @@ def new_note():
                 f"WHERE author_id = {session['user_id']} "\
                 f"AND note_name = '{note_name}'"
       response = db.session.execute(sql_query).fetchone()
-      return render_template(f"/edit/{response['id']}")
+      return redirect(f"/edit/{response['id']}")
     
     return render_template("create_note.html")

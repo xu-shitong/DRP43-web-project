@@ -1,12 +1,21 @@
 const WIN_WIDTH = 720;
 const CANVAS_WIDTH = 700;
 const MAX_WIN_HEIGHT = 600;
-const NODE_HEIGHT = 15; // each node in timeline take up 10px height
-const HOVER_TITLE_SIZE = 15;
+const NODE_HEIGHT = 15; // each node in timeline take up 15px height
+const HOVER_TITLE_SIZE = 14;
+const HOVER_DIV_WIDTH = 150;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
 let total_height;
+
+// translate year number to AD/BC
+function trans(num) {
+  if (num < 0) {
+    return "BC " + Math.abs(num)
+  }
+  return "AD " + num
+}
 
 class HNode {
 
@@ -32,6 +41,15 @@ class HNode {
     this.y = y;
     this.width = width;
     this.height = height;
+
+    let summary =
+      "<b>" + this.title + "</b>" + 
+      "<p>" + trans(this.start) + ' - ' + trans(this.end) + "</p>";
+    this.div = createDiv(summary);
+    this.div.style('font-size', `${HOVER_TITLE_SIZE}px`);
+    this.div.style('width', `${HOVER_DIV_WIDTH}px`);
+    this.div.style('background-color', 'whitesmoke');
+    
   }
 
   /* helper function for checking if mouse is over the object */
@@ -44,14 +62,26 @@ class HNode {
 
   /* display, if mouse hovering on it, show title by the side of block */
   display() {
-    // TODO: if text length is smaller than rect length, show title in the middle of rect
     rect(this.x, this.y, this.width, this.height);
+    let text_width = textWidth(this.title);
+
+    // if text length is smaller than rect length, show title in the middle of rect
+    if (text_width <= this.width) {
+      textAlign(CENTER, TOP)
+      text(this.title, this.x, this.y, this.width);
+    }
+
+    let lineNum = text_width / 70 + 2; 
+    this.div.style.height = `${lineNum * textAscent()}px`
+
+    // display div just below top middle of the node
+    let base = cnv.position()
+    this.div.position(base["x"] + this.x + this.width / 2, base["y"] + this.y);
+
     if (this.mouseHovering()) {
-      // TODO: put title in text box with background colour, so that the displayed text is clearer
-      // TODO: 设置text的图层为最高层，防止别的node的矩形框覆盖text内容
-      textSize(HOVER_TITLE_SIZE);
-      // +10 in x to avoid text overlap with mouse arrow
-      text(this.title, mouseX+10, mouseY+HOVER_TITLE_SIZE);
+      this.div.style("display", "block");
+    } else {
+      this.div.style("display", "none");
     }
   }
 
@@ -60,7 +90,7 @@ class HNode {
     if (this.mouseHovering()) {
       if (IS_MAIN_PAGE) {
         document.getElementById("description_id").innerHTML
-          = `<h2>${this.title}</h2>\n
+          = `<h2>${this.title}</h2>
             <p>${this.content}</p>`;
       } else {
         // render input boxes with previous information of history note
@@ -122,7 +152,6 @@ function initSelectBox() {
 let nodeCollections = []; // collection of nodes displayed in canvas
 
 /* generate a list of integer, represent what level each corrisponding element in LIST should be */
-// TODO: algorithm require node sort in START time order, remove this restriction by sorting
 function nonOverlapGenerator(list) {
   let layers = [];
   let result = []
@@ -204,10 +233,13 @@ function setup() {
 }
 
 function draw() {
-  background(200, 200, 200);
-  Array.prototype.forEach.call(nodeCollections, node => {
-    node.display();
-  });
+  // refresh page every 1 second
+  if(frameCount % 30 == 0){
+    background(200, 200, 200);
+    Array.prototype.forEach.call(nodeCollections, node => {
+      node.display();
+    });
+  }
 }
 
 function mousePressed() {
@@ -215,9 +247,3 @@ function mousePressed() {
     node.clicked();
   });
 }
-
-// function click_for_note() {
-
-
-
-// }
