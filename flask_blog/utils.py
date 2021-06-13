@@ -25,6 +25,7 @@ def fetchNote(noteId, is_in_main):
   entities = db.session.execute(sql_query).fetchall()
 
   # initialise note as start and end in 0
+  print(entities)
   note = defaultNote(is_in_main)
   if entities:
     # if note is not empty, initialise start and end as the first element in it
@@ -129,7 +130,6 @@ def fetchNote(noteId, is_in_main):
     note["singles"] = {"start": 0, "end": 0, "nodes": []}
   else :
     note["singles"] = singles
-  print(note)
   return note
 
 

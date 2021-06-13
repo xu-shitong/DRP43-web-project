@@ -93,13 +93,6 @@ def submit_note():
     description = request.form["body"]
 
     img = request.files.get("pic")
-    pic_name = request.form["pic_name"]
-    file_path = "./pics/" + str(session["user_id"]) + "_" + img.filename
-    pic_and_name = PicAndName(node_id=node_id, name=pic_name, path=file_path)
-    db.session.add(pic_and_name)
-    db.session.commit()
-    img.save(file_path)
-
 
     if node_id:
       # node id present, user is updating a node
@@ -112,13 +105,28 @@ def submit_note():
                   f'parent_node_id="{parent_id}" ' \
                   f'WHERE id = {node_id}'
       db.session.execute(sql_query)
-
+      db.session.commit()
     else :
       # node id not present, user is adding a node
       blog = HistoryNode(note_id=session["note_id"], title=title, start_date=startTime, end_date=endTime, content=description, parent_node_id=parent_id)
       db.session.add(blog)
+      db.session.commit()
 
-    db.session.commit()
+      # get id of new node, in case id is required to upload image
+      sql_query = "SELECT LAST_INSERT_ID()"
+      note = db.session.execute(sql_query).fetchone()
+      node_id = note["LAST_INSERT_ID()"]
+
+    if img:
+      # if containing uploaded picture, upload to database
+      pic_name = request.form["pic_name"]
+      file_path = "./pics/" + str(session["user_id"]) + "_" + img.filename
+      pic_and_name = PicAndName(node_id=node_id, name=pic_name, path=file_path)
+      db.session.add(pic_and_name)
+      db.session.commit()
+      img.save(file_path)
+
+
 
     url = url_for("edit_page.edit_page", id=session["note_id"])
     return redirect(url)

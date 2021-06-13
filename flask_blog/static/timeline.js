@@ -51,7 +51,7 @@ class HNode {
 
     this.x = x;
     this.y = y;
-    this.width = width;
+    this.width = (start == end) ? textWidth(`${trans(start)} ` + title) : width;
     this.height = height;
 
     let summary =
@@ -79,8 +79,7 @@ class HNode {
     if (this.end == this.start) {
       // if event happens in specific time
       textFont('Helvetica', 10);
-      let summary = `${trans(this.start)} ` + this.title;
-      text(summary, this.x, this.y, textWidth(summary) + 10); // +10 to prevent return line, include spage for end string char
+      text(`${trans(this.start)} ` + this.title, this.x, this.y, this.width); // +10 to prevent return line, include spage for end string char
 
       // draw a half transparent line from start of title to timeline 
       stroke(0,0,0, 100);
@@ -215,14 +214,17 @@ function nonOverlapNodeGenerator(list) {
 function nonOverlapSinglesGenerator(list, totPeriodSpan) {
   let layers = [];
   let result = [];
+  console.log(list);
 
   for (periodIndex in list) {
     let period = list[periodIndex]
 
     // pixel where single will start at
     let start = ((CANVAS_WIDTH * (period["start"] - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK);
-    let width = textWidth(period["title"]);
+    let width = textWidth(`${trans(period["start"])} ` + period["title"]);
 
+    console.log(start)
+    console.log(width)
     let i = 0;
     while (i < layers.length) {
 
@@ -235,7 +237,7 @@ function nonOverlapSinglesGenerator(list, totPeriodSpan) {
     }
     if (i == layers.length) {
       // end year of non single event's year
-      layers.push(start);
+      layers.push(start + width);
       result.push(i);
     }
   }
@@ -249,7 +251,7 @@ function addAllNodes(nodes, sublayerAlloc) {
   let totPeriodSpan = note["end"] - note["start"];
   let maxLayerNum = Math.max(...sublayerAlloc);
 
-  console.log(nodes);
+  console.log(sublayerAlloc);
   Array.prototype.forEach.call(nodes, node => {
     let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
     let pics_dict = node["pictures"]; // {"pic_name", "path"}
@@ -264,7 +266,7 @@ function addAllNodes(nodes, sublayerAlloc) {
       pics_dict,
       x=(CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
       y=((start == end) ? (maxLayerNum - layerNum) : layerNum) * NODE_HEIGHT + total_height,
-      width=(start == end) ? textWidth(node["title"]) : (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
+      width=(CANVAS_WIDTH * (end - start)) / totPeriodSpan,
       height=NODE_HEIGHT
     );
 
@@ -292,7 +294,7 @@ function initialiseNote(note_temp) {
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* generate alloc for single nodes */
   console.log(note);
-  let singleLayerAlloc = nonOverlapSinglesGenerator(singles, totPeriodSpan);
+  let singleLayerAlloc = nonOverlapSinglesGenerator(singles["nodes"], totPeriodSpan);
   let subLayerCount = addAllNodes(singles["nodes"], singleLayerAlloc);
   total_height += (subLayerCount + 1) * NODE_HEIGHT;  // plus 1 for layerNum start from 0
 
@@ -318,7 +320,7 @@ function setup() {
 function draw() {
   // refresh page every 1 second
   if(frameCount % 30 == 0){
-    background(200, 200, 200);
+    background(230, 230, 230);
     textSize(HOVER_TITLE_SIZE);
     Array.prototype.forEach.call(nodeCollections, node => {
       node.display();
