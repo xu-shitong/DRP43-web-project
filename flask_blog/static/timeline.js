@@ -1,4 +1,4 @@
-const WIN_WIDTH = 760; // width of the whole timeline section
+const WIN_WIDTH = 780; // width of the whole timeline section
 const TIMELINE_WIDTH = 720;  // width of part actually displaying year, i.e from the first year point to the last
 const MAX_WIN_HEIGHT = 600;
 const HOVER_TITLE_SIZE = 14;
