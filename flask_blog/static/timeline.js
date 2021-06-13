@@ -1,14 +1,14 @@
 const WIN_WIDTH = 780; // width of the whole timeline section
-const TIMELINE_WIDTH = 720;  // width of part actually displaying year, i.e from the first year point to the last
+const TIMELINE_WIDTH = 720;  // pixel of part actually displaying year, i.e from the first year point to the last
 const MAX_WIN_HEIGHT = 600;
 const HOVER_TITLE_SIZE = 14;
 const HOVER_DIV_WIDTH = 150;
 const NODE_HEIGHT = 15; // each node in timeline take up 15px height
-const TIMELINE_HEIGHT = 20;
+const TIMELINE_HEIGHT = 20; // height of arrow line and scale 
 const NUM_OF_YEAR_POINTS = 11; // Number of year points appearing on the timeline.
-const TIMELINE_BLANK = 25;
+const TIMELINE_BLANK = 25; // pixel of length to the left of timeline, where nothing is displayed
 const UNIT_SCALE_LIST = [1,2,5,10,20,50,100,200,500,1000]  // scales that will be displayed on timeline
-let CANVAS_WIDTH;
+let CANVAS_WIDTH; // pixel of width nodes and singles actually take
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
@@ -75,7 +75,13 @@ class HNode {
 
     if (this.end == this.start) {
       // if event happens in specific time
-      
+      textFont('Helvetica', 10);
+      let summary = `${trans(this.start)} ` + this.title;
+      text(summary, this.x, this.y, textWidth(summary) + 10); // +10 to prevent return line, include spage for end string char
+
+      // draw a half transparent line from start of title to timeline 
+      stroke(0,0,0, 100);
+      line(this.x, this.y + NODE_HEIGHT / 2, this.x, total_height + NODE_HEIGHT / 2);
     } else {
       // if event happened in period of time, display block
       rect(this.x, this.y, this.width, this.height);
@@ -83,6 +89,7 @@ class HNode {
 
       // if text length is smaller than rect length, show title in the middle of rect
       if (text_width <= this.width) {
+        textFont("Georgia", 15);
         textAlign(CENTER, TOP);
         text(this.title, this.x, this.y, this.width);
       }
@@ -124,10 +131,11 @@ class HNode {
         let innerHTML = ""
 
         let tree = note["tree"]
-        let allNodes = Object.keys(tree)
+        let allNodes = Object.keys(tree).filter((id) => {return id != this.node_id})
         let childList = [this.node_id]
 
-        while (childList.length > 0) {
+        // calculate child of node which are not single nodes
+        while (this.start != this.end && childList.length > 0) {
           let childId = childList[0]
           childList.shift()
 
@@ -167,9 +175,8 @@ function initSelectBox() {
 
 let nodeCollections = []; // collection of nodes displayed in canvas
 
-/* generate a list of integer, represent what level each corrisponding element in LIST should be
-   if inPixel, use nodes' text length to determine node length */
-function nonOverlapGenerator(list, inPixel) {
+/* generate a list of integer, represent what level each corrisponding element in LIST should be */
+function nonOverlapNodeGenerator(list) {
   let layers = [];
   let result = []
   for (periodIndex in list) {
@@ -194,10 +201,43 @@ function nonOverlapGenerator(list, inPixel) {
   return result;
 }
 
+/* generate a list of integer, specialised for single layer */
+function nonOverlapSinglesGenerator(list, totPeriodSpan) {
+  let layers = [];
+  let result = [];
+
+  for (periodIndex in list) {
+    let period = list[periodIndex]
+
+    // pixel where single will start at
+    let start = ((CANVAS_WIDTH * (period["start"] - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK);
+    let width = textWidth(period["title"]);
+
+    let i = 0;
+    while (i < layers.length) {
+
+      if (layers[i] <= start) {
+        layers[i] = start + width;
+        result.push(i);
+        break;
+      }
+      i++;
+    }
+    if (i == layers.length) {
+      // end year of non single event's year
+      layers.push(start);
+      result.push(i);
+    }
+  }
+
+  return result;
+}
+
+
 function addAllNodes(nodes, sublayerAlloc) {
   let i = 0;
-  let subLayerCount = 0; // record accumulated layer num of already processed layers
   let totPeriodSpan = note["end"] - note["start"];
+  let maxLayerNum = Math.max(...sublayerAlloc);
 
   Array.prototype.forEach.call(nodes, node => {
     let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
@@ -208,17 +248,16 @@ function addAllNodes(nodes, sublayerAlloc) {
       node["content"],
       node["parent_id"],
       node["node_id"],
-      (CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
-      layerNum * NODE_HEIGHT + total_height,
-      (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
-      NODE_HEIGHT
+      x=(CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
+      y=((start == end) ? (maxLayerNum - layerNum) : layerNum) * NODE_HEIGHT + total_height,
+      width=(start == end) ? textWidth(node["title"]) : (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
+      height=NODE_HEIGHT
     );
 
     nodeCollections.push(newNode);
-    subLayerCount = Math.max(subLayerCount, layerNum);
     i++;
   });
-  return subLayerCount;
+  return maxLayerNum;
 }
 
 function initialiseNote(note_temp) {
@@ -226,6 +265,9 @@ function initialiseNote(note_temp) {
   note_start = note["start"];
   note_end = note["end"];
   IS_MAIN_PAGE = note["is_in_main"];
+  let singles = note["singles"];
+
+  let totPeriodSpan = note["end"] - note["start"];
 
   //Round the start time to the smallest sacle
   originTime = Math.floor(note["start"]/unitScale)*unitScale;
@@ -234,9 +276,14 @@ function initialiseNote(note_temp) {
   numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale);
 
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
+  /* generate alloc for single nodes */
+  let singleLayerAlloc = nonOverlapSinglesGenerator(singles, totPeriodSpan);
+  let subLayerCount = addAllNodes(singles["nodes"], singleLayerAlloc);
+  total_height += (subLayerCount + 1) * NODE_HEIGHT;  // plus 1 for layerNum start from 0
+
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
   Array.prototype.forEach.call(note["nodes"], l => {
-    let sublayerAlloc = nonOverlapGenerator(l);
+    let sublayerAlloc = nonOverlapNodeGenerator(l);
     let subLayerCount = addAllNodes(l, sublayerAlloc)
     total_height += (subLayerCount + 2) * NODE_HEIGHT;  // plus 1 for interval between sublayer, 1 for layerNum start from 0
   });
@@ -256,11 +303,11 @@ function setup() {
 function draw() {
   // refresh page every 1 second
   if(frameCount % 30 == 0){
+    background(200, 200, 200);
     textSize(HOVER_TITLE_SIZE);
     Array.prototype.forEach.call(nodeCollections, node => {
       node.display();
     });
-    textFont("Georgia");
     drawTimeline(0, total_height+NODE_HEIGHT);
   }
 }
@@ -285,6 +332,7 @@ function drawTimeline(originX, originY) {
   for (var i = 0; i < NUM_OF_YEAR_POINTS; i++) {
     var coordX =originX + i*unitLength + TIMELINE_BLANK;
     line(coordX, originY, coordX, originY + 10);
+    textFont("Georgia", 15);
     text(originTime + i * unitScale, coordX, originY+10);
   }
 }
@@ -298,7 +346,7 @@ function setCanvasWidth() {
 
 //Set unit scale according to the largest time difference.
 function setUnitScale(start, end) {
-  totalTime = end - start;
+  let totalTime = end - start;
 
   // if total time is 0, either only have one single event, or no note is given, return 1 prevent divide by 0
   if (totalTime <= 0) {
