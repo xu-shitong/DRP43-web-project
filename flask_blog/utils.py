@@ -1,3 +1,4 @@
+from pymysql import NULL
 from flask_blog.app import db
 from flask_blog.db import Account, HistoryNode, Note
 
@@ -6,7 +7,6 @@ def getNoteInfo(note_id):
               "FROM note " \
               f"WHERE id = {note_id} "
   return db.session.execute(sql_query).fetchone()
-
 
 # retrieve note from database, 
 #   IS_MAIN_PAGE: boolean field, tell js whether it is main page or edit page
@@ -36,10 +36,9 @@ def fetchNote(noteId, is_in_main):
 
   # record what are the immediate child of the node
   tree = {0: {"title": "root node", "child": []}}
-  # {0: {title, [id, ...]}, 
-  #  id: {title, [id, ...]}
-  #  id:
-  # }
+  
+  # record single event
+  singles = NULL
 
   unallocedEntities = entities
   prevLen = 0 # initialise as 0 to avoid conflict with empty unalloc length
@@ -52,6 +51,15 @@ def fetchNote(noteId, is_in_main):
       # while entities is not empty, constantly remove element from it
       entity = entities.pop(0)
 
+      start_date = entity["start_date"]
+      end_date = entity["end_date"]
+
+      find_pics = f'SELECT name, path FROM pic_and_name WHERE node_id = {entity["id"]}'
+      pics = db.session.execute(find_pics).fetchall()
+      fields = ["pic_name", "path"]
+      pics = [(dict(zip(fields, pic))) for pic in pics]
+      # [{"pic_name": , "path":}, {"pic_name": , "path":}]
+
       # create node, will be ignored if fail to find parent
       new_one = {
         'node_id': entity["id"], 
@@ -59,11 +67,21 @@ def fetchNote(noteId, is_in_main):
         'start': entity["start_date"], 
         'end': entity["end_date"], 
         'title': entity["title"], 
-        'content': entity["content"]
+        'content': entity["content"],
+        'pictures': pics
       }
 
-      if not entity["parent_node_id"]:
-        # if node does not have parent, put in layer 0, record in map
+      if start_date == end_date:
+        # node is single event, put in singles
+        if singles == NULL:
+          singles = {"start": start_date, "end": end_date, "nodes": [new_one]}
+        else :
+          singles["nodes"].append(new_one)
+          singles["start"] = min(singles["start"], start_date)
+          singles["end"] = max(singles["end"], end_date)
+
+      elif not entity["parent_node_id"]:
+        # if node does not have parent, put in layer 1, record in map
         if note["nodes"]:
           note["nodes"][0].append(new_one)
         else:
@@ -100,13 +118,14 @@ def fetchNote(noteId, is_in_main):
 
 
       # ensure START and END are outer boundaries of the nodes
-      note["start"] = min(note["start"], entity["start_date"])
-      note["end"] = max(note["end"], entity["end_date"])
+      note["start"] = min(note["start"], start_date)
+      note["end"] = max(note["end"], end_date)
 
       if unallocedEntities:
         print(f"remaining entities are not added in note: {unallocedEntities}")
 
   note["tree"] = tree
+  note["singles"] = singles
   print(note)
   return note
 

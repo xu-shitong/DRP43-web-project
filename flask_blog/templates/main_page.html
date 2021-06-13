@@ -6,10 +6,6 @@
   <div id="image_id"></div>
   <p id="description_id"></p>
 
-
-  <!-- redirect to search page, search using keywords -->
-  <a href="{{ url_for('search_page.search') }}" >search</a>
-
   <!-- let user search a particular note with id -->
   <br>
   <form method="post" class="form-inline">
@@ -22,57 +18,21 @@
   <!-- display all available notes -->
   <hr>
   <div class="container">
-        <div class="bg-muted">
-            <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
-            <div id="length" value="{{ length }}"></div>
-            <ul id="notes list">
-            {% for _note in notes %}
-              <li><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
-            {% endfor %}
-            </ul>
-        </div>
+    <div class="bg-muted">
+      <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
+      <div id="length" value="{{ length }}"></div>
+      <ul id="notes list" class="list-group">
+      {% for _note in notes %}
+        <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
   </div>
   <hr>
 
   <!-- pop up input window for input new note name -->
   {% if g.user %}
-    <button id="new_note" onclick="display_create()">new note</button>
-    <div id="create_note_form" style="display: none;">
-      <label for="new_note_name">note name:</label>
-      <input name="new_note_name" id="note_name_id" required>
-    </div>
-    <button id="submit_note_name" onclick="redirect_create()" style="display: none;">create</button>
-    <p id="add_note_err" style="display: none;">note name already used, do you want to edit this note</p>
-    <a id="prev_note" href="" style="display: none;">example_note_name</a>
-    <script>
-      function display_create() {
-        document.getElementById("create_note_form").style.display = "block";
-        document.getElementById("submit_note_name").style.display = "block";
-      }
-
-      function redirect_create() {
-        note_name = document.getElementById("note_name_id").value
-        console.log(note_name)
-        $.post(
-          "/new_note/"+note_name, 
-          success=function(_response){
-            console.log(_response)
-            response = JSON.parse(_response)
-            console.log(typeof(response))
-            if (_response[0] == '{') {
-              console.log(response)
-              document.getElementById("add_note_err").style.display="block"
-              document.getElementById("prev_note").style.display="block"
-              let prev_note_link = document.getElementById("prev_note")
-              prev_note_link.href = "../edit/"+response["href"]
-              prev_note_link.innerText = response["note_name"]
-            } else {
-              window.location.href = '../edit/'+_response;
-            }
-          }
-        )
-      }
-    </script>
+     <a href="/create_note">create note</a>
   {% endif %}
   
   <!-- button redirect to edit page -->

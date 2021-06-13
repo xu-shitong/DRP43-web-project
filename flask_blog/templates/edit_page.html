@@ -3,6 +3,7 @@
   <script>
     function clearInputs() {
       document.getElementById("node_id").value = "";
+      document.getElementById("node_id_copy").value = "";
       document.getElementById("start").value = "";
       document.getElementById("end").value = "";
       document.getElementById("title").value = "";
@@ -13,6 +14,8 @@
       // function implemented in timeline.js
       initSelectBox()
     }
+
+    window.onload = clearInputs;
   </script>
 
   <hr>
@@ -29,12 +32,11 @@
   <hr>
 
   <div class="container">
-      <form action="/edit" method="POST" enctype="multipart/form-data">
+      <form action="/update_event" method="POST" enctype="multipart/form-data">
 
         <!-- text box, for sending node id to backend, never display to user -->
-        <div class="input-group mb-3">
-          <span class="input-group-text">Displaying event with id:</span>
-          <input id="node_id" type="text" name="node_id" class="form-control" readonly>
+        <div>
+          <input id="node_id" type="text" name="node_id" readonly>
         </div>
 
         <!-- time period input box -->
@@ -84,7 +86,17 @@
           <input type="submit" name="submit" value="Update/Submit event" class="btn btn-primary">
 
       </form>
-      
+
+      <!-- delete history event -->
+      <form action="/delete_event" method="POST">
+        <div>
+          <input id="node_id_copy" type="text" name="node_id" readonly>
+        </div>
+
+        <!-- delete event button -->
+        <input type="submit" name="submit" value="delete event">
+      </form>
+
       <!-- back to main page -->
       <a href="/main/{{ note_id }}" class="btn btn-primary">finish editing note</a>
       
