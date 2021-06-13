@@ -13,7 +13,6 @@ let note;
 let total_height;
 
 
-
 // translate year number to AD/BC
 function trans(num) {
   if (num < 0) {
@@ -24,14 +23,14 @@ function trans(num) {
 
 class HNode {
 
-  /** 
+  /**
    * constructor for a history node
    *   start: start of the node
    *   end: end of node, when equal to start, treat as event
    *   title: title of node, also used as PK for node
    *   parent: the node is detail of what other history node
    */
-  constructor(start, end, title, content, 
+  constructor(start, end, title, content,
     parent_id, node_id,
     x, y, width, height) {
     this.start = start;
@@ -48,20 +47,20 @@ class HNode {
     this.height = height;
 
     let summary =
-      "<b>" + this.title + "</b>" + 
+      "<b>" + this.title + "</b>" +
       "<p>" + trans(this.start) + ' - ' + trans(this.end) + "</p>";
     this.div = createDiv(summary);
     this.div.style('font-size', `${HOVER_TITLE_SIZE}px`);
     this.div.style('width', `${HOVER_DIV_WIDTH}px`);
     this.div.style('background-color', 'whitesmoke');
-    
+
   }
 
   /* helper function for checking if mouse is over the object */
   mouseHovering() {
     return (this.x < mouseX) &&
-           (mouseX < this.x + this.width) && 
-           (this.y < mouseY) && 
+           (mouseX < this.x + this.width) &&
+           (this.y < mouseY) &&
            (mouseY < this.y + this.height);
   }
 
@@ -76,7 +75,7 @@ class HNode {
       text(this.title, this.x, this.y, this.width);
     }
 
-    let lineNum = text_width / 70 + 2; 
+    let lineNum = text_width / 70 + 2;
     this.div.style.height = `${lineNum * textAscent()}px`
 
     // display div just below top middle of the node
@@ -105,12 +104,12 @@ class HNode {
         document.getElementById("end").value = this.end;
         document.getElementById("title").value = this.title;
         document.getElementById("body").value = this.content;
-        
+
         // display all node not of child of the current node
         let parent_input = document.getElementById("parent_input")
-        
+
         let innerHTML = ""
-        
+
         let tree = note["tree"]
         let allNodes = Object.keys(tree)
         let childList = [this.node_id]
@@ -149,7 +148,6 @@ function initSelectBox() {
   parent_input = document.getElementById("parent_input")
   parent_input.innerHTML = ""
   Object.entries(note["tree"]).forEach(([key, value]) => {
-    // console.log(key, value);
     parent_input.innerHTML += `<option value='${key}'>${value["title"]}</option>`
   });
 }
@@ -165,14 +163,14 @@ function nonOverlapGenerator(list) {
 
     let i = 0;
     while (i < layers.length) {
-       
+
       if (layers[i] <= period["start"]) {
         layers[i] = period["end"];
         result.push(i);
         break;
-      } 
+      }
       i++;
-    } 
+    }
     if (i == layers.length) {
       layers.push(period["end"]);
       result.push(i);
@@ -216,7 +214,7 @@ function initialiseNote(note_temp) {
         node["node_id"],
         (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
         layerNum * NODE_HEIGHT + total_height,
-        (CANVAS_WIDTH * (end - start)) / totPeriodSpan, 
+        (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
         NODE_HEIGHT
       );
 
@@ -242,7 +240,6 @@ function setup() {
 function draw() {
   // refresh page every 1 second
   if(frameCount % 30 == 0){
-    // background(255, 238, 204);
     textSize(HOVER_TITLE_SIZE);
     Array.prototype.forEach.call(nodeCollections, node => {
       node.display();
@@ -258,26 +255,6 @@ function mousePressed() {
   });
 }
 
-function drawArrow(x,y,w,h) {
-  fill(0,255,0,100);
-  var i = h / 3;
-  var j = w - h;
-  rect(x, y + i, j, i);
-  triangle(x+j, y, x+w, y+h/2, x+j, y+h);
-  var totalTime = note['end'] - note['start'];
-  var numOfYearPoints = 11;
-  var unitScale = totalTime / numOfYearPoints;
-  var unitLength = WIN_WIDTH / numOfYearPoints;
-  for (var k = 0; k < numOfYearPoints; k++) {
-    fill(255, 0, 0);
-    ellipse(x+k*unitLength, y+h/2, 5, 5);
-    var year = note['start'] + k*unitScale;
-    fill(0);
-    text(int(year), x+k*unitLength, y);
-  }
-}
-
-//yeye's version:
 function drawTimeline(originX, originY) {
   //Round the start time to the previous 10.
   const originTime = Math.floor(note["start"]/10)*10;
@@ -303,7 +280,7 @@ function setCanvasWidth() {
   CANVAS_WIDTH = round(((note["end"] - note["start"]) / unitScale) * (WIN_WIDTH / NUM_OF_YEAR_POINTS));
 }
 
-//Set unit scale according to the largest time
+//Set unit scale according to the largest time difference.
 function setUnitScale(totalTime) {
   if (totalTime <= 10) {
     return 1;
