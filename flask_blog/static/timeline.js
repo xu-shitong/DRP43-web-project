@@ -1,4 +1,4 @@
-const WIN_WIDTH = 760; // width of the whole timeline section
+const WIN_WIDTH = 780; // width of the whole timeline section
 const TIMELINE_WIDTH = 720;  // width of part actually displaying year, i.e from the first year point to the last
 const MAX_WIN_HEIGHT = 600;
 const HOVER_TITLE_SIZE = 14;
@@ -12,8 +12,10 @@ let CANVAS_WIDTH;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
-let total_height;
-let originTime;
+let total_height;  // pixel of total height of displaying node part
+let originTime;  // year number of the first year point on timeline
+let unitScale;  // year interval between year point
+let numOfPixelsShifted; // pixel from first year point to start of first event
 
 
 // translate year number to AD/BC
@@ -165,8 +167,9 @@ function initSelectBox() {
 
 let nodeCollections = []; // collection of nodes displayed in canvas
 
-/* generate a list of integer, represent what level each corrisponding element in LIST should be */
-function nonOverlapGenerator(list) {
+/* generate a list of integer, represent what level each corrisponding element in LIST should be
+   if inPixel, use nodes' text length to determine node length */
+function nonOverlapGenerator(list, inPixel) {
   let layers = [];
   let result = []
   for (periodIndex in list) {
@@ -191,48 +194,50 @@ function nonOverlapGenerator(list) {
   return result;
 }
 
+function addAllNodes(nodes, sublayerAlloc) {
+  let i = 0;
+  let subLayerCount = 0; // record accumulated layer num of already processed layers
+  let totPeriodSpan = note["end"] - note["start"];
+
+  Array.prototype.forEach.call(nodes, node => {
+    let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
+    let newNode = new HNode(
+      start,
+      end,
+      node["title"],
+      node["content"],
+      node["parent_id"],
+      node["node_id"],
+      (CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
+      layerNum * NODE_HEIGHT + total_height,
+      (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
+      NODE_HEIGHT
+    );
+
+    nodeCollections.push(newNode);
+    subLayerCount = Math.max(subLayerCount, layerNum);
+    i++;
+  });
+  return subLayerCount;
+}
+
 function initialiseNote(note_temp) {
   note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
   note_start = note["start"];
   note_end = note["end"];
   IS_MAIN_PAGE = note["is_in_main"];
 
-  let totPeriodSpan = note_end - note_start;
-
-  const unitScale = setUnitScale(note_start, note_end);
-
   //Round the start time to the smallest sacle
   originTime = Math.floor(note["start"]/unitScale)*unitScale;
 
   // Calculate how many pixels should be shifted.
-  const numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale);
+  numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale);
 
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
   Array.prototype.forEach.call(note["nodes"], l => {
     let sublayerAlloc = nonOverlapGenerator(l);
-    let i = 0;
-    let subLayerCount = 0; // record accumulated layer num of already processed layers
-
-    Array.prototype.forEach.call(l, node => {
-      let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
-      let newNode = new HNode(
-        start,
-        end,
-        node["title"],
-        node["content"],
-        node["parent_id"],
-        node["node_id"],
-        (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
-        layerNum * NODE_HEIGHT + total_height,
-        (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
-        NODE_HEIGHT
-      );
-
-      nodeCollections.push(newNode);
-      subLayerCount = Math.max(subLayerCount, layerNum);
-      i++;
-    });
+    let subLayerCount = addAllNodes(l, sublayerAlloc)
     total_height += (subLayerCount + 2) * NODE_HEIGHT;  // plus 1 for interval between sublayer, 1 for layerNum start from 0
   });
   total_height -= NODE_HEIGHT; // leave only one interval at bottum of timeline
@@ -267,8 +272,8 @@ function mousePressed() {
 }
 
 function drawTimeline(originX, originY) {
-  const unitScale = setUnitScale(note["start"], note["end"]);
 
+  // pixel interval between year point on timeline
   const unitLength = TIMELINE_WIDTH / (NUM_OF_YEAR_POINTS - 1);
 
   // main timeline
@@ -280,22 +285,24 @@ function drawTimeline(originX, originY) {
   for (var i = 0; i < NUM_OF_YEAR_POINTS; i++) {
     var coordX =originX + i*unitLength + TIMELINE_BLANK;
     line(coordX, originY, coordX, originY + 10);
-    text(originTime + i * unitScale, coordX, originY+7);
+    text(originTime + i * unitScale, coordX, originY+10);
   }
 }
 
 //Set Canvas' width so that the length of history nodes is to scale.
 function setCanvasWidth() {
   note = JSON.parse(note_temp);
-  const unitScale = setUnitScale(note["start"], note["end"]);
+  unitScale = setUnitScale(note["start"], note["end"]);
   CANVAS_WIDTH = round(((note["end"] - note["start"]) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale));
 }
 
 //Set unit scale according to the largest time difference.
 function setUnitScale(start, end) {
   totalTime = end - start;
+
+  // if total time is 0, either only have one single event, or no note is given, return 1 prevent divide by 0
   if (totalTime <= 0) {
-    return 0;
+    return 1;
   }
   
   for (i in UNIT_SCALE_LIST) {
@@ -304,5 +311,6 @@ function setUnitScale(start, end) {
       return UNIT_SCALE_LIST[i];
     }
   }
+  // time too long, return 1000 anyway, total history cannot be longer than 10000 years
   return 1000;
 }
