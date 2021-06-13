@@ -214,7 +214,6 @@ function nonOverlapNodeGenerator(list) {
 function nonOverlapSinglesGenerator(list, totPeriodSpan) {
   let layers = [];
   let result = [];
-  console.log(list);
 
   for (periodIndex in list) {
     let period = list[periodIndex]
@@ -223,8 +222,6 @@ function nonOverlapSinglesGenerator(list, totPeriodSpan) {
     let start = ((CANVAS_WIDTH * (period["start"] - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK);
     let width = textWidth(`${trans(period["start"])} ` + period["title"]);
 
-    console.log(start)
-    console.log(width)
     let i = 0;
     while (i < layers.length) {
 
@@ -247,11 +244,14 @@ function nonOverlapSinglesGenerator(list, totPeriodSpan) {
 
 
 function addAllNodes(nodes, sublayerAlloc) {
+  if (sublayerAlloc.length == 0) {
+    return 0;
+  }
+
   let i = 0;
   let totPeriodSpan = note["end"] - note["start"];
   let maxLayerNum = Math.max(...sublayerAlloc);
 
-  console.log(sublayerAlloc);
   Array.prototype.forEach.call(nodes, node => {
     let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
     let pics_dict = node["pictures"]; // {"pic_name", "path"}
@@ -293,7 +293,6 @@ function initialiseNote(note_temp) {
 
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* generate alloc for single nodes */
-  console.log(note);
   let singleLayerAlloc = nonOverlapSinglesGenerator(singles["nodes"], totPeriodSpan);
   let subLayerCount = addAllNodes(singles["nodes"], singleLayerAlloc);
   total_height += (subLayerCount + 1) * NODE_HEIGHT;  // plus 1 for layerNum start from 0
