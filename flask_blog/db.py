@@ -37,5 +37,12 @@ class HistoryNode(db.Model):
     parent_node_id = db.Column(db.INT, nullable=False)
 
 
+class PicAndName(db.Model):
+    id = db.Column(db.INT, primary_key=True, nullable=False)
+    node_id = db.Column(db.INT, db.ForeignKey('history_node.id'), nullable=False)
+    name = db.Column(db.VARCHAR(100))
+    path = db.Column(db.VARCHAR(100), nullable=False)
+
+
 def completeClassInit():
     return db

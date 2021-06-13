@@ -10,6 +10,7 @@ from werkzeug.utils import redirect
 from flask_blog.app import db
 from flask_blog.utils import dbDummyInit, fetchNote, getNoteInfo
 from flask_blog.auth import login_required
+from flask_blog.db import PicAndName
 import json
 
 bp = Blueprint("edit_page", __name__)
@@ -82,6 +83,15 @@ def submit_note():
     parent_id = request.form.get("parent")
 
     description = request.form["body"]
+
+    img = request.files.get("pic")
+    pic_name = request.form["pic_name"]
+    file_path = "./pics/" + str(session["user_id"]) + "_" + img.filename
+    pic_and_name = PicAndName(node_id=node_id, name=pic_name, path=file_path)
+    db.session.add(pic_and_name)
+    db.session.commit()
+    img.save(file_path)
+
 
     if node_id:
       # node id present, user is updating a node
