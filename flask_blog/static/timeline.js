@@ -1,16 +1,19 @@
-const WIN_WIDTH = 720;
+const WIN_WIDTH = 760; // width of the whole timeline section
+const TIMELINE_WIDTH = 720;  // width of part actually displaying year, i.e from the first year point to the last
 const MAX_WIN_HEIGHT = 600;
 const HOVER_TITLE_SIZE = 14;
 const HOVER_DIV_WIDTH = 150;
-const NODE_HEIGHT = 15; // each node in timeline take up 10px height
+const NODE_HEIGHT = 15; // each node in timeline take up 15px height
 const TIMELINE_HEIGHT = 20;
 const NUM_OF_YEAR_POINTS = 11; // Number of year points appearing on the timeline.
 const TIMELINE_BLANK = 25;
+const UNIT_SCALE_LIST = [1,2,5,10,20,50,100,200,500,1000]  // scales that will be displayed on timeline
 let CANVAS_WIDTH;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
 let total_height;
+let originTime;
 
 
 // translate year number to AD/BC
@@ -53,7 +56,7 @@ class HNode {
     this.div.style('font-size', `${HOVER_TITLE_SIZE}px`);
     this.div.style('width', `${HOVER_DIV_WIDTH}px`);
     this.div.style('background-color', 'whitesmoke');
-
+    this.div.style("display", "none")
   }
 
   /* helper function for checking if mouse is over the object */
@@ -196,13 +199,13 @@ function initialiseNote(note_temp) {
 
   let totPeriodSpan = note_end - note_start;
 
-  //Round the start time to the previous 10 as the origin of the timeline.
-  const originTime = Math.floor(note["start"]/10)*10;
+  const unitScale = setUnitScale(note_start, note_end);
+
+  //Round the start time to the smallest sacle
+  originTime = Math.floor(note["start"]/unitScale)*unitScale;
 
   // Calculate how many pixels should be shifted.
-  const unitScale = setUnitScale(note_end - note_start);
-  const numOfPixelsInOneYear = WIN_WIDTH / (NUM_OF_YEAR_POINTS * unitScale);
-  const numOfPixelsShifted = (note_start - originTime) * numOfPixelsInOneYear;
+  const numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale);
 
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
@@ -264,13 +267,13 @@ function mousePressed() {
 }
 
 function drawTimeline(originX, originY) {
-  //Round the start time to the previous 10.
-  const originTime = Math.floor(note["start"]/10)*10;
+  const unitScale = setUnitScale(note["start"], note["end"]);
 
-  const unitScale = setUnitScale(note["end"] - note["start"]);
-  const unitLength = WIN_WIDTH / NUM_OF_YEAR_POINTS;
+  const unitLength = TIMELINE_WIDTH / (NUM_OF_YEAR_POINTS - 1);
 
+  // main timeline
   line(originX, originY, originX + WIN_WIDTH, originY);
+  // arrow to the right side of the line
   line(WIN_WIDTH - 10, originY + 5, WIN_WIDTH, originY);
   line(WIN_WIDTH - 10, originY - 5, WIN_WIDTH, originY);
 
@@ -284,49 +287,22 @@ function drawTimeline(originX, originY) {
 //Set Canvas' width so that the length of history nodes is to scale.
 function setCanvasWidth() {
   note = JSON.parse(note_temp);
-  const unitScale = setUnitScale(note["end"] - note["start"]);
-  CANVAS_WIDTH = round(((note["end"] - note["start"]) / unitScale) * (WIN_WIDTH / NUM_OF_YEAR_POINTS));
+  const unitScale = setUnitScale(note["start"], note["end"]);
+  CANVAS_WIDTH = round(((note["end"] - note["start"]) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale));
 }
 
 //Set unit scale according to the largest time difference.
-function setUnitScale(totalTime) {
-  if (totalTime <= 10) {
-    return 1;
+function setUnitScale(start, end) {
+  totalTime = end - start;
+  if (totalTime <= 0) {
+    return 0;
   }
-  else if (totalTime <= 20) {
-    return 2;
+  
+  for (i in UNIT_SCALE_LIST) {
+    // minus 2: the worst case for fit is the event just touch 2 scales, so in total 8 scales are used 
+    if (UNIT_SCALE_LIST[i] * (NUM_OF_YEAR_POINTS - 3) >= totalTime) {
+      return UNIT_SCALE_LIST[i];
+    }
   }
-  else if (totalTime <= 50) {
-    return 5;
-  }
-  else if (totalTime <= 100) {
-    return 10;
-  }
-  else if (totalTime <= 200) {
-    return 20;
-  }
-  else if (totalTime <= 300) {
-    return 30;
-  }
-  else if (totalTime <= 400) {
-    return 40;
-  }
-  else if (totalTime <= 500) {
-    return 50;
-  }
-  else if (totalTime <= 600) {
-    return 60;
-  }
-  else if (totalTime <= 700) {
-    return 70;
-  }
-  else if (totalTime <= 800) {
-    return 80;
-  }
-  else if (totalTime <= 900) {
-    return 90;
-  }
-  else {
-    return 100;
-  }
+  return 1000;
 }
