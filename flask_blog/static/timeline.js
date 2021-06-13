@@ -294,8 +294,10 @@ function setCanvasWidth() {
 //Set unit scale according to the largest time difference.
 function setUnitScale(start, end) {
   totalTime = end - start;
+
+  // if total time is 0, either only have one single event, or no note is given, return 1 prevent divide by 0
   if (totalTime <= 0) {
-    return 0;
+    return 1;
   }
   
   for (i in UNIT_SCALE_LIST) {
@@ -304,5 +306,6 @@ function setUnitScale(start, end) {
       return UNIT_SCALE_LIST[i];
     }
   }
+  // time too long, return 1000 anyway, total history cannot be longer than 10000 years
   return 1000;
 }
