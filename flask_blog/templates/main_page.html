@@ -6,10 +6,6 @@
   <div id="image_id"></div>
   <p id="description_id"></p>
 
-
-  <!-- redirect to search page, search using keywords -->
-  <a href="{{ url_for('search_page.search') }}" >search</a>
-
   <!-- let user search a particular note with id -->
   <br>
   <form method="post" class="form-inline">
@@ -22,15 +18,15 @@
   <!-- display all available notes -->
   <hr>
   <div class="container">
-        <div class="bg-muted">
-            <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
-            <div id="length" value="{{ length }}"></div>
-            <ul id="notes list" class="list-group">
-            {% for _note in notes %}
-              <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
-            {% endfor %}
-            </ul>
-        </div>
+    <div class="bg-muted">
+      <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
+      <div id="length" value="{{ length }}"></div>
+      <ul id="notes list" class="list-group">
+      {% for _note in notes %}
+        <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
+      {% endfor %}
+      </ul>
+    </div>
   </div>
   <hr>
 
