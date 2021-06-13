@@ -43,13 +43,13 @@ db = initDatabase()
 # sql_query2 = "INSERT INTO note (author_id, note_name, create_date, refs, is_public) " \
 #              "VALUES (1, 'The Tang Dynasty', '2021-6-3 10:00:00', 0, 0)"
 # sql_query3 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
-#              "VALUES ('1', 'Flourishment Age of Kaiyuan Era', '712', '741', 'content', 1)"
+#              "VALUES ('1', 'Flourishment Age of Kaiyuan Era', '712', '741', 'content', 0)"
 # sql_query4 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
 #              "VALUES ('1', 'Government of Zhenguan', '627', '649', 'society developed quickly', 1)"
 # sql_query5 = "INSERT INTO note (author_id, note_name, create_date, refs, is_public) " \
 #              "VALUES (1, 'The Qin Dynasty', '2021-6-3 10:00:00', 0, 1)"
 # sql_query6 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
-#              "VALUES ('2', 'Building Great Wall', '-214', '-170', 'large labour force to build Great World', 1)"
+#              "VALUES ('2', 'Building Great Wall', '-214', '-170', 'large labour force to build Great World', 0)"
 # sql_query7 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
 #              "VALUES ('1', 'The Tang Dynasty establishment and destory', '618', '907', 'content', 1)"
 # db.session.execute(sql_query1)
@@ -77,6 +77,8 @@ import flask_blog.edit_page as edit
 app.register_blueprint(edit.bp)
 import flask_blog.search_page as search
 app.register_blueprint(search.bp)
+import flask_blog.personal_page as personal
+app.register_blueprint(personal.bp)
 import flask_blog.create_page as create
 app.register_blueprint(create.bp)
 app.add_url_rule('/', endpoint='index')

@@ -1,15 +1,15 @@
 from flask.globals import session
-from flask.helpers import url_for
 from flask_sqlalchemy.utils import sqlalchemy_version
 from werkzeug.utils import redirect
 from flask_blog.auth import login_required
 from flask_blog.db import Note
-from flask import Blueprint, flash, request, jsonify
+from flask import Blueprint, flash, request, jsonify, url_for, make_response
 from flask.templating import render_template
 from flask_blog.app import db
 from flask_blog.utils import fetchNote, defaultNote, getNoteInfo
 import json
 bp = Blueprint("main_page", __name__)
+
 
 def all_notes():
     # fetch all notes, available for user to choose to view
@@ -19,6 +19,7 @@ def all_notes():
     fields = ['note id', 'note name', 'username']
     notes = ([(dict(zip(fields, note))) for note in notes])
     return notes
+
 
 # if no note is passed in, meaning no note is displaying. otherwise, display the given note
 #    note_id is the displaying note's id
@@ -47,12 +48,24 @@ def display_notes(note_id=None):
 
     return render_template('main_page.html', note=json.dumps(note), notes=notes, note_id=note_id, note_name=note_name)
 
+
 # first enter of main page, no note displaying 
 @bp.route("/main", methods=['GET', 'POST'])
 def main():
     return display_notes()
+
     
 # on displaying a note in main page, with note_id = ID
 @bp.route("/main/<int:id>", methods=['GET', 'POST'])
 def render_a_note(id):
     return display_notes(id)
+
+
+@bp.route("/main/main/pic/<path>", methods=['GET', 'POST'])
+def render_a_pic(path):
+    image_data = open("pics/"+path, "rb").read()
+    response = make_response(image_data)
+    response.headers['Content-Type'] = 'image/jpg'
+    return response
+
+

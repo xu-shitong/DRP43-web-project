@@ -19,9 +19,20 @@
   </script>
 
   <hr>
+    <div class="container">
+        <form action="/editName/{{ note_name }}" method="POST">
+            <div class="input-group mb-3">
+              <span class="input-group-text">Note Name</span>
+              <input id="new_note_name" type="text" name="new_note_name" class="form-control" value="{{ note_name }}" required>
+              <input type="submit" name="submit" value="change note name" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+
+  <hr>
 
   <div class="container">
-      <form action="/update_event" method="POST">
+      <form action="/update_event" method="POST" enctype="multipart/form-data">
 
         <!-- text box, for sending node id to backend, never display to user -->
         <div>
@@ -60,6 +71,14 @@
         <div class="input-group">
           <span class="input-group-text">Description:</span>
             <textarea name="body" id="body" class="form-control" required></textarea>
+        </div>
+
+        <br>
+        <!-- upload picture box -->
+        <div class="input-group">
+            <input type="file" size="30" name="pic"/>
+            <span class="input-group-text">picture title</span>
+            <input type="text" name="pic_name" class="form-control"/>
         </div>
 
         <!-- submit button -->

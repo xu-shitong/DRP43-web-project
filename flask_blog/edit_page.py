@@ -5,12 +5,13 @@ from sqlalchemy import sql
 from flask_blog.db import Account, HistoryNode, Note
 from html import entities
 import re
-from flask import (Blueprint, flash, request, session)
+from flask import (Blueprint, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
 from flask_blog.utils import dbDummyInit, fetchNote, getNoteInfo
 from flask_blog.auth import login_required
+from flask_blog.db import PicAndName
 import json
 
 bp = Blueprint("edit_page", __name__)
@@ -43,6 +44,24 @@ def edit_page(id):
     # tree = itertools.chain.from_iterable()
     return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"])
 
+
+@bp.route("/editName/<old_name>", methods=["POST"])
+@login_required
+def change_note_name(old_name):
+    new_name = request.form["new_note_name"]
+    sql_query = f'UPDATE note SET note_name="{new_name}" ' \
+                f'WHERE note_name = "{old_name}"'
+    sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
+    db.session.execute(sql_query)
+    db.session.commit()
+    (id,) = db.session.execute(sql_query_2).fetchone()
+    session['note_name'] = new_name
+    print(id)
+    # TODO: change here
+    # print(url_for("edit_page.edit_page", id=id))
+    return rerender_edit_page(id)
+
+
 # respond to submit of edit page's update
 @bp.route("/update_event", methods=["POST"])
 @login_required
@@ -72,6 +91,15 @@ def submit_note():
     parent_id = request.form.get("parent")
 
     description = request.form["body"]
+
+    img = request.files.get("pic")
+    pic_name = request.form["pic_name"]
+    file_path = "./pics/" + str(session["user_id"]) + "_" + img.filename
+    pic_and_name = PicAndName(node_id=node_id, name=pic_name, path=file_path)
+    db.session.add(pic_and_name)
+    db.session.commit()
+    img.save(file_path)
+
 
     if node_id:
       # node id present, user is updating a node

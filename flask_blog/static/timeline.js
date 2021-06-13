@@ -36,7 +36,7 @@ class HNode {
    *   parent: the node is detail of what other history node
    */
   constructor(start, end, title, content,
-    parent_id, node_id,
+    parent_id, node_id, pics_dict,
     x, y, width, height) {
     this.start = start;
     this.end = end;
@@ -45,6 +45,9 @@ class HNode {
 
     this.parent_id = parent_id;
     this.node_id = node_id;
+    // this.pic_name = pic_name;
+    // this.pics = pics;
+    this.pics_dict = pics_dict;
 
     this.x = x;
     this.y = y;
@@ -113,9 +116,16 @@ class HNode {
   clicked() {
     if (this.mouseHovering()) {
       if (IS_MAIN_PAGE) {
+         let str = "";
+         Array.prototype.forEach.call(this.pics_dict, one_pic_dict => {
+          str += `<p>../../${one_pic_dict["path"]} ${one_pic_dict["pic_name"]}</p>
+                  <img src="main/pic/1_pic1.jpg">`;
+                  // <img src="../../${one_pic_dict["path"]}">`;
+        })
         document.getElementById("description_id").innerHTML
           = `<h2>${this.title}</h2>
-            <p>${this.content}</p>`;
+            <p>${this.content}</p>
+            ${str}`;
       } else {
         // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
@@ -239,8 +249,11 @@ function addAllNodes(nodes, sublayerAlloc) {
   let totPeriodSpan = note["end"] - note["start"];
   let maxLayerNum = Math.max(...sublayerAlloc);
 
+  console.log(nodes);
   Array.prototype.forEach.call(nodes, node => {
     let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
+    let pics_dict = node["pictures"]; // {"pic_name", "path"}
+
     let newNode = new HNode(
       start,
       end,
@@ -248,6 +261,7 @@ function addAllNodes(nodes, sublayerAlloc) {
       node["content"],
       node["parent_id"],
       node["node_id"],
+      pics_dict,
       x=(CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
       y=((start == end) ? (maxLayerNum - layerNum) : layerNum) * NODE_HEIGHT + total_height,
       width=(start == end) ? textWidth(node["title"]) : (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
@@ -277,6 +291,7 @@ function initialiseNote(note_temp) {
 
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* generate alloc for single nodes */
+  console.log(note);
   let singleLayerAlloc = nonOverlapSinglesGenerator(singles, totPeriodSpan);
   let subLayerCount = addAllNodes(singles["nodes"], singleLayerAlloc);
   total_height += (subLayerCount + 1) * NODE_HEIGHT;  // plus 1 for layerNum start from 0
@@ -333,7 +348,7 @@ function drawTimeline(originX, originY) {
     var coordX =originX + i*unitLength + TIMELINE_BLANK;
     line(coordX, originY, coordX, originY + 10);
     textFont("Georgia", 15);
-    text(originTime + i * unitScale, coordX, originY+10);
+    text(originTime + i * unitScale, coordX, originY+7);
   }
 }
 

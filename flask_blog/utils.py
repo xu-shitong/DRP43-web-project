@@ -8,7 +8,6 @@ def getNoteInfo(note_id):
               f"WHERE id = {note_id} "
   return db.session.execute(sql_query).fetchone()
 
-
 # retrieve note from database, 
 #   IS_MAIN_PAGE: boolean field, tell js whether it is main page or edit page
 #   START is the minimum of START variable in nodes, 
@@ -55,6 +54,12 @@ def fetchNote(noteId, is_in_main):
       start_date = entity["start_date"]
       end_date = entity["end_date"]
 
+      find_pics = f'SELECT name, path FROM pic_and_name WHERE node_id = {entity["id"]}'
+      pics = db.session.execute(find_pics).fetchall()
+      fields = ["pic_name", "path"]
+      pics = [(dict(zip(fields, pic))) for pic in pics]
+      # [{"pic_name": , "path":}, {"pic_name": , "path":}]
+
       # create node, will be ignored if fail to find parent
       new_one = {
         'node_id': entity["id"], 
@@ -62,7 +67,8 @@ def fetchNote(noteId, is_in_main):
         'start': entity["start_date"], 
         'end': entity["end_date"], 
         'title': entity["title"], 
-        'content': entity["content"]
+        'content': entity["content"],
+        'pictures': pics
       }
 
       if start_date == end_date:
@@ -119,7 +125,10 @@ def fetchNote(noteId, is_in_main):
         print(f"remaining entities are not added in note: {unallocedEntities}")
 
   note["tree"] = tree
-  note["singles"] = singles
+  if singles == NULL:
+    note["singles"] = {"start": 0, "end": 0, "nodes": []}
+  else :
+    note["singles"] = singles
   print(note)
   return note
 
