@@ -63,14 +63,20 @@ class HNode {
 
   /* display, if mouse hovering on it, show title by the side of block */
   display() {
-    fill(255, 0, 0, 100);
-    rect(this.x, this.y, this.width, this.height);
-    let text_width = textWidth(this.title);
+    if (this.end == this.start) {
+      // if event happens in specific time
+      
+    } else {
+      // if event happened in period of time, display block
+      fill(255, 0, 0, 100);
+      rect(this.x, this.y, this.width, this.height);
+      let text_width = textWidth(this.title);
 
-    // if text length is smaller than rect length, show title in the middle of rect
-    if (text_width <= this.width) {
-      textAlign(CENTER, TOP)
-      text(this.title, this.x, this.y, this.width);
+      // if text length is smaller than rect length, show title in the middle of rect
+      if (text_width <= this.width) {
+        textAlign(CENTER, TOP)
+        text(this.title, this.x, this.y, this.width);
+      }
     }
 
     let lineNum = text_width / 70 + 2; 

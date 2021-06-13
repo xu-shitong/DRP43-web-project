@@ -32,7 +32,7 @@ class HistoryNode(db.Model):
     note_id = db.Column(db.INT, db.ForeignKey('note.id'), nullable=False)
     title = db.Column(db.VARCHAR(50), nullable=False)
     start_date = db.Column(db.INT, nullable=False)
-    end_date = db.Column(db.INT, nullable=True)
+    end_date = db.Column(db.INT, nullable=False)
     content = db.Column(db.Text, nullable=False)
     parent_node_id = db.Column(db.INT, nullable=False)
 

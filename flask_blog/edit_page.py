@@ -62,8 +62,9 @@ def submit_note():
 
     startTime = int(request.form["start"])
     endTime_temp = request.form["end"]
-    if endTime_temp == None:
-        endTime = None
+    print(endTime_temp)
+    if endTime_temp == '':
+        endTime = startTime
     else:
         endTime = int(endTime_temp)
 
