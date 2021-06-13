@@ -16,6 +16,17 @@
   </script>
 
   <hr>
+    <div class="container">
+        <form action="/editName/{{ note_name }}" method="POST">
+            <div class="input-group mb-3">
+              <span class="input-group-text">Note Name</span>
+              <input id="new_note_name" type="text" name="new_note_name" class="form-control" value="{{ note_name }}" required>
+              <input type="submit" name="submit" value="change note name" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+
+  <hr>
 
   <div class="container">
       <form action="/edit" method="POST">

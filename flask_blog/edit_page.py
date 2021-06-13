@@ -4,7 +4,7 @@ from sqlalchemy import sql
 from flask_blog.db import Account, HistoryNode, Note
 from html import entities
 import re
-from flask import (Blueprint, flash, request, session)
+from flask import (Blueprint, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
@@ -36,6 +36,24 @@ def edit_page(id):
       session["note_name"] = note_info["note_name"]
 
     return rerender_edit_page(id)
+
+
+@bp.route("/editName/<old_name>", methods=["POST"])
+@login_required
+def change_note_name(old_name):
+    new_name = request.form["new_note_name"]
+    sql_query = f'UPDATE note SET note_name="{new_name}" ' \
+                f'WHERE note_name = "{old_name}"'
+    sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
+    db.session.execute(sql_query)
+    db.session.commit()
+    (id,) = db.session.execute(sql_query_2).fetchone()
+    session['note_name'] = new_name
+    print(id)
+    # TODO: change here
+    # print(url_for("edit_page.edit_page", id=id))
+    return rerender_edit_page(id)
+
 
 # respond to submit of edit page's update
 @bp.route("/edit", methods=["POST"])

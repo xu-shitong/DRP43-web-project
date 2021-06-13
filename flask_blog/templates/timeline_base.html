@@ -34,7 +34,8 @@
   <div class="container" align="center">
       <ul class="list_inline list-unstyled" >
       {% if g.user %}
-        <li class="list-inline-item"><span>{{ g.user['username'] }}</span>
+{#        <li class="list-inline-item"><span>{{ g.user['username'] }}</span>#}
+        <li class="list-inline-item"><a href="/personal/{{ g.user['username'] }}">{{ g.user['username'] }}</a>
         <li class="list-inline-item"><a href="{{ url_for('auth.logout')}}" class="btn btn-primary">Log Out</a>
       {% else %}
         <li class="list-inline-item"><a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register</a>
