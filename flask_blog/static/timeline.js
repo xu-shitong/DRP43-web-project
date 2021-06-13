@@ -1,14 +1,17 @@
 const WIN_WIDTH = 720;
-const CANVAS_WIDTH = 700;
 const MAX_WIN_HEIGHT = 600;
 const HOVER_TITLE_SIZE = 14;
 const HOVER_DIV_WIDTH = 150;
 const NODE_HEIGHT = 15; // each node in timeline take up 10px height
 const TIMELINE_HEIGHT = 20;
+const NUM_OF_YEAR_POINTS = 11; // Number of year points appearing on the timeline.
+const TIMELINE_BLANK = 25;
+let CANVAS_WIDTH;
 let IS_MAIN_PAGE=true;
 let cnv;
 let note;
 let total_height;
+
 
 // translate year number to AD/BC
 function trans(num) {
@@ -20,14 +23,14 @@ function trans(num) {
 
 class HNode {
 
-  /** 
+  /**
    * constructor for a history node
    *   start: start of the node
    *   end: end of node, when equal to start, treat as event
    *   title: title of node, also used as PK for node
    *   parent: the node is detail of what other history node
    */
-  constructor(start, end, title, content, 
+  constructor(start, end, title, content,
     parent_id, node_id,
     x, y, width, height) {
     this.start = start;
@@ -44,42 +47,43 @@ class HNode {
     this.height = height;
 
     let summary =
-      "<b>" + this.title + "</b>" + 
+      "<b>" + this.title + "</b>" +
       "<p>" + trans(this.start) + ' - ' + trans(this.end) + "</p>";
     this.div = createDiv(summary);
     this.div.style('font-size', `${HOVER_TITLE_SIZE}px`);
     this.div.style('width', `${HOVER_DIV_WIDTH}px`);
     this.div.style('background-color', 'whitesmoke');
-    
+
   }
 
   /* helper function for checking if mouse is over the object */
   mouseHovering() {
     return (this.x < mouseX) &&
-           (mouseX < this.x + this.width) && 
-           (this.y < mouseY) && 
+           (mouseX < this.x + this.width) &&
+           (this.y < mouseY) &&
            (mouseY < this.y + this.height);
   }
 
   /* display, if mouse hovering on it, show title by the side of block */
   display() {
+    let text_width = textWidth(this.title);
+
     if (this.end == this.start) {
       // if event happens in specific time
       
     } else {
       // if event happened in period of time, display block
-      fill(255, 0, 0, 100);
       rect(this.x, this.y, this.width, this.height);
       let text_width = textWidth(this.title);
 
       // if text length is smaller than rect length, show title in the middle of rect
       if (text_width <= this.width) {
-        textAlign(CENTER, TOP)
+        textAlign(CENTER, TOP);
         text(this.title, this.x, this.y, this.width);
       }
     }
 
-    let lineNum = text_width / 70 + 2; 
+    let lineNum = text_width / 70 + 2;
     this.div.style.height = `${lineNum * textAscent()}px`
 
     // display div just below top middle of the node
@@ -108,12 +112,12 @@ class HNode {
         document.getElementById("end").value = this.end;
         document.getElementById("title").value = this.title;
         document.getElementById("body").value = this.content;
-        
+
         // display all node not of child of the current node
         let parent_input = document.getElementById("parent_input")
-        
+
         let innerHTML = ""
-        
+
         let tree = note["tree"]
         let allNodes = Object.keys(tree)
         let childList = [this.node_id]
@@ -152,7 +156,6 @@ function initSelectBox() {
   parent_input = document.getElementById("parent_input")
   parent_input.innerHTML = ""
   Object.entries(note["tree"]).forEach(([key, value]) => {
-    console.log(key, value);
     parent_input.innerHTML += `<option value='${key}'>${value["title"]}</option>`
   });
 }
@@ -168,14 +171,14 @@ function nonOverlapGenerator(list) {
 
     let i = 0;
     while (i < layers.length) {
-       
+
       if (layers[i] <= period["start"]) {
         layers[i] = period["end"];
         result.push(i);
         break;
-      } 
+      }
       i++;
-    } 
+    }
     if (i == layers.length) {
       layers.push(period["end"]);
       result.push(i);
@@ -192,7 +195,15 @@ function initialiseNote(note_temp) {
   IS_MAIN_PAGE = note["is_in_main"];
 
   let totPeriodSpan = note_end - note_start;
-  
+
+  //Round the start time to the previous 10 as the origin of the timeline.
+  const originTime = Math.floor(note["start"]/10)*10;
+
+  // Calculate how many pixels should be shifted.
+  const unitScale = setUnitScale(note_end - note_start);
+  const numOfPixelsInOneYear = WIN_WIDTH / (NUM_OF_YEAR_POINTS * unitScale);
+  const numOfPixelsShifted = (note_start - originTime) * numOfPixelsInOneYear;
+
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
   Array.prototype.forEach.call(note["nodes"], l => {
@@ -203,15 +214,15 @@ function initialiseNote(note_temp) {
     Array.prototype.forEach.call(l, node => {
       let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
       let newNode = new HNode(
-        start, 
-        end, 
-        node["title"], 
+        start,
+        end,
+        node["title"],
         node["content"],
         node["parent_id"],
         node["node_id"],
-        (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan, 
-        layerNum * NODE_HEIGHT + total_height, 
-        (CANVAS_WIDTH * (end - start)) / totPeriodSpan, 
+        (CANVAS_WIDTH * (start - note_start)) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
+        layerNum * NODE_HEIGHT + total_height,
+        (CANVAS_WIDTH * (end - start)) / totPeriodSpan,
         NODE_HEIGHT
       );
 
@@ -228,25 +239,21 @@ function initialiseNote(note_temp) {
 function setup() {
   /** STEP1: deciding metadata of timeline */
   note_temp = document.getElementById("canvas").getAttribute('note');
+  setCanvasWidth();
   initialiseNote(note_temp);
   cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT+TIMELINE_HEIGHT);
   cnv.parent("canvas");
-  
-  Array.prototype.forEach.call(nodeCollections, node => {
-    node.display();
-  });
-  console.log(note_temp)
 }
 
 function draw() {
   // refresh page every 1 second
   if(frameCount % 30 == 0){
-    background(255);
     textSize(HOVER_TITLE_SIZE);
     Array.prototype.forEach.call(nodeCollections, node => {
       node.display();
     });
-    drawArrow(0,total_height+NODE_HEIGHT,WIN_WIDTH,TIMELINE_HEIGHT);
+    textFont("Georgia");
+    drawTimeline(0, total_height+NODE_HEIGHT);
   }
 }
 
@@ -256,21 +263,70 @@ function mousePressed() {
   });
 }
 
-function drawArrow(x,y,w,h) {
-  fill(0,255,0,100);
-  var i = h / 3;
-  var j = w - h;
-  rect(x, y + i, j, i);
-  triangle(x+j, y, x+w, y+h/2, x+j, y+h);
-  var totalTime = note['end'] - note['start'];
-  var pointNum = 10;
-  var unitTime = totalTime / pointNum;
-  var unitLength = WIN_WIDTH / pointNum;
-  for (var k = 0; k < 10; k++) {
-    fill(255, 0, 0);
-    ellipse(x+k*unitLength, y+h/2, 5, 5);
-    var year = note['start'] + k*unitTime;
-    fill(0);
-    text(int(year), x+k*unitLength, y);
+function drawTimeline(originX, originY) {
+  //Round the start time to the previous 10.
+  const originTime = Math.floor(note["start"]/10)*10;
+
+  const unitScale = setUnitScale(note["end"] - note["start"]);
+  const unitLength = WIN_WIDTH / NUM_OF_YEAR_POINTS;
+
+  line(originX, originY, originX + WIN_WIDTH, originY);
+  line(WIN_WIDTH - 10, originY + 5, WIN_WIDTH, originY);
+  line(WIN_WIDTH - 10, originY - 5, WIN_WIDTH, originY);
+
+  for (var i = 0; i < NUM_OF_YEAR_POINTS; i++) {
+    var coordX =originX + i*unitLength + TIMELINE_BLANK;
+    line(coordX, originY, coordX, originY + 10);
+    text(originTime + i * unitScale, coordX, originY+7);
+  }
+}
+
+//Set Canvas' width so that the length of history nodes is to scale.
+function setCanvasWidth() {
+  note = JSON.parse(note_temp);
+  const unitScale = setUnitScale(note["end"] - note["start"]);
+  CANVAS_WIDTH = round(((note["end"] - note["start"]) / unitScale) * (WIN_WIDTH / NUM_OF_YEAR_POINTS));
+}
+
+//Set unit scale according to the largest time difference.
+function setUnitScale(totalTime) {
+  if (totalTime <= 10) {
+    return 1;
+  }
+  else if (totalTime <= 20) {
+    return 2;
+  }
+  else if (totalTime <= 50) {
+    return 5;
+  }
+  else if (totalTime <= 100) {
+    return 10;
+  }
+  else if (totalTime <= 200) {
+    return 20;
+  }
+  else if (totalTime <= 300) {
+    return 30;
+  }
+  else if (totalTime <= 400) {
+    return 40;
+  }
+  else if (totalTime <= 500) {
+    return 50;
+  }
+  else if (totalTime <= 600) {
+    return 60;
+  }
+  else if (totalTime <= 700) {
+    return 70;
+  }
+  else if (totalTime <= 800) {
+    return 80;
+  }
+  else if (totalTime <= 900) {
+    return 90;
+  }
+  else {
+    return 100;
   }
 }

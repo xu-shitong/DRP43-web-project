@@ -25,9 +25,9 @@
         <div class="bg-muted">
             <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
             <div id="length" value="{{ length }}"></div>
-            <ul id="notes list">
+            <ul id="notes list" class="list-group">
             {% for _note in notes %}
-              <li><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
+              <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
             {% endfor %}
             </ul>
         </div>
