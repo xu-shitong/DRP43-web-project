@@ -24,7 +24,7 @@ class Note(db.Model):
     note_name = db.Column(db.VARCHAR(50), nullable=False)
     create_date = db.Column(db.DATETIME, nullable=False, default=datetime.utcnow())
     refs = db.Column(db.INT, nullable=False)
-    is_public = db.Column(db.INT, nullable=False, default=0)
+    is_public = db.Column(db.VARCHAR(5), nullable=False, default="00")
 
 
 class HistoryNode(db.Model):
