@@ -61,9 +61,9 @@ def render_a_note(id):
     return display_notes(id)
 
 
-@bp.route("/main/main/pics/<path>", methods=['GET', 'POST'])
+@bp.route("/main/pics/<path>", methods=['GET', 'POST'])
 def render_a_pic(path):
-    image_data = open("pics/"+path, "rb").read()
+    image_data = open("../pics/"+path, "rb").read()
     response = make_response(image_data)
     response.headers['Content-Type'] = 'image/jpg'
     return response

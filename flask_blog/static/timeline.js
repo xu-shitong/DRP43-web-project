@@ -117,7 +117,7 @@ class HNode {
       if (IS_MAIN_PAGE) {
          let str = "";
          Array.prototype.forEach.call(this.pics_dict, one_pic_dict => {
-          str += `<p>../../${one_pic_dict["path"]}</p>
+          str += `<p>${one_pic_dict["path"]}</p>
                   <img width="70%" src= "main/${one_pic_dict['path']}"/>
                   <p>${one_pic_dict["pic_name"]}</p>`;
         })

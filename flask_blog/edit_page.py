@@ -1,4 +1,5 @@
 import itertools
+from posixpath import abspath
 from flask.helpers import url_for
 
 from sqlalchemy import sql
@@ -77,7 +78,7 @@ def submit_note():
                 f'WHERE id = {session["note_id"]}'
     note = db.session.execute(sql_query).fetchone()
     # TODO: index 1 here indicate priority for other user
-    if (not user_id == note["author_id"]) and (note["is_public"][1] == 0):
+    if (not user_id == note["author_id"]) and (note["is_public"][1] == "0"):
         flash("you cannot edit this note, report how you enter this website")
         url = url_for("edit_page.edit_page", id=session["note_id"])
         return redirect(url)
@@ -123,7 +124,7 @@ def submit_note():
     if img:
       # if containing uploaded picture, upload to database
       pic_name = request.form["pic_name"]
-      file_path = "./pics/" + str(session["user_id"]) + "_" + img.filename
+      file_path = "../pics/" + str(session["user_id"]) + "_" + img.filename
       pic_and_name = PicAndName(node_id=node_id, name=pic_name, path=file_path)
       db.session.add(pic_and_name)
       db.session.commit()
