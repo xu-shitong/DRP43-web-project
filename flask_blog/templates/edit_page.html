@@ -24,12 +24,26 @@
 
   <hr>
     <div class="container">
-        <form action="/editName/{{ note_name }}" method="POST">
+        <form action="/editNote/{{ note_name }}" method="POST">
             <div class="input-group mb-3">
               <span class="input-group-text">Note Name</span>
               <input id="new_note_name" type="text" name="new_note_name" class="form-control" value="{{ note_name }}" required>
-              <input type="submit" name="submit" value="change note name" class="btn btn-primary">
             </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text">Who can see</span>
+              <select id="read" name="read" class="form-control" required>
+                <option value='0'>me</option>
+                <option value='1'>invited user</option>
+                <option value='2'>everyone</option>
+              </select>
+              <span class="input-group-text">Who can write</span>
+              <select id="write" name="write" class="form-control" required>
+                <option value='0'>me</option>
+                <option value='1'>invited user</option>
+                <option value='2'>everyone</option>
+              </select>
+            </div>
+            <input type="submit" name="submit" value="change note" class="btn btn-primary">
         </form>
     </div>
 
@@ -39,8 +53,9 @@
       <form action="/update_event" method="POST" enctype="multipart/form-data">
 
         <!-- text box, for sending node id to backend, never display to user -->
-        <div>
-          <input id="node_id" type="text" name="node_id" readonly>
+        <div class="input-group mb-3">
+          <span class="input-group-text">id</span>
+          <input id="node_id" type="text" name="node_id" class="form-control" readonly>
         </div>
 
         <!-- time period input box -->
@@ -93,12 +108,12 @@
 
       <!-- delete history event -->
       <form action="/delete_event" method="POST">
-        <div>
-          <input id="node_id_copy" type="text" name="node_id" readonly>
+        <div class="input-group">
+          <input id="node_id_copy" type="text" name="node_id" class="form-control" readonly>
+          <input type="submit" name="submit" value="delete event" class="btn btn-primary">
         </div>
 
         <!-- delete event button -->
-        <input type="submit" name="submit" value="delete event">
       </form>
 
       <!-- back to main page -->
