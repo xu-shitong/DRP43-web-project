@@ -45,18 +45,20 @@ def edit_page(id):
     return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"])
 
 
-@bp.route("/editName/<old_name>", methods=["POST"])
+@bp.route("/editNote/<old_name>", methods=["POST"])
 @login_required
 def change_note_name(old_name):
     new_name = request.form["new_note_name"]
-    sql_query = f'UPDATE note SET note_name="{new_name}" ' \
-                f'WHERE note_name = "{old_name}"'
+    read = request.form["read"]
+    write = request.form["write"]
+    isPublic = read + write
+    sql_query = f'UPDATE note SET note_name="{new_name}", is_public="{isPublic}" ' \
+
     sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
     db.session.execute(sql_query)
     db.session.commit()
     (id,) = db.session.execute(sql_query_2).fetchone()
     session['note_name'] = new_name
-    print(id)
     # TODO: change here
     # print(url_for("edit_page.edit_page", id=id))
     return rerender_edit_page(id)
@@ -74,7 +76,8 @@ def submit_note():
                 f'FROM note '\
                 f'WHERE id = {session["note_id"]}'
     note = db.session.execute(sql_query).fetchone()
-    if (not user_id == note["author_id"]) and (note["is_public"] == 0):
+    # TODO: index 1 here indicate priority for other user
+    if (not user_id == note["author_id"]) and (note["is_public"][1] == 0):
         flash("you cannot edit this note, report how you enter this website")
         url = url_for("edit_page.edit_page", id=session["note_id"])
         return redirect(url)

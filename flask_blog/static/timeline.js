@@ -117,9 +117,9 @@ class HNode {
       if (IS_MAIN_PAGE) {
          let str = "";
          Array.prototype.forEach.call(this.pics_dict, one_pic_dict => {
-          str += `<p>../../${one_pic_dict["path"]} ${one_pic_dict["pic_name"]}</p>
-                  <img src="main/pic/1_pic1.jpg">`;
-                  // <img src="../../${one_pic_dict["path"]}">`;
+          str += `<p>../../${one_pic_dict["path"]}</p>
+                  <img width="70%" src= "main/${one_pic_dict['path']}"/>
+                  <p>${one_pic_dict["pic_name"]}</p>`;
         })
         document.getElementById("description_id").innerHTML
           = `<h2>${this.title}</h2>
