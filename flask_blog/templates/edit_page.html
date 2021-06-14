@@ -1,5 +1,9 @@
-{% extends "timeline_base.html" %}
+{% extends "base1.html" %}
 {% block content %}
+
+  {# display timeline. #}
+  {% include "timeline_base.html" %}
+
   <script>
     function clearInputs() {
       document.getElementById("node_id").value = "";

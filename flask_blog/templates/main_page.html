@@ -1,19 +1,23 @@
-{% extends 'timeline_base.html' %}
+{% extends 'base1.html' %}
 {% block content %}
 
+  {# display timeline. #}
+  {% include "timeline_base.html" %}
 
   <!-- display image and description, format shown in main_page_example -->
   <div id="image_id"></div>
   <p id="description_id"></p>
 
   <!-- let user search a particular note with id -->
-  <br>
-  <form method="post" class="form-inline">
-    <label for="note_id" class="fw-lighter">note_id</label>
-    <input name="note_id" id="note_id" value="{{ request.form['note_id'] }}" required>
-    <input type="submit" value="open" class="btn btn-primary">
-  </form>
-  <br>
+  <div class="container">
+    <br>
+    <form method="post" class="form-inline">
+      <label for="note_id" class="fw-lighter">note_id</label>
+      <input name="note_id" id="note_id" value="{{ request.form['note_id'] }}" required>
+      <input type="submit" value="open" class="btn btn-primary btn-sm">
+    </form>
+    <br>
+  </div>
 
   <!-- display all available notes -->
   <hr>
@@ -23,23 +27,24 @@
       <div id="length" value="{{ length }}"></div>
       <ul id="notes list" class="list-group">
       {% for _note in notes %}
-        <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary"> {{ _note['note name'] }}</a></li>
+        <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary btn-sm"> {{ _note['note name'] }}</a></li>
       {% endfor %}
       </ul>
     </div>
   </div>
   <hr>
 
-  <!-- pop up input window for input new note name -->
-  {% if g.user %}
-     <a href="/create_note">create note</a>
-  {% endif %}
-  
-  <!-- button redirect to edit page -->
-  {% if note_id and g.user %}
-    <a href="/edit/{{ note_id }}" class="btn btn-primary">edit this note</a>
-  {% endif %}
+  <div class="container btn-toolbar">
+    <!-- pop up input window for input new note name -->
+    {% if g.user %}
+       <a href="/create_note" class="btn btn-outline-primary">create note</a>
+    {% endif %}
 
+    <!-- button redirect to edit page -->
+    {% if note_id and g.user %}
+      <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {#{% block content %}#}
