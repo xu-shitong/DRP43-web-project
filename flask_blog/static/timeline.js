@@ -51,6 +51,7 @@ class HNode {
 
     this.x = x;
     this.y = y;
+    textFont('Helvetica', 10);
     this.width = (start == end) ? textWidth(`${trans(start)} ` + title) : width;
     this.height = height;
 

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base1.html' %}
 {% block content %}
 
 <form method="POST">
@@ -8,8 +8,17 @@
   </div>
 
   <div>
-    <span>publicity: </span>
-    <select id="publicity" name="publicity" required>
+    <span>read publicity: </span>
+    <select id="read" name="read" required>
+      <option value='0'>private</option>
+      <option value='1'>open for reference</option>
+      <option value="2">open for edit</option>
+    </select>
+  </div>
+
+  <div>
+    <span>write publicity: </span>
+    <select id="write" name="write" required>
       <option value='0'>private</option>
       <option value='1'>open for reference</option>
       <option value="2">open for edit</option>

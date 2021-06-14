@@ -10,7 +10,7 @@ from flask import (Blueprint, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
-from flask_blog.utils import dbDummyInit, fetchNote, getNoteInfo
+from flask_blog.utils import fetchNote, getNoteInfo
 from flask_blog.auth import login_required
 from flask_blog.db import PicAndName
 import json
@@ -35,6 +35,7 @@ def edit_page(id):
     if note_info:
       # if successfully fetched note, set session note name
       session["note_name"] = note_info["note_name"]
+      session["is_public"] = note_info["is_public"]
     else:
       # if user give bad note id, set note name to None
       return render_template("error/404.html", message=f"note with id: {id} not found")
@@ -43,26 +44,30 @@ def edit_page(id):
     note = fetchNote(noteId=id, is_in_main=False)
 
     # tree = itertools.chain.from_iterable()
-    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"])
+    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"], read=session["is_public"][0], write=session["is_public"][1])
 
 
-@bp.route("/editNote/<old_name>", methods=["POST"])
+@bp.route("/editNote", methods=["POST"])
 @login_required
-def change_note_name(old_name):
+def change_note_name():
     new_name = request.form["new_note_name"]
     read = request.form["read"]
     write = request.form["write"]
     isPublic = read + write
+    note_id = session["note_id"]
     sql_query = f'UPDATE note SET note_name="{new_name}", is_public="{isPublic}" ' \
+                f"WHERE id = '{note_id}'"
 
-    sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
     db.session.execute(sql_query)
     db.session.commit()
+
+    sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
     (id,) = db.session.execute(sql_query_2).fetchone()
     session['note_name'] = new_name
     # TODO: change here
     # print(url_for("edit_page.edit_page", id=id))
-    return rerender_edit_page(id)
+    # return rerender_edit_page(id)
+    return redirect(url_for("edit_page.edit_page", id=note_id))
 
 
 # respond to submit of edit page's update

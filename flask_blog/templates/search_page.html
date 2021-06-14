@@ -4,18 +4,40 @@
   <!-- display all available notes -->
   <hr>
   <div class="container">
+    <p>{{notes}}</p>
     {% if notes %}
     <div class="bg-muted">
       <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
       <ul id="notes list" class="list-group">
       {% for _note in notes %}
         <li class="list-group-item" align="center"><a id="{{ loop.index }}" class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+        <button type="button" onclick="addFavour({{ _note['id'] }})">add favourite</button>
       {% endfor %}
       </ul>
     </div>
+
+    
     {% else %}
       <p id="t" class="fw-lighter" align="center">no notes are found</p>
     {% endif %}
+    
+    <!-- function for respond to add favour action -->
+    <script>
+      function addFavour(id) {
+        
+        $.post(
+          `/search/${id}`,
+          success=(message) => {
+            if (message.includes("fail")) {
+              alert(message)
+            } else {
+              // TODO: change to alter display on page later
+              alert(message)
+            }
+          }
+        )
+      }
+    </script>
   </div>
   <hr>
   <div class="container">

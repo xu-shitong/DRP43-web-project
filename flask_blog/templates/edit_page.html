@@ -24,7 +24,7 @@
 
   <hr>
     <div class="container">
-        <form action="/editNote/{{ note_name }}" method="POST">
+        <form action="/editNote" method="POST">
             <div class="input-group mb-3">
               <span class="input-group-text">Note Name</span>
               <input id="new_note_name" type="text" name="new_note_name" class="form-control" value="{{ note_name }}" required>
@@ -48,6 +48,15 @@
     </div>
 
   <hr>
+  {% if read and write %}
+    <script>
+      function displayPublicity() {
+        document.getElementById("read").value = {{ read }}
+        document.getElementById("write").value = {{ write }}
+      } 
+      displayPublicity()
+    </script>
+  {% endif %}
 
   <div class="container">
       <form action="/update_event" method="POST" enctype="multipart/form-data">

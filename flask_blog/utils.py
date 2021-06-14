@@ -134,44 +134,84 @@ def fetchNote(noteId, is_in_main):
 
 
 def defaultNote(is_in_main):
-  return {"is_in_main": is_in_main, "start": 0, "end": 0, "nodes": []}
+  return {"is_in_main": is_in_main, "start": 0, "end": 0, "nodes": [], "singles": {"start": 0, "end": 0, "nodes": []}}
+
+# get all note that belone to the user
+def get_private_note(user_id):
+  private_notes = "SELECT note.id, author_id, note_name, note.create_date, refs, is_public FROM note JOIN account ON note.author_id=account.id " \
+                 f'WHERE {user_id}=note.author_id '
+  return db.session.execute(private_notes).fetchall()
+
+# get note that visible to user
+# if IS_FAVOUR is true, return note that are marked as favourite by user
+#    READ is minimum read publicity
+#    WRITE is minimum write publicity
+# return SQL_QUERY
+def get_note_with_publicity(user_id, is_favour, read, write):
+
+  # return all field of note
+  sql_query = "SELECT note.id, author_id, note_name, create_date, refs, is_public "
+
+  if user_id:
+    # if fetching note for certain user
+    if is_favour:
+      # select all note visible and favoured by user
+      sql_query += "FROM note JOIN user_favour ON note.id=user_favour.note_id " \
+                  f"WHERE user_favour.user_id={user_id} " \
+                  "AND "
+    else :
+      # select all note visible, not favoured by user
+      sql_query += "FROM note CROSS JOIN user_favour " \
+                  f"WHERE (user_favour.user_id<>{user_id} OR user_favour.note_id<>note.id) " \
+                  "AND "
+  else :
+    # user not logged in, return all note satisfy read write publicity
+    sql_query += "FROM note " \
+                "WHERE "
+  
+  # add constrain on read write publicity, -2 -1 means publicity are the last but 2 chars
+  sql_query += f"SUBSTRING(note.is_public, -2, 1)>='{read}' " \
+               f"AND SUBSTRING(note.is_public, -1, 1)>='{write}' "
 
 
-note = {"is_main_page": True,
-          "start": 100, "end": 150,
-          "nodes": [[{"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"},
-                    {"start": 110, "end": 130, "title": "event 2", "content": "content of event 2"},
-                    {"start": 120, "end": 140, "title": "event 3", "content": "content of event 3"}],
-                    [{"start": 100, "end": 150, "title": "event 4", "content": "content of event 4"}]]
-          }
+  return sql_query
 
-def dbDummyInit():
-  # Dummy initialisation of database
-  db.drop_all()
-  db.create_all()
-  new_one = Account(id=1, username="name", password="123")
-  db.session.add(new_one)
-  db.session.commit()
-  new_one = Note(id=1, note_name="name", author_id=1, references=0)
-  db.session.add(new_one)
-  db.session.commit()
-  note = {"is_main_page": False,
-          "start": 100, "end": 150, 
-          "nodes": [[{"node_id": 1, "parent_id": 0,"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"}, 
-                    {"node_id": 2, "parent_id": 0,"start": 110, "end": 130, "title": "event 2", "content": "content of event 2"}, 
-                    {"node_id": 3, "parent_id": 0,"start": 120, "end": 140, "title": "event 3", "content": "content of event 3"}],
-                    [{"node_id": 4, "parent_id": 1,"start": 100, "end": 150, "title": "event 4", "content": "content of event 4"}]]
-          }
-  for layer in note["nodes"]:
-    for entity in layer:
-      newNode = HistoryNode(
-        note_id=1,
-        title=entity["title"],
-        start_date=entity["start"],
-        end_date=entity["end"],
-        content=entity["content"],
-        parent_node_id=entity["parent_id"]
-      )
-      db.session.add(newNode)
-      db.session.commit()
-  # end dummy initialisation
+## following variables and functions are for develop/test propose
+# note = {"is_main_page": True,
+#           "start": 100, "end": 150,
+#           "nodes": [[{"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"},
+#                     {"start": 110, "end": 130, "title": "event 2", "content": "content of event 2"},
+#                     {"start": 120, "end": 140, "title": "event 3", "content": "content of event 3"}],
+#                     [{"start": 100, "end": 150, "title": "event 4", "content": "content of event 4"}]]
+#           }
+
+# def dbDummyInit():
+#   # Dummy initialisation of database
+#   db.drop_all()
+#   db.create_all()
+#   new_one = Account(id=1, username="name", password="123")
+#   db.session.add(new_one)
+#   db.session.commit()
+#   new_one = Note(id=1, note_name="name", author_id=1, references=0)
+#   db.session.add(new_one)
+#   db.session.commit()
+#   note = {"is_main_page": False,
+#           "start": 100, "end": 150, 
+#           "nodes": [[{"node_id": 1, "parent_id": 0,"start": 100, "end": 120, "title": "event 1", "content": "content of event 1"}, 
+#                     {"node_id": 2, "parent_id": 0,"start": 110, "end": 130, "title": "event 2", "content": "content of event 2"}, 
+#                     {"node_id": 3, "parent_id": 0,"start": 120, "end": 140, "title": "event 3", "content": "content of event 3"}],
+#                     [{"node_id": 4, "parent_id": 1,"start": 100, "end": 150, "title": "event 4", "content": "content of event 4"}]]
+#           }
+#   for layer in note["nodes"]:
+#     for entity in layer:
+#       newNode = HistoryNode(
+#         note_id=1,
+#         title=entity["title"],
+#         start_date=entity["start"],
+#         end_date=entity["end"],
+#         content=entity["content"],
+#         parent_node_id=entity["parent_id"]
+#       )
+#       db.session.add(newNode)
+#       db.session.commit()
+#   # end dummy initialisation
