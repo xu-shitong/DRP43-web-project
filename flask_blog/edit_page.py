@@ -10,7 +10,7 @@ from flask import (Blueprint, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
-from flask_blog.utils import dbDummyInit, fetchNote, getNoteInfo
+from flask_blog.utils import dbDummyInit, fetchNote, getNoteInfo, get_my_note
 from flask_blog.auth import login_required
 from flask_blog.db import PicAndName
 import json
@@ -41,10 +41,11 @@ def edit_page(id):
     
     # fetch note data from database, render edit page
     note = fetchNote(noteId=id, is_in_main=False)
-
+    # print(session["user_id"])
     # tree = itertools.chain.from_iterable()
     return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"],
-                           base_note=session["user_id"])
+                           base_note=get_my_note(session["user_id"]))
+
 
 
 @bp.route("/editNote/<old_name>", methods=["POST"])
