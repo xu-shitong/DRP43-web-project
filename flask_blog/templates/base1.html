@@ -28,8 +28,8 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               {# todo: show notes of this particular user. #}
-              {% for _note in notes %}
-                <li><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="dropdown-item"> {{ _note['note name'] }}</a></li>
+              {% for _note in base_note %}
+                <li><a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="dropdown-item"> {{ _note['note_name'] }}</a></li>
               {% endfor %}
               </ul>
             </li>

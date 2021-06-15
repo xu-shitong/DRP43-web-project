@@ -175,3 +175,11 @@ def dbDummyInit():
       db.session.add(newNode)
       db.session.commit()
   # end dummy initialisation
+
+
+def get_my_note(user_id=None):
+  if user_id is not None:
+    sql_query = f"SELECT id, note_name FROM note WHERE author_id = {user_id}"
+    my_notes = db.session.execute(sql_query)
+    my_notes = [dict(zip(["id", "note_name"], my_note)) for my_note in my_notes]
+    return my_notes

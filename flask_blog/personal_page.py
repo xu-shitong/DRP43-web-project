@@ -6,7 +6,7 @@ from flask_blog.db import Note
 from flask import Blueprint, flash, request, jsonify
 from flask.templating import render_template
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, defaultNote, getNoteInfo
+from flask_blog.utils import fetchNote, defaultNote, getNoteInfo, get_my_note
 import json
 
 
@@ -18,7 +18,7 @@ def person(name):
     notes = getMyNote(name)
     fields = ['id', 'note_name', 'create_date', 'refs']
     notes = ([(dict(zip(fields, note))) for note in notes])
-    return render_template('personal_page.html', name=name, notes=notes)
+    return render_template('personal_page.html', name=name, notes=notes, base_note=get_my_note(session["user_id"]))
 
 
 def getMyNote(name):

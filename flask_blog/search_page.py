@@ -1,6 +1,7 @@
-from flask import Blueprint, flash, request, jsonify
+from flask import Blueprint, flash, request, jsonify, session
 from flask.templating import render_template
 from flask_blog.app import db
+from flask_blog.utils import get_my_note
 
 bp = Blueprint("search_page", __name__)
 
@@ -28,7 +29,8 @@ def search():
     else:
         notes = []
 
-    return render_template("search_page.html", notes=notes, hot_notes=hot_notes)
+    return render_template("search_page.html", notes=notes, hot_notes=hot_notes,
+                           base_note=get_my_note(session["user_id"]))
 
 
 def get_popular_note():
