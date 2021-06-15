@@ -22,8 +22,19 @@
     window.onload = clearInputs;
   </script>
 
+  <div class="container">
+    <button class="btn btn-outline-primary" id="event-edit-button">Add an event</button>
+    <button class="btn btn-outline-primary" id="title-edit-button">Change note name</button>
+    <!-- back to main page -->
+    <a href="/main/{{ note_id }}" class="btn btn-outline-primary">Save changes</a>
+
+    {# todo: float this button to the right. #}
+    <!-- delete note -->
+    <button class="btn btn-outline-primary float-end" id="delete_note_id" onclick="delete_note()">Delete this note</button>
+  </div>
+
   <hr>
-    <div class="container">
+    <div class="container" id="title-edit">
         <form action="/editNote" method="POST">
             <div class="input-group mb-3">
               <span class="input-group-text">Note Name</span>
@@ -43,11 +54,10 @@
                 <option value='2'>everyone</option>
               </select>
             </div>
-            <input type="submit" name="submit" value="change note" class="btn btn-primary">
+            <input type="submit" name="submit" value="Apply" class="btn btn-outline-primary">
         </form>
     </div>
 
-  <hr>
   {% if read and write %}
     <script>
       function displayPublicity() {
@@ -58,94 +68,97 @@
     </script>
   {% endif %}
 
-  <div class="container">
-      <form action="/update_event" method="POST" enctype="multipart/form-data">
+  <div class="container" id="event-edit">
+    <form action="/update_event" method="POST" enctype="multipart/form-data">
 
-        <!-- text box, for sending node id to backend, never display to user -->
-        <div class="input-group mb-3">
-          <span class="input-group-text">id</span>
-          <input id="node_id" type="text" name="node_id" class="form-control" readonly>
-        </div>
+      <!-- text box, for sending node id to backend, never display to user -->
+      <div class="input-group mb-3">
+        <span class="input-group-text">id</span>
+        <input id="node_id" type="text" name="node_id" class="form-control" readonly>
+      </div>
 
-        <!-- time period input box -->
-        <div class="input-group mb-3">
-          <span class="input-group-text">From</span>
-          <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" required>
-          <span class="input-group-text">To</span>
-          <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100">
-        </div>
+      <!-- time period input box -->
+      <div class="input-group mb-3">
+        <span class="input-group-text">From</span>
+        <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" required>
+        <span class="input-group-text">To</span>
+        <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100">
+      </div>
 
-        <!-- image input box -->
-        <!-- <div>
-          <label for="img">Select image:</label>
-          <input type="file" id="img" name="img" accept="image/*">
-        </div> -->
+      <!-- image input box -->
+      <!-- <div>
+        <label for="img">Select image:</label>
+        <input type="file" id="img" name="img" accept="image/*">
+      </div> -->
 
-        <!-- title input box -->
-        <div class="input-group mb-3">
-          <span class="input-group-text">Title:</span>
-          <input id="title" type="text" name="title" class="form-control" placeholder="e.g. Roman Empire" required>
-        </div>
+      <!-- title input box -->
+      <div class="input-group mb-3">
+        <span class="input-group-text">Title:</span>
+        <input id="title" type="text" name="title" class="form-control" placeholder="e.g. Roman Empire" required>
+      </div>
 
-        <!-- select parent node box -->
-        <div class="input-group mb-3">
-          <span class="input-group-text">Happened during</span>
-          <select id="parent_input" name="parent" class="form-control" required>
-            <option value='0'>root node</option>
-          </select>
-        </div>
+      <!-- select parent node box -->
+      <div class="input-group mb-3">
+        <span class="input-group-text">Happened during</span>
+        <select id="parent_input" name="parent" class="form-control" required>
+          <option value='0'>root node</option>
+        </select>
+      </div>
 
-        <!-- description input box -->
-        <div class="input-group">
-          <span class="input-group-text">Description:</span>
-            <textarea name="body" id="body" class="form-control" required></textarea>
-        </div>
+      <!-- description input box -->
+      <div class="input-group">
+        <span class="input-group-text">Description:</span>
+          <textarea name="body" id="body" class="form-control" required></textarea>
+      </div>
 
-        <br>
-        <!-- upload picture box -->
-        <div class="input-group">
-            <input type="file" size="30" name="pic"/>
-            <span class="input-group-text">picture title</span>
-            <input type="text" name="pic_name" class="form-control"/>
-        </div>
+      <br>
+      <!-- upload picture box -->
+      <div class="input-group">
+          <input type="file" size="30" name="pic"/>
+          <span class="input-group-text">picture title</span>
+          <input type="text" name="pic_name" class="form-control"/>
+      </div>
 
-        <!-- submit button -->
-        <br>
-          <input type="submit" name="submit" value="Save changes" class="btn btn-primary">
-          <!-- back to main page -->
-          <a href="/main/{{ note_id }}" class="btn btn-primary">Cancel</a>
-          <!-- clear button -->
-          <button type="button" class="btn btn-primary" onclick="clearInputs()">reset edit</button>
-      </form>
+      <!-- submit button -->
+      <br>
+        <input type="submit" name="submit" value="Add this event" class="btn btn-outline-primary">
+        <!-- clear button -->
+        <button type="button" class="btn btn-outline-primary" onclick="clearInputs()">Reset edit</button>
+    </form>
 
-      <!-- delete history event -->
-      <form action="/delete_event" method="POST">
-        <div class="input-group">
-{#          <input id="node_id_copy" type="text" name="node_id" class="form-control" readonly>#}
-          <input type="submit" name="submit" value="delete event" class="btn btn-primary">
-        </div>
+    <!-- delete history event -->
+    <form action="/delete_event" method="POST">
+      <input id="node_id_copy" type="text" name="node_id" class="form-control" readonly style="display:none">
+      <input type="submit" name="submit" value="Delete this event" class="btn btn-outline-primary">
+    </form>
 
-        <!-- delete event button -->
-      </form>
-      
-      <!-- delete note -->
-      <button id="delete_note_id" onclick="delete_note()">delete note</button>
-      <script>
-        function delete_note() {
-          $.post(
-            "/delete_note",
-            success=(error) => {
-              if (error) {
-                // has error, display and terminate delete
-                alert(error)
-              } else {
-                // else, backend has deleted note, jump to frontend
-                alert("deleted note successfully, jumping back to main page")
-                window.location.href="../main"
-              }
-            }
-          )
-        }
-      </script>
   </div>
+
+  <script>
+    function delete_note() {
+      $.post(
+        "/delete_note",
+        success=(error) => {
+          if (error) {
+            // has error, display and terminate delete
+            alert(error)
+          } else {
+            // else, backend has deleted note, jump to frontend
+            alert("deleted note successfully, jumping back to main page")
+            window.location.href="../main"
+          }
+        }
+      )
+    }
+    $("#event-edit").hide();
+    $("#title-edit").hide();
+    $("#event-edit-button").click(function (){
+        $("#event-edit").show();
+        $("#title-edit").hide();
+    })
+    $("#title-edit-button").click(function (){
+        $("#title-edit").show();
+        $("#event-edit").hide();
+    })
+  </script>
 {% endblock content %}
