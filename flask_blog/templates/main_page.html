@@ -44,6 +44,10 @@
     {% if note_id and g.user %}
       <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
     {% endif %}
+
+    {% if g.user %}
+      <a href="/merge" class="btn btn-outline-primary">merge notes</a>
+    {% endif %}
   </div>
 {% endblock %}
 

@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, request, jsonify, url_for, render_template, session
 from flask_blog.app import db
 from flask_blog.db import Note, HistoryNode
+from flask_blog.utils import get_my_note
 
 bp = Blueprint("merge", __name__)
 
@@ -24,19 +25,41 @@ def merge():
         db.session.add(note3)
         db.session.commit()
         id3 = Note.query.filter_by(note_name=new_name).first().id
-        nodes3 = []
+        change_in_id = {0: 0}
+        id = get_last_id()
+
         for node1 in nodes1:
-            new_node = HistoryNode(note_id=id3, title=node1.title, start_date=node1.start_date,
+            id = id + 1
+            new_node = HistoryNode(id=id, note_id=id3, title=node1.title, start_date=node1.start_date,
                                    end_date=node1.end_date, content=node1.content, parent_node_id=0)
-            nodes3.append(new_node)
+            db.session.add(new_node)
+            change_in_id[node1.id] = id
+        db.session.commit()
+        for node1 in nodes1:
+            new_id = change_in_id[node1.id]
+            new_parent_id = change_in_id[node1.parent_node_id]
+            sql_query = f'UPDATE history_node SET parent_node_id={new_parent_id} ' \
+                        f'WHERE id="{new_id}"'
+            db.session.execute(sql_query)
+            db.session.commit()
+
+        change_in_id = {0: 0}
         for node2 in nodes2:
+            id = id + 1
             new_node = HistoryNode(note_id=id3, title=node2.title, start_date=node2.start_date,
                                    end_date=node2.end_date, content=node2.content, parent_node_id=0)
-            nodes3.append(new_node)
-        for node3 in nodes3:
-            db.session.add(node3)
+            db.session.add(new_node)
+            change_in_id[node2.id] = id
         db.session.commit()
-    return render_template("merge.html", notes=notes)
+        for node2 in nodes2:
+            new_id = change_in_id[node2.id]
+            new_parent_id = change_in_id[node2.parent_node_id]
+            sql_query = f'UPDATE history_node SET parent_node_id={new_parent_id} ' \
+                        f'WHERE id="{new_id}"'
+            db.session.execute(sql_query)
+            db.session.commit()
+
+    return render_template("merge.html", notes=notes, base_note=get_my_note(session))
 
 
 
@@ -46,3 +69,22 @@ def get_all_note_editable_by_user():
     notes = db.session.execute(sql_query).fetchall()
     notes = [note for (note,) in notes]
     return notes
+
+
+def find_hierarchy(nodes):
+    hierarchy = {}
+    for node in nodes:
+        node_id = node.id
+        parent_id = node.parent_node_id
+        if parent_id in hierarchy:
+            hierarchy[parent_id].append(node_id)
+        else:
+            hierarchy[parent_id] = [node_id]
+    return hierarchy
+
+
+def get_last_id():
+    sql_query = "SELECT id FROM history_node ORDER BY id DESC"
+    (id,) = db.session.execute(sql_query).fetchone()
+    return id
+
