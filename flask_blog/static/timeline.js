@@ -130,9 +130,10 @@ class HNode {
             ${str}
             </div>`;
       } else {
+        $("#event-edit").show();
         // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
-        // document.getElementById("node_id_copy").value = this.node_id;
+        document.getElementById("node_id_copy").value = this.node_id;
         document.getElementById("start").value = this.start;
         document.getElementById("end").value = this.end;
         document.getElementById("title").value = this.title;
