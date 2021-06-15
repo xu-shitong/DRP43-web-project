@@ -1,38 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ name }}'s personal page</title>
-</head>
-<body>
-    <h1>{{ name }}</h1>
-    <hr>
-    <h1>My favourite</h1>
-    <p id="t" class="fw-lighter" align="center">There are in total {{ favourite_notes | length }} notes</p>
-    {% for _note in favourites_notes %}
-          <li align="center">
-              <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-primary">
-                  {{ _note['note_name'] }}
-              </a>
-              create by  {{ _note['create_date'] }}
-          </li>
-        {% endfor %}
-    <hr>
+{% extends "base1.html" %}
+{% block content %}
+
+  <div class="container">
+    <h1>Hello {{ name }}!</h1>
+  </div>
+  <hr>
+  <div class="container">
     <h1>My note</h1>
     <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
-    <ul class="list-unstyled">
+    <ul class="list-group">
         <div id="length" value="{{ length }}"></div>
 
         {% for _note in notes %}
-          <li align="center">
-              <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-primary">
+          <li class="list-group-item">
+              <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">
                   {{ _note['note_name'] }}
               </a>
-              create by  {{ _note['create_date'] }}
+            created on {{ _note['create_date'] }}
           </li>
         {% endfor %}
     </ul>
-    <a href="/main"> main </a>
-
-</body>
-</html>
+  </div>
+  <hr>
+  <div class="container">
+    <h1>My favourite</h1>
+    <p id="t" class="fw-lighter" align="center">There are in total {{ favourite_notes | length }} notes</p>
+    <ul class="list-group">
+    {% for _note in favourites_notes %}
+      <li class="list-group-item">
+        <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-primary">
+          {{ _note['note_name'] }}
+        </a>
+        create by  {{ _note['create_date'] }}
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

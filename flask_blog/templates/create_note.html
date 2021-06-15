@@ -1,30 +1,33 @@
-{% extends 'base.html' %}
+{% extends "base1.html" %}
 {% block content %}
 
-<form method="POST">
-  <div>
-    <label for="new_note_name">note name:</label>
-    <input name="new_note_name" id="note_name_id" required>
+  <div class="container">
+    <form method="POST">
+
+      <div class="input-group mb-3">
+        <span class="input-group-text">Note name</span>
+        <input class="form-control" name="new_note_name" id="note_name_id" required>
+      </div>
+
+      <div class="input-group mb-3">
+        <label class="input-group-text">Publicity</label>
+        <select class="form-select" id="publicity" name="publicity" required>
+          <option selected>Choose...</option>
+          <option value='0'>private</option>
+          <option value='1'>open for reference</option>
+          <option value="2">open for edit</option>
+        </select>
+      </div>
+
+      <input type="submit" name="submit" value="create" class="btn btn-outline-secondary">
+    </form>
+
+    {% if href %}
+      <p id="add_note_err">note name already used, do you want to edit this note</p>
+      <a id="prev_note" href="/edit/{{ href }}">{{ note_name }}</a>
+
+    {% endif %}
   </div>
-
-  <div>
-    <span>publicity: </span>
-    <select id="publicity" name="publicity" required>
-      <option value='0'>private</option>
-      <option value='1'>open for reference</option>
-      <option value="2">open for edit</option>
-    </select>
-  </div>
-
-  <input type="submit" name="submit" value="create" class="btn btn-primary">
-</form>
-
-{% if href %}
-  <p id="add_note_err">note name already used, do you want to edit this note</p>
-  <a id="prev_note" href="/edit/{{ href }}">{{ note_name }}</a>
-  
-{% endif %}
-
 <!-- <script>
 
   function redirect_create() {
