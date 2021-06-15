@@ -91,11 +91,15 @@ def submit_note():
 
     startTime = int(request.form["start"])
     endTime_temp = request.form["end"]
-    print(endTime_temp)
     if endTime_temp == '':
         endTime = startTime
     else:
         endTime = int(endTime_temp)
+    
+    if endTime < startTime:
+        flash("invalid end time, should be at least equal to start time")
+        url = url_for("edit_page.edit_page", id=session["note_id"])
+        return redirect(url)
 
     title = request.form["title"]
     parent_id = request.form.get("parent")

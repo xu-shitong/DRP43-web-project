@@ -70,9 +70,11 @@
         <!-- time period input box -->
         <div class="input-group mb-3">
           <span class="input-group-text">From</span>
-          <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" required>
+          <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" 
+                 oninput="if(value>2021)value=2021;if(value<-5000)value=-5000" required>
           <span class="input-group-text">To</span>
-          <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100">
+          <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" 
+                 oninput="if(value>2021)value=2021;if(value<-5000)value=-5000">
         </div>
 
         <!-- image input box -->
