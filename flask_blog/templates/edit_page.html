@@ -102,25 +102,22 @@
 
         <!-- submit button -->
         <br>
-          <input type="submit" name="submit" value="Update/Submit event" class="btn btn-primary">
-
+          <input type="submit" name="submit" value="Save changes" class="btn btn-primary">
+          <!-- back to main page -->
+          <a href="/main/{{ note_id }}" class="btn btn-primary">Cancel</a>
+          <!-- clear button -->
+          <button type="button" class="btn btn-primary" onclick="clearInputs()">reset edit</button>
       </form>
 
       <!-- delete history event -->
       <form action="/delete_event" method="POST">
         <div class="input-group">
-          <input id="node_id_copy" type="text" name="node_id" class="form-control" readonly>
+{#          <input id="node_id_copy" type="text" name="node_id" class="form-control" readonly>#}
           <input type="submit" name="submit" value="delete event" class="btn btn-primary">
         </div>
 
         <!-- delete event button -->
       </form>
-
-      <!-- back to main page -->
-      <a href="/main/{{ note_id }}" class="btn btn-primary">finish editing note</a>
-      
-      <!-- clear button -->
-      <button type="button" class="btn btn-primary" onclick="clearInputs()">reset edit</button>
       
       <!-- delete note -->
       <button id="delete_note_id" onclick="delete_note()">delete note</button>

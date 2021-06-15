@@ -1,30 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Merge</title>
-</head>
-<body>
-    <div class="input-group mb-3">
-    <form method="POST">
-        <span class="input-group-text">new name:</span>
-        <input id="new_name" type="text" name="new_name" class="form-control" required>
+{% extends "base1.html" %}
+{% block content %}
+  <div class="container">
+  <form method="POST">
 
-        <span class="input-group-text">first</span>
-        <select id="first" name="first" class="form-control" required>
-            {% for _note in notes %}
-                <option value='{{ loop.index0 }}' name="_note">{{ _note }}</option>
-            {% endfor %}
-        </select>
-        <span class="input-group-text">second</span>
-        <select id="second" name="second" class="form-control" required>
-            {% for _note in notes %}
-                <option value='{{ loop.index0 }}'>{{ _note }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" name="submit" value="merge" class="btn btn-primary">
-    </form>
+    <div class="input-group mb-3">
+      <span class="input-group-text">New note name:</span>
+      <input id="new_name" type="text" name="new_name" class="form-control" required>
     </div>
 
-</body>
-</html>
+    <div class="input-group mb-3">
+      <span class="input-group-text">First note</span>
+      <select id="first" name="first" class="form-control" required>
+          {% for _note in notes %}
+              <option value='{{ loop.index0 }}' name="_note">{{ _note }}</option>
+          {% endfor %}
+      </select>
+      <span class="input-group-text">Second note</span>
+      <select id="second" name="second" class="form-control" required>
+          {% for _note in notes %}
+              <option value='{{ loop.index0 }}'>{{ _note }}</option>
+          {% endfor %}
+      </select>
+    </div>
+
+      <input type="submit" name="submit" value="merge" class="btn btn-outline-primary">
+  </form>
+  </div>
+
+{% endblock %}

@@ -122,13 +122,16 @@ class HNode {
                   <p>${one_pic_dict["pic_name"]}</p>`;
         })
         document.getElementById("description_id").innerHTML
-          = `<h2>${this.title}</h2>
+          = `<br>
+            <div class="container">
+            <h2>${this.title}</h2>
             <p>${this.content}</p>
-            ${str}`;
+            ${str}
+            </div>`;
       } else {
         // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
-        document.getElementById("node_id_copy").value = this.node_id;
+        // document.getElementById("node_id_copy").value = this.node_id;
         document.getElementById("start").value = this.start;
         document.getElementById("end").value = this.end;
         document.getElementById("title").value = this.title;
