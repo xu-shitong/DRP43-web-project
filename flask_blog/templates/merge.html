@@ -1,0 +1,30 @@
+{% extends "base1.html" %}
+{% block content %}
+  <div class="container">
+  <form method="POST">
+
+    <div class="input-group mb-3">
+      <span class="input-group-text">New note name:</span>
+      <input id="new_name" type="text" name="new_name" class="form-control" required>
+    </div>
+
+    <div class="input-group mb-3">
+      <span class="input-group-text">First note</span>
+      <select id="first" name="first" class="form-control" required>
+          {% for _note in notes %}
+              <option value='{{ loop.index0 }}' name="_note">{{ _note }}</option>
+          {% endfor %}
+      </select>
+      <span class="input-group-text">Second note</span>
+      <select id="second" name="second" class="form-control" required>
+          {% for _note in notes %}
+              <option value='{{ loop.index0 }}'>{{ _note }}</option>
+          {% endfor %}
+      </select>
+    </div>
+
+      <input type="submit" name="submit" value="merge" class="btn btn-outline-primary">
+  </form>
+  </div>
+
+{% endblock %}

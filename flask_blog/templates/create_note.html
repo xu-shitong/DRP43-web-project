@@ -1,39 +1,41 @@
-{% extends 'base1.html' %}
+{% extends "base1.html" %}
 {% block content %}
 
-<form method="POST">
-  <div>
-    <label for="new_note_name">note name:</label>
-    <input name="new_note_name" id="note_name_id" required>
-  </div>
+  <div class="container">
+    <form method="POST">
 
-  <div>
-    <span>read publicity: </span>
-    <select id="read" name="read" required>
-      <option value='0'>private</option>
-      <option value='1'>open for reference</option>
-      <option value="2">open for edit</option>
-    </select>
-  </div>
+      <div>
+        <label for="new_note_name">note name:</label>
+        <input name="new_note_name" id="note_name_id" required>
+      </div>
 
-  <div>
-    <span>write publicity: </span>
-    <select id="write" name="write" required>
-      <option value='0'>private</option>
-      <option value='1'>open for reference</option>
-      <option value="2">open for edit</option>
-    </select>
-  </div>
+      <div>
+        <span>read publicity: </span>
+        <select id="read" name="read" required>
+          <option value='0'>private</option>
+          <option value='1'>open for reference</option>
+          <option value="2">open for edit</option>
+        </select>
+      </div>
 
-  <input type="submit" name="submit" value="create" class="btn btn-primary">
-</form>
+      <div>
+        <span>write publicity: </span>
+        <select id="write" name="write" required>
+          <option value='0'>private</option>
+          <option value='1'>open for reference</option>
+          <option value="2">open for edit</option>
+        </select>
+      </div>
+
+      <input type="submit" name="submit" value="create" class="btn btn-outline-secondary">
+    </form>
+  </div>
 
 {% if href %}
   <p id="add_note_err">note name already used, do you want to edit this note</p>
   <a id="prev_note" href="/edit/{{ href }}">{{ note_name }}</a>
-  
-{% endif %}
 
+{% endif %}
 <!-- <script>
 
   function redirect_create() {

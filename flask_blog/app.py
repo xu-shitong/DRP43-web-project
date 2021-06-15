@@ -82,6 +82,8 @@ import flask_blog.personal_page as personal
 app.register_blueprint(personal.bp)
 import flask_blog.create_page as create
 app.register_blueprint(create.bp)
+import flask_blog.merge as merge
+app.register_blueprint(merge.bp)
 app.add_url_rule('/', endpoint='index')
 
 

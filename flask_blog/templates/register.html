@@ -2,7 +2,6 @@
 
 {% block content %}
 
-  <br>
   <div class="container">
     <h1>Register</h1>
     <hr>
@@ -24,5 +23,13 @@
       <input class="btn btn-outline-secondary" type="submit" value="Register">
 
     </form>
+  </div>
+
+
+  <div class="container">
+    <hr>
+    <small class="text-muted">
+      Already have an account? <a href="{{ url_for("auth.login") }}">Log in</a>
+    </small>
   </div>
 {% endblock %}

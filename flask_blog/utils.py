@@ -142,7 +142,7 @@ def all_notes(session):
   if "user_id" in session:
     # if user logged in
     # fetch notes that belong to the user
-    sql_query = get_private_note(session["user_id"])
+    sql_query = private_note_sql(session["user_id"])
     notes = db.session.execute(sql_query).fetchall()
 
     # fetch notes that are marked as favour, and visible to user
@@ -172,10 +172,19 @@ def all_notes(session):
   notes_ = ([(dict(zip(fields, note))) for note in notes])
   return notes_
     
-# sql of all note that belone to the user
-def get_private_note(user_id):
-  return "SELECT note.id, author_id, note_name, note.create_date, refs, is_public FROM note JOIN account ON note.author_id=account.id " \
+# sql of all private note
+def private_note_sql(user_id):
+  return "SELECT note.id, author_id, note_name, note.create_date, refs, is_public FROM note " \
          f'WHERE {user_id}=note.author_id '
+
+# return private notes, if not logged in, return []
+def get_my_note(session):
+  if "user_id" in session:
+    sql_query = private_note_sql(session["user_id"])
+    my_notes = db.session.execute(sql_query).fetchall()
+    my_notes = [dict(zip(['id', 'author_id', 'note_name', 'create_date', 'refs', 'is_public' ], my_note)) for my_note in my_notes]
+    return my_notes
+  return []
 
 # sql of note that visible to user
 # if IS_FAVOUR return note that are marked as favourite by user

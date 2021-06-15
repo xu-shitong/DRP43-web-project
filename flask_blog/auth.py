@@ -17,17 +17,18 @@ def register():
         password = request.form['password']
         error = None
         if not username:
-            error = 'username is required'
+            error = 'Username is required'
         elif not password:
-            error = 'password is required'
+            error = 'Password is required'
         elif not validateKey(username):
-            error = 'already registered'
+            error = 'You have already registered for this account!'
         if error is None:
             new_one = Account(username=username, password=password)
             db.session.add(new_one)
             db.session.commit()
+            flash(f"Account created for {username}! You are now able to log in!", "success")
             return redirect(url_for('auth.login'))
-        flash(error)
+        flash(error, "danger")
     return render_template('register.html')
 
 
@@ -45,12 +46,11 @@ def login():
             error = 'Incorrect username.'
         elif not record_user.password == password:
             error = 'Incorrect password.'
-
         if error is None:
             session.clear()
             session['user_id'] = record_user.id
             return redirect(url_for('main_page.main'))
-        flash(error)
+        flash(error, "danger")
 
     return render_template('login.html')
 

@@ -1,12 +1,13 @@
 from re import U
-from flask_blog.utils import all_notes, get_note_with_publicity, get_private_note
+from flask_blog.utils import get_note_with_publicity, private_note_sql
 from os import write
 from flask_blog.db import UserFavour
 from flask.globals import session
 from flask_blog.auth import login_required
-from flask import Blueprint, flash, request, jsonify
+from flask import Blueprint, flash, request, jsonify, session
 from flask.templating import render_template
 from flask_blog.app import db
+from flask_blog.utils import get_my_note
 
 bp = Blueprint("search_page", __name__)
 
@@ -34,7 +35,7 @@ def search():
         # if user logged in, include private notes in search result
         if "user_id" in session:
             user_id = session["user_id"]
-            sql_query = get_private_note(session["user_id"]) + f' AND note_name LIKE "%{info}%"'
+            sql_query = private_note_sql(session["user_id"]) + f' AND note_name LIKE "%{info}%"'
             private_notes = db.session.execute(sql_query).fetchall()
 
             sql_query = get_note_with_publicity(user_id=user_id, is_favour=True, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
@@ -55,7 +56,8 @@ def search():
         private_notes = []
 
     # notes are ones displaied in menu dropdown box, favour_notes, non_favour_notes, private notes are notes containing the keyword
-    return render_template("search_page.html", notes=all_notes(session), private_notes=private_notes, favour_notes=favour_notes, non_favour_notes=non_favour_notes, hot_notes=hot_notes)
+    return render_template("search_page.html", private_notes=private_notes, favour_notes=favour_notes, non_favour_notes=non_favour_notes, hot_notes=hot_notes, 
+                           base_note=get_my_note(session))
 
 
 def get_popular_note():

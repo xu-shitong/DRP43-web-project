@@ -10,7 +10,7 @@ from flask import (Blueprint, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, getNoteInfo
+from flask_blog.utils import fetchNote, getNoteInfo, get_my_note
 from flask_blog.auth import login_required
 from flask_blog.db import PicAndName
 import json
@@ -43,8 +43,9 @@ def edit_page(id):
     # fetch note data from database, render edit page
     note = fetchNote(noteId=id, is_in_main=False)
 
-    # tree = itertools.chain.from_iterable()
-    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"], read=session["is_public"][0], write=session["is_public"][1])
+    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"], read=session["is_public"][0], write=session["is_public"][1], 
+                           base_note=get_my_note(session))
+
 
 
 @bp.route("/editNote", methods=["POST"])
@@ -115,7 +116,7 @@ def submit_note():
                   f'WHERE id = {node_id}'
       db.session.execute(sql_query)
       db.session.commit()
-    else :
+    else:
       # node id not present, user is adding a node
       blog = HistoryNode(note_id=session["note_id"], title=title, start_date=startTime, end_date=endTime, content=description, parent_node_id=parent_id)
       db.session.add(blog)
@@ -144,7 +145,7 @@ def submit_note():
 def delete_event():
     node_id = request.form["node_id"]
 
-    if node_id :
+    if node_id:
       sql_query = f"DELETE FROM history_node WHERE id={node_id}"
       db.session.execute(sql_query)
       db.session.commit()
@@ -158,7 +159,7 @@ def delete_event():
       print(succeed)
       if succeed:
         flash("deleted a parent node, all child moved to root")
-    else :
+    else:
       flash("you didn't select a node to delete")
 
     url = url_for("edit_page.edit_page", id=session["note_id"])

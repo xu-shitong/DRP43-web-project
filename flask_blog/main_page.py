@@ -8,7 +8,7 @@ from flask_blog.db import Note
 from flask import Blueprint, flash, request, jsonify, url_for, make_response
 from flask.templating import render_template
 from flask_blog.app import db
-from flask_blog.utils import all_notes, fetchNote, defaultNote, getNoteInfo, get_note_with_publicity, get_private_note
+from flask_blog.utils import fetchNote, defaultNote, getNoteInfo, get_my_note, get_note_with_publicity
 import json
 bp = Blueprint("main_page", __name__)
 
@@ -34,10 +34,8 @@ def display_notes(note_id=None):
         note = defaultNote(is_in_main=True)
         note_name = None
 
-    # fetch all notes, available for user to choose to view
-    notes = all_notes(session)
-
-    return render_template('main_page.html', note=json.dumps(note), notes=notes, note_id=note_id, note_name=note_name)
+    return render_template('main_page.html', note=json.dumps(note), note_id=note_id, note_name=note_name,
+                           base_note=get_my_note(session))
 
 
 # first enter of main page, no note displaying 
