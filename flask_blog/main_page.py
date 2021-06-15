@@ -45,8 +45,13 @@ def display_notes(note_id=None):
 
     # fetch all notes, available for user to choose to view
     notes = all_notes()
+
+    user_id = None
+    if "user_id" in session:
+        user_id = session["user_id"]
+
     return render_template('main_page.html', note=json.dumps(note), notes=notes, note_id=note_id, note_name=note_name,
-                           base_note=get_my_note(session["user_id"]))
+                           base_note=get_my_note(user_id))
 
 
 # first enter of main page, no note displaying 
