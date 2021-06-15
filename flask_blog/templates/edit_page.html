@@ -1,4 +1,4 @@
-{% extends "base1.html" %}
+{% extends "history_base.html" %}
 {% block content %}
 
   {# display timeline. #}
@@ -24,39 +24,66 @@
 
   <div class="container">
     <button class="btn btn-outline-primary" id="event-edit-button">Add an event</button>
-    <button class="btn btn-outline-primary" id="title-edit-button">Change note name</button>
+
+    <!-- button for change note name publicity -->
+    <button class="btn btn-outline-primary" id="title-edit-button">Note configuration</button>
+
     <!-- back to main page -->
     <a href="/main/{{ note_id }}" class="btn btn-outline-primary">Save changes</a>
 
-    {# todo: float this button to the right. #}
-    <!-- delete note -->
-    <button class="btn btn-outline-primary float-end" id="delete_note_id" onclick="delete_note()">Delete this note</button>
+    {% if is_owner %}
+      <!-- delete note -->
+      <button class="btn btn-outline-primary float-end" id="delete_note_id" onclick="delete_note()">Delete this note</button>
+    {% else %}
+      <button class="btn btn-outline-primary float-end" onclick="invalid_delete()">Delete this note</button>
+    {% endif %}
   </div>
 
   <hr>
-    <div class="container" id="title-edit">
-        <form action="/editNote" method="POST">
-            <div class="input-group mb-3">
-              <span class="input-group-text">Note Name</span>
-              <input id="new_note_name" type="text" name="new_note_name" class="form-control" value="{{ note_name }}" required>
-            </div>
-            <div class="input-group mb-3">
-              <span class="input-group-text">Who can see</span>
-              <select id="read" name="read" class="form-control" required>
-                <option value='0'>me</option>
-                <option value='1'>invited user</option>
-                <option value='2'>everyone</option>
-              </select>
-              <span class="input-group-text">Who can write</span>
-              <select id="write" name="write" class="form-control" required>
-                <option value='0'>me</option>
-                <option value='1'>invited user</option>
-                <option value='2'>everyone</option>
-              </select>
-            </div>
-            <input type="submit" name="submit" value="Apply" class="btn btn-outline-primary">
-        </form>
-    </div>
+    {% if is_owner %}
+      <div class="container" id="title-edit">
+          <form action="/editNote" method="POST">
+              <div class="input-group mb-3">
+                <span class="input-group-text">Note Name</span>
+                <input id="new_note_name" type="text" name="new_note_name" class="form-control" value="{{ note_name }}" required>
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text">Who can see</span>
+                <select id="read" name="read" class="form-control" required>
+                  <option value='0'>me</option>
+                  <option value='1'>invited user</option>
+                  <option value='2'>everyone</option>
+                </select>
+                <span class="input-group-text">Who can write</span>
+                <select id="write" name="write" class="form-control" required>
+                  <option value='0'>me</option>
+                  <option value='1'>invited user</option>
+                  <option value='2'>everyone</option>
+                </select>
+              </div>
+              <input type="submit" name="submit" value="Apply" class="btn btn-outline-primary">
+          </form>
+      </div>
+    {% else %}
+      <div class="container" id="title-edit">
+        <p>Note Name: {{ note_name }}</p>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Who can see</span>
+          <select id="read" name="read" class="form-control" readonly>
+            <option value='0'>me</option>
+            <option value='1'>invited user</option>
+            <option value='2'>everyone</option>
+          </select>
+          <span class="input-group-text">Who can write</span>
+          <select id="write" name="write" class="form-control" readonly>
+            <option value='0'>me</option>
+            <option value='1'>invited user</option>
+            <option value='2'>everyone</option>
+          </select>
+        </div>
+        <p>only note owner can change publicity</p>
+      </div>
+    {% endif %}
 
   {% if read and write %}
     <script>
@@ -72,7 +99,7 @@
     <form action="/update_event" method="POST" enctype="multipart/form-data">
 
       <!-- text box, for sending node id to backend, never display to user -->
-      <div class="input-group mb-3">
+      <div class="input-group mb-3" style="display: none;">
         <span class="input-group-text">id</span>
         <input id="node_id" type="text" name="node_id" class="form-control" readonly>
       </div>
@@ -101,9 +128,9 @@
 
       <!-- select parent node box -->
       <div class="input-group mb-3">
-        <span class="input-group-text">Happened during</span>
+        <span class="input-group-text">Detail event of:</span>
         <select id="parent_input" name="parent" class="form-control" required>
-          <option value='0'>root node</option>
+          <option value='0'>(the most general event)</option>
         </select>
       </div>
 
@@ -137,6 +164,9 @@
   </div>
 
   <script>
+    function invalid_delete() {
+      alert("delete failed, only owner of the note can delete it")
+    }
     function delete_note() {
       $.post(
         "/delete_note",

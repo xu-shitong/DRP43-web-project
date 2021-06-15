@@ -30,17 +30,20 @@ def display_notes(note_id=None):
 
             # check if user has permission to write to note
             if "user_id" in session :
-                write_permission = (session["user_id"] == note_id) or (note_info["is_public"][0] == '2') 
+                edit_permission = (session["user_id"] == note_info["author_id"]) or (note_info["is_public"][0] == '2')
+            else :
+                # user not logged in, permission is false
+                edit_permission = False 
         else:
             return render_template("error/404.html", message=f"note with id: {note_id} not found")
     else:
         # no note_id given, return empty note content and name 
         note = defaultNote(is_in_main=True)
         note_name = None
-        write_permission = False
+        edit_permission = False
 
     return render_template('main_page.html', note=json.dumps(note), note_id=note_id, note_name=note_name,
-                           base_note=get_my_note(session), write_permission=write_permission)
+                           base_note=get_my_note(session), edit_permission=edit_permission)
 
 
 # first enter of main page, no note displaying 

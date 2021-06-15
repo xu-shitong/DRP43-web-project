@@ -2,18 +2,22 @@
 <html>
 <title>timeline base</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<head>
-  <script src="/static/timeline.js"></script>
-</head>
+{% if note_id %}
+  <head>
+    <script src="/static/timeline.js"></script>
+  </head>
+{% endif %}
 <body>
 
   <br>
   <div class="container">
     <div id="canvas" note="{{ note }}" align="center"></div>
 
-    <!-- displaying id of note -->
-    <div id="note_name">showing note: {{ note_name }}</div>
-    <div id="note_id">id: {{ note_id }}</div>
+    {% if note_id %}
+      <!-- displaying name and id of note -->
+      <div id="note_name">showing note: {{ note_name }}</div>
+      <!-- <div id="note_id">id: {{ note_id }}</div> -->
+    {% endif %}
 
   </div>
 

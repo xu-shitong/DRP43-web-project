@@ -1,3 +1,4 @@
+import functools
 import itertools
 from posixpath import abspath
 from flask.helpers import url_for
@@ -6,24 +7,35 @@ from sqlalchemy import sql
 from flask_blog.db import Account, HistoryNode, Note
 from html import entities
 import re
-from flask import (Blueprint, flash, request, session, url_for)
+from flask import (Blueprint, g, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, getNoteInfo, get_my_note
+from flask_blog.utils import fetchNote, getNoteInfo, get_my_note, get_note_with_publicity
 from flask_blog.auth import login_required
 from flask_blog.db import PicAndName
 import json
 
 bp = Blueprint("edit_page", __name__)
 
-# fetch note data from database, render edit page
-def rerender_edit_page(id):
-    note = fetchNote(noteId=id, is_in_main=False)
-
-    # tree = itertools.chain.from_iterable()
-    return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"])
-
+# check if user has permission to edit the note
+def check_edit_priviledge():
+    # ensure user has logged in
+    if not "user_id" in session:
+      return False
+    
+    user_id = session["user_id"]
+    sql_query = f'SELECT id, is_public, author_id '\
+                f'FROM note '\
+                f'WHERE id = {session["note_id"]}'
+    note = db.session.execute(sql_query).fetchone()
+    # TODO: index 1 here indicate priority for other user
+    url = None
+    if (not user_id == note["author_id"]) and (note["is_public"][1] == "0"):
+        flash("you cannot edit this note, report how you enter this website")
+        url = url_for("edit_page.edit_page", id=session["note_id"])
+          
+    return url
 
 # on enter edit page, id is note_id
 @bp.route("/edit/<int:id>", methods=["GET", "POST"])
@@ -44,7 +56,7 @@ def edit_page(id):
     note = fetchNote(noteId=id, is_in_main=False)
 
     return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"], read=session["is_public"][0], write=session["is_public"][1], 
-                           base_note=get_my_note(session))
+                           base_note=get_my_note(session), is_owner=(session["user_id"]==note_info["author_id"]))
 
 
 
@@ -65,28 +77,18 @@ def change_note_name():
     sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
     (id,) = db.session.execute(sql_query_2).fetchone()
     session['note_name'] = new_name
-    # TODO: change here
-    # print(url_for("edit_page.edit_page", id=id))
-    # return rerender_edit_page(id)
     return redirect(url_for("edit_page.edit_page", id=note_id))
 
 
-# respond to submit of edit page's update
+# respond to update of edit page's update
 @bp.route("/update_event", methods=["POST"])
 @login_required
-def submit_note():
+def update_event():
     node_id = request.form["node_id"]
     user_id = session["user_id"]
 
-    # check if user has permission to edit the note
-    sql_query = f'SELECT id, is_public, author_id '\
-                f'FROM note '\
-                f'WHERE id = {session["note_id"]}'
-    note = db.session.execute(sql_query).fetchone()
-    # TODO: index 1 here indicate priority for other user
-    if (not user_id == note["author_id"]) and (note["is_public"][1] == "0"):
-        flash("you cannot edit this note, report how you enter this website")
-        url = url_for("edit_page.edit_page", id=session["note_id"])
+    url = check_edit_priviledge()
+    if url:
         return redirect(url)
 
     startTime = int(request.form["start"])
@@ -140,14 +142,16 @@ def submit_note():
       db.session.commit()
       img.save(file_path)
 
-
-
     url = url_for("edit_page.edit_page", id=session["note_id"])
     return redirect(url)
 
 @bp.route("/delete_event", methods=["POST"])
 def delete_event():
     node_id = request.form["node_id"]
+
+    url = check_edit_priviledge()
+    if url :
+      return redirect(url)
 
     if node_id:
       sql_query = f"DELETE FROM history_node WHERE id={node_id}"
@@ -158,11 +162,8 @@ def delete_event():
       sql_query = 'UPDATE history_node ' \
                   'SET parent_node_id="0" ' \
                   f'WHERE parent_node_id="{node_id}"'
-      succeed = db.session.execute(sql_query)
+      db.session.execute(sql_query)
       db.session.commit()
-      print(succeed)
-      if succeed:
-        flash("deleted a parent node, all child moved to root")
     else:
       flash("you didn't select a node to delete")
 
@@ -174,8 +175,6 @@ def delete_event():
 def delete_note():
     # verify note is owned by user, only owner of note can delete note
     owner = Note.query.filter_by(id=session['note_id']).first()
-    print(owner)
-    print(session)
     if not (session["user_id"] == owner.author_id):
       # cannot delete note
       return "you are not owner of the note, only creater of note can delete it"

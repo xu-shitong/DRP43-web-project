@@ -1,4 +1,4 @@
-{% extends "base1.html" %}
+{% extends "history_base.html" %}
 {% block content %}
 
   <div class="container">
@@ -10,20 +10,20 @@
       </div>
 
       <div>
-        <span>read publicity: </span>
+        <span>who can read: </span>
         <select id="read" name="read" required>
-          <option value='0'>private</option>
-          <option value='1'>open for reference</option>
-          <option value="2">open for edit</option>
+          <option value='0'>only me</option>
+          <option value='1'>invited user</option>
+          <option value="2">all user</option>
         </select>
       </div>
 
       <div>
-        <span>write publicity: </span>
+        <span>who can write: </span>
         <select id="write" name="write" required>
-          <option value='0'>private</option>
-          <option value='1'>open for reference</option>
-          <option value="2">open for edit</option>
+          <option value='0'>only me</option>
+          <option value='1'>invited user</option>
+          <option value="2">all user</option>
         </select>
       </div>
 

@@ -6,7 +6,7 @@ from flask_blog.db import Note
 from flask import Blueprint, flash, request, jsonify
 from flask.templating import render_template
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, defaultNote, getNoteInfo, get_my_note
+from flask_blog.utils import fetchNote, defaultNote, getName, getNoteInfo, get_my_note
 import json
 
 
@@ -15,22 +15,6 @@ bp = Blueprint("person", __name__)
 
 @bp.route("/personal/<int:id>", methods=['GET', 'POST'])
 def person(id):
-    notes = getMyNote(id)
+    notes = get_my_note(session)
     name = getName(id)
-    fields = ['id', 'note_name', 'create_date', 'refs']
-    notes = ([(dict(zip(fields, note))) for note in notes])
-    return render_template('personal_page.html', name=name, notes=notes, base_note=get_my_note(session))
-
-
-def getMyNote(id):
-    sql_query = "SELECT note.id, note_name, note.create_date, refs " \
-                "FROM note JOIN account ON author_id = account.id " \
-                f"WHERE account.id = '{id}'"
-    notes = db.session.execute(sql_query).fetchall()
-    return notes
-
-
-def getName(id):
-    sql_query = f"SELECT username FROM account WHERE id={id}"
-    (name,) = db.session.execute(sql_query).fetchone()
-    return name
+    return render_template('personal_page.html', name=name, notes=notes, base_note=notes)

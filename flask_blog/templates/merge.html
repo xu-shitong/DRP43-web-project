@@ -1,4 +1,4 @@
-{% extends "base1.html" %}
+{% extends "history_base.html" %}
 {% block content %}
   <div class="container">
   <form method="POST">
@@ -12,13 +12,13 @@
       <span class="input-group-text">First note</span>
       <select id="first" name="first" class="form-control" required>
           {% for _note in notes %}
-              <option value='{{ loop.index0 }}' name="_note">{{ _note }}</option>
+              <option value='{{ loop.index0 }}' name="_note">{{ _note["note_name"] }}</option>
           {% endfor %}
       </select>
       <span class="input-group-text">Second note</span>
       <select id="second" name="second" class="form-control" required>
           {% for _note in notes %}
-              <option value='{{ loop.index0 }}'>{{ _note }}</option>
+              <option value='{{ loop.index0 }}'>{{ _note["note_name"] }}</option>
           {% endfor %}
       </select>
     </div>

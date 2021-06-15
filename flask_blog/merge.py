@@ -1,21 +1,25 @@
 from flask import Blueprint, flash, request, jsonify, url_for, render_template, session
 from flask_blog.app import db
 from flask_blog.db import Note, HistoryNode
-from flask_blog.utils import get_my_note
+from flask_blog.utils import get_my_note, get_note_with_publicity
+from flask_blog.auth import login_required
 
 bp = Blueprint("merge", __name__)
 
 
 @bp.route("/merge", methods=["GET", "POST"])
+@login_required
 def merge():
-    notes = get_all_note_editable_by_user()
+    notes = get_my_note(session)
+    my_favour_sql = get_note_with_publicity(session["user_id"], is_favour=True, read='2', write='2')
+    notes += db.session.execute(my_favour_sql).fetchall()
     if request.method == 'POST':
         author_id = session["user_id"]
         index1 = int(request.form["first"])
         index2 = int(request.form["second"])
         new_name = request.form["new_name"]
-        note1 = Note.query.filter_by(note_name=notes[index1]).first()
-        note2 = Note.query.filter_by(note_name=notes[index2]).first()
+        note1 = Note.query.filter_by(note_name=notes[index1]["note_name"]).first()
+        note2 = Note.query.filter_by(note_name=notes[index2]["note_name"]).first()
         id1 = note1.id
         id2 = note2.id
         # print(notes[index1] + " " + notes[index2] + " " + new_name)
@@ -62,13 +66,13 @@ def merge():
     return render_template("merge.html", notes=notes, base_note=get_my_note(session))
 
 
-
-def get_all_note_editable_by_user():
-    user_id = session["user_id"]
-    sql_query = f"SELECT note_name FROM note WHERE author_id={user_id}"  # TODO: or
-    notes = db.session.execute(sql_query).fetchall()
-    notes = [note for (note,) in notes]
-    return notes
+# ABANDONED, can be substituted by function in util
+# def get_all_note_editable_by_user():
+#     user_id = session["user_id"]
+#     sql_query = f"SELECT note_name FROM note WHERE author_id={user_id}"  # TODO: or
+#     notes = db.session.execute(sql_query).fetchall()
+#     notes = [note for (note,) in notes]
+#     return notes
 
 
 def find_hierarchy(nodes):

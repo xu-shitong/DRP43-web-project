@@ -131,6 +131,7 @@ class HNode {
             </div>`;
       } else {
         $("#event-edit").show();
+        $("#title-edit").hide();
         // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
         document.getElementById("node_id_copy").value = this.node_id;

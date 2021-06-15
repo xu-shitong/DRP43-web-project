@@ -2,6 +2,7 @@ from pymysql import NULL
 from flask_blog.app import db
 from flask_blog.db import Account, HistoryNode, Note
 
+# get a partivular note info, DOES NOT verify if user has the priviledge to see/edit it
 def getNoteInfo(note_id):
   sql_query = "SELECT * " \
               "FROM note " \
@@ -36,7 +37,7 @@ def fetchNote(noteId, is_in_main):
   idLayerMap = {}
 
   # record what are the immediate child of the node
-  tree = {0: {"title": "root node", "child": []}}
+  tree = {0: {"title": "(the most general event)", "child": []}}
   
   # record single event
   singles = NULL
@@ -222,6 +223,12 @@ def get_note_with_publicity(user_id, is_favour, read, write):
 
 
   return sql_query
+
+# get user name with given user ID
+def getName(id):
+    sql_query = f"SELECT username FROM account WHERE id={id}"
+    (name,) = db.session.execute(sql_query).fetchone()
+    return name
 
 ## following variables and functions are for develop/test propose
 # note = {"is_main_page": True,

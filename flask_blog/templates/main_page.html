@@ -1,15 +1,37 @@
-{% extends 'base1.html' %}
+{% extends 'history_base.html' %}
 {% block content %}
 
   {# display timeline. #}
   {% include "timeline_base.html" %}
 
-  <!-- display image and description, format shown in main_page_example -->
-  <div id="image_id"></div>
-  <p id="description_id"></p>
+  {% if note_id %}
+    <!-- display image and description, format shown in main_page_example -->
+    <div id="image_id"></div>
+    <p id="description_id"></p>
+
+    <!-- indication on how to edit note -->
+    {% if not g.user %}
+      <div class="thang">
+        <a href="/auth/login">login</a>
+        <p>&nbsp;to edit notes</p>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <!-- indication on how to open note -->
+  {% if not (note_id or g.user) %}
+    <div class="thang">
+      <p>open a note by&nbsp;</p>
+      <a href="/search">search public notes</a>
+      <p>&nbsp;or&nbsp;</p>
+      <a href="/auth/login">login</a>
+      <p>&nbsp;to see personal notes</p>
+    </div>
+  {% endif %}
 
   <!-- let user search a particular note with id -->
-  <div class="container">
+  <!-- ABANDONED, make no sence for user to remember note id -->
+  <!-- <div class="container">
     <br>
     <form method="post" class="form-inline">
       <label for="note_id" class="fw-lighter">note_id</label>
@@ -17,39 +39,42 @@
       <input type="submit" value="open" class="btn btn-primary btn-sm">
     </form>
     <br>
-  </div>
+  </div> -->
 
-  <!-- display all available notes -->
-  <hr>
-  <div class="container">
-    <div class="bg-muted">
-      <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
-      <div id="length" value="{{ length }}"></div>
-      <ul id="notes list" class="list-group">
-      {% for _note in notes %}
-        <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary btn-sm"> {{ _note['note name'] }}</a></li>
-      {% endfor %}
-      </ul>
+  {% if g.user %}
+    <!-- display all available notes -->
+    <!-- ABANDONED, private notes can be seen from drop down box -->
+    <!-- <hr>
+    <div class="container">
+      <div class="bg-muted">
+        <p id="t" class="fw-lighter" align="center">you have {{ notes | length }} created notes</p>
+        <div id="length" value="{{ length }}"></div>
+        <ul id="notes list" class="list-group">
+        {% for _note in notes %}
+          <li class="list-group-item"><a id="{{ loop.index }}" href="/main/{{ _note['note id'] }}" class="btn btn-primary btn-sm"> {{ _note['note name'] }}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
     </div>
-  </div>
-  <hr>
+    <hr> -->
 
-  <div class="container btn-toolbar">
-    <!-- pop up input window for input new note name -->
-    {% if g.user %}
-       <a href="/create_note" class="btn btn-outline-primary">create note</a>
-    {% endif %}
+    <div class="container btn-toolbar">
+      <!-- pop up input window for input new note name -->
+      <a href="/create_note" class="btn btn-outline-primary">create note</a>
 
-    <!-- button redirect to edit page -->
-    <p>{{write_permission}}</p>
-    {% if note_id and g.user and write_permission == True %}
-      <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
-    {% endif %}
+      <!-- button redirect to edit page -->
+      {% if note_id %}
+        {% if edit_permission == True %}
+          <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
+        {% else %}
+          <p>you have no permission to edit the note, consult owner of note to get access</p>
+        {% endif %}
+      {% endif %}
 
-    {% if g.user %}
-      <a href="/merge" class="btn btn-outline-primary mx-4">merge notes</a>
-    {% endif %}
-  </div>
+        <a href="/merge" class="btn btn-outline-primary mx-4">merge notes</a>
+    </div>
+  {% endif %}
+
 {% endblock %}
 
 {#{% block content %}#}
