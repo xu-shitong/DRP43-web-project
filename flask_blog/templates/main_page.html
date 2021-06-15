@@ -41,7 +41,8 @@
     {% endif %}
 
     <!-- button redirect to edit page -->
-    {% if note_id and g.user %}
+    <p>{{write_permission}}</p>
+    {% if note_id and g.user and write_permission == True %}
       <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
     {% endif %}
 

@@ -6,6 +6,7 @@ from flask_blog.db import Note
 from flask_blog.auth import login_required
 from flask import Blueprint, flash, request, jsonify
 from flask_blog.auth import login_required
+from flask_blog.utils import get_my_note
 import json
 
 bp = Blueprint("/create_page", __name__)
@@ -41,4 +42,4 @@ def new_note():
       node_id = note["LAST_INSERT_ID()"]
       return redirect(f"/edit/{node_id}")
     
-    return render_template("create_note.html")
+    return render_template("create_note.html", base_note=get_my_note(session))
