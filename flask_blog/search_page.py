@@ -1,5 +1,5 @@
 from re import U
-from flask_blog.utils import get_note_with_publicity, get_private_note
+from flask_blog.utils import all_notes, get_note_with_publicity, get_private_note
 from os import write
 from flask_blog.db import UserFavour
 from flask.globals import session
@@ -27,29 +27,35 @@ def search():
     # if (info.startswith('-') and info[1:].isdigit()) or info.isdigit():
     #   # if search info is a number, treat as time
 
-    # if user logged in, include private notes in notes
-    if "user_id" in session:
-        private_notes = get_private_note(session["user_id"])
-    else :
-        private_notes = []
-
     # info is a string, search titles to find a note title contain the info
+    print(info)
     if info:
       
+        # if user logged in, include private notes in search result
         if "user_id" in session:
             user_id = session["user_id"]
+            sql_query = get_private_note(session["user_id"]) + f' AND note_name LIKE "%{info}%"'
+            private_notes = db.session.execute(sql_query).fetchall()
+
+            sql_query = get_note_with_publicity(user_id=user_id, is_favour=True, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
+            favour_notes = db.session.execute(sql_query).fetchall()
+
+            sql_query = get_note_with_publicity(user_id=user_id, is_favour=False, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
+            non_favour_notes = db.session.execute(sql_query).fetchall()
         else :
             user_id = None
-        sql_query = get_note_with_publicity(user_id=user_id, is_favour=True, read='2', write='0') + " AND note_name LIKE '%{info}%'"
-        favour_notes = db.session.execute(sql_query).fetchall()
+            private_notes = []
+            favour_notes = []
 
-        sql_query = get_note_with_publicity(user_id=user_id, is_favour=False, read='2', write='0') + " AND note_name LIKE '%{info}%'"
-        non_favour_notes = db.session.execute(sql_query).fetchall()
+            sql_query = get_note_with_publicity(user_id=None, is_favour=False, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
+            non_favour_notes = db.session.execute(sql_query).fetchall()
     else:
         favour_notes = []
         non_favour_notes = []
+        private_notes = []
 
-    return render_template("search_page.html", notes=(private_notes + favour_notes), favour_notes=favour_notes, non_favour_notes=non_favour_notes, hot_notes=hot_notes)
+    # notes are ones displaied in menu dropdown box, favour_notes, non_favour_notes, private notes are notes containing the keyword
+    return render_template("search_page.html", notes=all_notes(session), private_notes=private_notes, favour_notes=favour_notes, non_favour_notes=non_favour_notes, hot_notes=hot_notes)
 
 
 def get_popular_note():

@@ -1,44 +1,53 @@
 {% extends "base1.html" %}
 {% block content %}
 
-  <!-- display all available notes -->
+  <!-- display available notes containing search keyword -->
   <hr>
   <div class="container">
-    <p>{{notes}}</p>
-    {% if notes %}
-    <div class="bg-muted">
-      <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>
-      <ul id="notes list" class="list-group">
-      {% for _note in notes %}
-        <li class="list-group-item" align="center"><a id="{{ loop.index }}" class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
-        <button type="button" onclick="addFavour({{ _note['id'] }})">add favourite</button>
-      {% endfor %}
-      </ul>
-    </div>
+    {% if private_notes or favour_notes or non_favour_notes %}
 
+      <!-- private notes, do not allow add private note as favourite note -->
+      {% if private_notes %}
+      <div class="bg-muted">
+        <p id="t" class="fw-lighter" align="center">There are in total {{ private_notes | length }} private notes</p>
+        <ul id="notes list" class="list-group">
+        {% for _note in private_notes %}
+          <li class="list-group-item" align="center"><a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- TODO display favour notes -->
+      <!-- note marked as favourite before -->
+      {% if favour_notes %}
+      <div class="bg-muted">
+        <p id="t" class="fw-lighter" align="center">There are in total {{ favour_notes | length }} your favourite notes</p>
+        <ul class="list-group">
+        {% for _note in favour_notes %}
+          <li class="list-group-item" align="center"><a id="{{ loop.index }}" class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- note marked has not marked as favourite -->
+      {% if non_favour_notes %}
+      <div class="bg-muted">
+        <p id="t" class="fw-lighter" align="center">There are in total {{ non_favour_notes | length }} non favourite notes</p>
+        <ul class="list-group">
+        {% for _note in non_favour_notes %}
+          <li class="list-group-item" align="center"><a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
     
     {% else %}
+      <!-- no note available to user contain keyword -->
       <p id="t" class="fw-lighter" align="center">no notes are found</p>
     {% endif %}
-    
-    <!-- function for respond to add favour action -->
-    <script>
-      function addFavour(id) {
-        
-        $.post(
-          `/search/${id}`,
-          success=(message) => {
-            if (message.includes("fail")) {
-              alert(message)
-            } else {
-              // TODO: change to alter display on page later
-              alert(message)
-            }
-          }
-        )
-      }
-    </script>
-  </div>
+    </div>
   <hr>
   <div class="container">
     <div class="bg-muted">

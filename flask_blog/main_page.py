@@ -8,43 +8,9 @@ from flask_blog.db import Note
 from flask import Blueprint, flash, request, jsonify, url_for, make_response
 from flask.templating import render_template
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, defaultNote, getNoteInfo, get_note_with_publicity, get_private_note
+from flask_blog.utils import all_notes, fetchNote, defaultNote, getNoteInfo, get_note_with_publicity, get_private_note
 import json
 bp = Blueprint("main_page", __name__)
-
-
-def all_notes():
-    print(session)
-    if "user_id" in session:
-        # if user logged in
-        # fetch notes that belong to the user
-        notes = get_private_note(session["user_id"])
-
-        # fetch notes that are marked as favour, and visible to user
-        sql_query = get_note_with_publicity(user_id=session["user_id"], is_favour=True, read='2', write='0')
-        notes += db.session.execute(sql_query).fetchall()
-
-        # shared_note = "SELECT note.id, note_name, username, note.is_public FROM note JOIN user_favour "\
-        #               "ON note.id=user_favour.note_id " \
-        #               "JOIN account ON note.author_id=account.id " \
-        #              f"WHERE {session['user_id']}=user_favour.user_id"
-        # favour_notes = db.session.execute(shared_note).fetchall()
-        
-        # # filter notes that are visible to user
-        # # TODO: after adding friend ficture, change logic of checking visibility
-        # for note in favour_notes:
-        #   # if note is visible to public, display, 
-        #   if note["is_public"][0] == '2':
-        #     notes.append((note["id"], note["note_name"], note["username"]))
-    else :
-        # user not logged in, return only public note
-        sql_query = get_note_with_publicity(user_id=None, is_favour=False, read='2', write='0')
-        notes = db.session.execute(sql_query).fetchall()
-
-
-    fields = ['note id', 'author_id', 'note name', 'create_date', 'refs', 'is_public' ]
-    notes_ = ([(dict(zip(fields, note))) for note in notes])
-    return notes_
 
 # if no note is passed in, meaning no note is displaying. otherwise, display the given note
 #    note_id is the displaying note's id
@@ -69,7 +35,7 @@ def display_notes(note_id=None):
         note_name = None
 
     # fetch all notes, available for user to choose to view
-    notes = all_notes()
+    notes = all_notes(session)
 
     return render_template('main_page.html', note=json.dumps(note), notes=notes, note_id=note_id, note_name=note_name)
 

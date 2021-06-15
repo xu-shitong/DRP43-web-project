@@ -136,38 +136,76 @@ def fetchNote(noteId, is_in_main):
 def defaultNote(is_in_main):
   return {"is_in_main": is_in_main, "start": 0, "end": 0, "nodes": [], "singles": {"start": 0, "end": 0, "nodes": []}}
 
-# get all note that belone to the user
-def get_private_note(user_id):
-  private_notes = "SELECT note.id, author_id, note_name, note.create_date, refs, is_public FROM note JOIN account ON note.author_id=account.id " \
-                 f'WHERE {user_id}=note.author_id '
-  return db.session.execute(private_notes).fetchall()
+# if logged in, get private note and favourite note
+# if not logged in, return empty
+def all_notes(session):
+  if "user_id" in session:
+    # if user logged in
+    # fetch notes that belong to the user
+    sql_query = get_private_note(session["user_id"])
+    notes = db.session.execute(sql_query).fetchall()
 
-# get note that visible to user
-# if IS_FAVOUR is true, return note that are marked as favourite by user
-#    READ is minimum read publicity
-#    WRITE is minimum write publicity
-# return SQL_QUERY
+    # fetch notes that are marked as favour, and visible to user
+    sql_query = get_note_with_publicity(user_id=session["user_id"], is_favour=True, read='2', write='0')
+    notes += db.session.execute(sql_query).fetchall()
+
+    # shared_note = "SELECT note.id, note_name, username, note.is_public FROM note JOIN user_favour "\
+    #               "ON note.id=user_favour.note_id " \
+    #               "JOIN account ON note.author_id=account.id " \
+    #              f"WHERE {session['user_id']}=user_favour.user_id"
+    # favour_notes = db.session.execute(shared_note).fetchall()
+    
+    # # filter notes that are visible to user
+    # # TODO: after adding friend ficture, change logic of checking visibility
+    # for note in favour_notes:
+    #   # if note is visible to public, display, 
+    #   if note["is_public"][0] == '2':
+    #     notes.append((note["id"], note["note_name"], note["username"]))
+  else :
+    # # user not logged in, return only public note
+    # sql_query = get_note_with_publicity(user_id=None, is_favour=False, read='2', write='0')
+    # notes = db.session.execute(sql_query).fetchall()
+    notes = []
+
+
+  fields = ['note id', 'author_id', 'note name', 'create_date', 'refs', 'is_public' ]
+  notes_ = ([(dict(zip(fields, note))) for note in notes])
+  return notes_
+    
+# sql of all note that belone to the user
+def get_private_note(user_id):
+  return "SELECT note.id, author_id, note_name, note.create_date, refs, is_public FROM note JOIN account ON note.author_id=account.id " \
+         f'WHERE {user_id}=note.author_id '
+
+# sql of note that visible to user
+# if IS_FAVOUR return note that are marked as favourite by user
+# READ is minimum read publicity
+# WRITE is minimum write publicity
+# excluding user private notes
 def get_note_with_publicity(user_id, is_favour, read, write):
 
   # return all field of note
-  sql_query = "SELECT note.id, author_id, note_name, create_date, refs, is_public "
-
+  sql_query = "SELECT DISTINCT note.id, author_id, note_name, create_date, refs, is_public " \
+              "FROM note " \
+              "WHERE "
+  
+  
   if user_id:
-    # if fetching note for certain user
+    # if fetching note for certain user, exclude private note
+    sql_query += f"author_id<>{user_id} AND "
+
+    favour_sql = "(SELECT * " \
+                  "FROM   user_favour uf " \
+                 f"WHERE  uf.user_id = {user_id} " \
+                  "AND    uf.note_id = note.id) "
     if is_favour:
-      # select all note visible and favoured by user
-      sql_query += "FROM note JOIN user_favour ON note.id=user_favour.note_id " \
-                  f"WHERE user_favour.user_id={user_id} " \
-                  "AND "
+      # select all note favoured by user
+      sql_query += f"EXISTS {favour_sql} AND "
     else :
-      # select all note visible, not favoured by user
-      sql_query += "FROM note CROSS JOIN user_favour " \
-                  f"WHERE (user_favour.user_id<>{user_id} OR user_favour.note_id<>note.id) " \
-                  "AND "
-  else :
-    # user not logged in, return all note satisfy read write publicity
-    sql_query += "FROM note " \
-                "WHERE "
+      # select all note not favoured by user
+      sql_query += f"NOT EXISTS {favour_sql} AND "
+
+  # ELSE: user not logged in, return all note satisfy read write publicity, no additional constrain
   
   # add constrain on read write publicity, -2 -1 means publicity are the last but 2 chars
   sql_query += f"SUBSTRING(note.is_public, -2, 1)>='{read}' " \
