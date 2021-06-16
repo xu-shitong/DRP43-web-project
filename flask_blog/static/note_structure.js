@@ -52,6 +52,6 @@ Array.prototype.forEach.call(rootNode.children, child => {
     count += 1;
 })
 
-document.getElementById('note structure').innerHTML = html;
+document.getElementById('note_structure').innerHTML = html;
 
 

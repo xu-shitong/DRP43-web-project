@@ -4,14 +4,15 @@
   {# display timeline. #}
   {% include "timeline_base.html" %}
 
-  <div id="note structure" style="font-size:20px; border: 2px solid rgb(173, 160, 160) " class="text-muted container"></div>
-  <script src="/static/note_structure.js"></script>
-
-
   {% if note_id %}
     <!-- display image and description, format shown in main_page_example -->
     <div id="image_id"></div>
-    <p id="description_id"></p>
+    <div id="wrapper">
+      <p id="description_id"></p>
+
+      <div id="note_structure" style="font-size:20px; border: 2px solid rgb(173, 160, 160) " class="text-muted"></div>
+      <script src="/static/note_structure.js"></script>
+    </div>
 
     <!-- indication on how to edit note -->
     {% if not g.user %}

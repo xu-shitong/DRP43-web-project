@@ -28,3 +28,21 @@ input[type=submit] { align-self: start; min-width: 10em; }
 .thang p, .thang a{
   float: left;
 }
+
+#wrapper {
+  position: relative;
+}
+
+#description_id {
+  position: relative;
+  float: left;
+  left: 10%;
+  width: 40%;
+}
+
+#note_structure {
+  position: relative;
+  float: right;
+  right: 10%;
+  width: 40%;
+}
