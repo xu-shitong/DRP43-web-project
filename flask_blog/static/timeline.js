@@ -52,7 +52,7 @@ class HNode {
     this.x = x;
     this.y = y;
     textFont('Helvetica', 10);
-    this.width = (start == end) ? textWidth(`${trans(start)} ` + title) : width;
+    this.width = (start == end) ? textWidth(`${trans(start)} ` + title) + 10 : width;
     this.height = height;
 
     let summary =
@@ -259,131 +259,6 @@ function nonOverlapSinglesGenerator(list, totPeriodSpan) {
   return result;
 }
 
-// add node of one layer to nodeCollection, 
-function addAllNodes(nodes, sublayerAlloc) {
-  if (sublayerAlloc.length == 0) {
-    return 0;
-  }
-
-  let i = 0;
-  let totPeriodSpan = note["end"] - note["start"];
-  let maxLayerNum = Math.max(...sublayerAlloc);
-
-  Array.prototype.forEach.call(nodes, node => {
-    let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
-    let pics_dict = node["pictures"]; // {"pic_name", "path"}
-
-    let newNode = new HNode(
-      start,
-      end,
-      node["title"],
-      node["content"],
-      node["parent_id"],
-      node["node_id"],
-      pics_dict,
-      x=(CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
-      y=((start == end) ? (maxLayerNum - layerNum) : layerNum) * NODE_HEIGHT + total_height,
-      width=(CANVAS_WIDTH * (end - start)) / totPeriodSpan,
-      height=NODE_HEIGHT
-    );
-
-    nodeCollections.push(newNode);
-    i++;
-  });
-  return maxLayerNum;
-}
-
-// fetch note from html, add to nodeCollection
-function initialiseNote(note_temp) {
-  note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
-  note_start = note["start"];
-  note_end = note["end"];
-  IS_MAIN_PAGE = note["is_in_main"];
-  let singles = note["singles"];
-
-  let totPeriodSpan = note["end"] - note["start"];
-
-  // Calculate how many pixels should be shifted.
-  numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((yearPointNum - 1) * unitScale);
-
-  total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
-  /* generate alloc for single nodes */
-  let singleLayerAlloc = nonOverlapSinglesGenerator(singles["nodes"], totPeriodSpan);
-  let subLayerCount = addAllNodes(singles["nodes"], singleLayerAlloc);
-  total_height += (subLayerCount + 1) * NODE_HEIGHT;  // plus 1 for layerNum start from 0
-
-  /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
-  Array.prototype.forEach.call(note["nodes"], l => {
-    let sublayerAlloc = nonOverlapNodeGenerator(l);
-    let subLayerCount = addAllNodes(l, sublayerAlloc)
-    total_height += (subLayerCount + 2) * NODE_HEIGHT;  // plus 1 for interval between sublayer, 1 for layerNum start from 0
-  });
-  total_height -= NODE_HEIGHT; // leave only one interval at bottum of timeline
-}
-
-// draw line with year points below nodes
-function drawTimeline(originX, originY) {
-
-  // pixel interval between year point on timeline
-  const unitLength = TIMELINE_WIDTH / (yearPointNum - 1);
-
-  // main timeline
-  line(originX, originY, originX + WIN_WIDTH, originY);
-  // arrow to the right side of the line
-  line(WIN_WIDTH - 10, originY + 5, WIN_WIDTH, originY);
-  line(WIN_WIDTH - 10, originY - 5, WIN_WIDTH, originY);
-
-  // the first time scale start with AD/BC
-  let coordX =originX + TIMELINE_BLANK;
-  line(coordX, originY, coordX, originY + 10);
-  textFont("Georgia", 15);
-  textAlign(LEFT);
-  text(trans(originTime), coordX, originY+7);
-
-  for (var i = 1; i < yearPointNum; i++) {
-    coordX =originX + i*unitLength + TIMELINE_BLANK;
-    line(coordX, originY, coordX, originY + 10);
-    textFont("Georgia", 15);
-    textAlign(CENTER, TOP);
-    text(originTime + i * unitScale, coordX, originY+7);
-  }
-
-  // print "year" at start of timeline
-  textFont("Georgia", 15);
-  textAlign(LEFT);
-  text("Common Era:", originX, originY - 15);
-}
-
-/* p5 create canvas */
-function setup() {
-  /** STEP1: deciding metadata of timeline */
-  note_temp = document.getElementById("canvas").getAttribute('note');
-  setCanvasWidth();
-  initialiseNote(note_temp);
-  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT+TIMELINE_HEIGHT);
-  cnv.parent("canvas");
-}
-
-// p5 update canvas
-function draw() {
-  // refresh page every 1 second
-  if(frameCount % 30 == 0){
-    background(230, 230, 230);
-    textSize(HOVER_TITLE_SIZE);
-    Array.prototype.forEach.call(nodeCollections, node => {
-      node.display();
-    });
-    drawTimeline(0, total_height+NODE_HEIGHT);
-  }
-}
-
-// p5 detect mouse pressed
-function mousePressed() {
-  Array.prototype.forEach.call(nodeCollections, node => {
-    node.clicked();
-  });
-}
-
 // Set unitScale, originTime, yearPointNum according to the start and end of timeline
 function setScales(start, end) {
   let totalTime = end - start;
@@ -416,4 +291,136 @@ function setScales(start, end) {
   // time too long, return 1000 anyway, total history cannot be longer than 10000 years
   unitScale = 1000;
   return ;
+}
+
+// add node of one layer to nodeCollection, 
+function addAllNodes(nodes, sublayerAlloc) {
+  if (sublayerAlloc.length == 0) {
+    return 0;
+  }
+
+  let i = 0;
+  let totPeriodSpan = note["end"] - note["start"];
+  if (totPeriodSpan == 0) {
+    // if note contain only singles happened in one year, set totSpan to 1 in order to display
+    totPeriodSpan = 1;
+  }
+  let maxLayerNum = Math.max(...sublayerAlloc);
+
+  Array.prototype.forEach.call(nodes, node => {
+    let start = node["start"], end = node["end"], layerNum = sublayerAlloc[i];
+    let pics_dict = node["pictures"]; // {"pic_name", "path"}
+
+    let newNode = new HNode(
+      start,
+      end,
+      node["title"],
+      node["content"],
+      node["parent_id"],
+      node["node_id"],
+      pics_dict,
+      x=(CANVAS_WIDTH * (start - note["start"])) / totPeriodSpan + numOfPixelsShifted + TIMELINE_BLANK,
+      y=((start == end) ? (maxLayerNum - layerNum) : layerNum) * NODE_HEIGHT + total_height,
+      width=(CANVAS_WIDTH * (end - start)) / totPeriodSpan,
+      height=NODE_HEIGHT
+    );
+
+    nodeCollections.push(newNode);
+    i++;
+  });
+  console.log(nodeCollections)
+  return maxLayerNum + 1;
+}
+
+// fetch note from html, add to nodeCollection
+function initialiseNote(note_temp) {
+  note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
+  note_start = note["start"];
+  note_end = note["end"];
+  IS_MAIN_PAGE = note["is_in_main"];
+  let singles = note["singles"];
+
+  let totPeriodSpan = note["end"] - note["start"];
+
+  // Calculate how many pixels should be shifted.
+  numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((yearPointNum - 1) * unitScale);
+
+  total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
+  /* generate alloc for single nodes */
+  let singleLayerAlloc = nonOverlapSinglesGenerator(singles["nodes"], totPeriodSpan);
+  let subLayerCount = addAllNodes(singles["nodes"], singleLayerAlloc);
+  total_height += subLayerCount * NODE_HEIGHT;
+
+  /* each element in note["nodes"] is a list of nodes belong to the same layer of event */
+  Array.prototype.forEach.call(note["nodes"], l => {
+    let sublayerAlloc = nonOverlapNodeGenerator(l);
+    let subLayerCount = addAllNodes(l, sublayerAlloc)
+    total_height += (subLayerCount + 1) * NODE_HEIGHT;  // plus 1 for interval between sublayer
+  });
+  if (note["nodes"].length != 0) {
+    total_height -= NODE_HEIGHT;
+  }
+}
+
+// draw line with year points below nodes
+function drawTimeline(originX, originY) {
+
+  // pixel interval between year point on timeline
+  const unitLength = TIMELINE_WIDTH / (yearPointNum - 1);
+
+  // main timeline
+  line(originX, originY, originX + WIN_WIDTH, originY);
+  // arrow to the right side of the line
+  line(WIN_WIDTH - 10, originY + 5, WIN_WIDTH, originY);
+  line(WIN_WIDTH - 10, originY - 5, WIN_WIDTH, originY);
+
+  // the first time scale start with AD/BC
+  let coordX =originX + TIMELINE_BLANK;
+  line(coordX, originY, coordX, originY + 10);
+  textFont("Georgia", 15);
+  textAlign(LEFT);
+  text(trans(originTime), originX, originY+7);
+
+  for (var i = 1; i < yearPointNum; i++) {
+    coordX =originX + i*unitLength + TIMELINE_BLANK;
+    line(coordX, originY, coordX, originY + 10);
+    textFont("Georgia", 15);
+    textAlign(CENTER, TOP);
+    text(originTime + i * unitScale, coordX, originY+7);
+  }
+
+  // print "Common Era" at start of timeline
+  textFont('Helvetica', 10);
+  textAlign(LEFT);
+  text("Common Era:", originX, originY - 10);
+}
+
+/* p5 create canvas */
+function setup() {
+  /** STEP1: deciding metadata of timeline */
+  note_temp = document.getElementById("canvas").getAttribute('note');
+  setCanvasWidth();
+  initialiseNote(note_temp);
+  cnv = createCanvas(WIN_WIDTH, total_height+NODE_HEIGHT+TIMELINE_HEIGHT);
+  cnv.parent("canvas");
+}
+
+// p5 update canvas
+function draw() {
+  // refresh page every 1 second
+  if(frameCount % 30 == 0){
+    background(230, 230, 230);
+    textSize(HOVER_TITLE_SIZE);
+    Array.prototype.forEach.call(nodeCollections, node => {
+      node.display();
+    });
+    drawTimeline(0, total_height+NODE_HEIGHT);
+  }
+}
+
+// p5 detect mouse pressed
+function mousePressed() {
+  Array.prototype.forEach.call(nodeCollections, node => {
+    node.clicked();
+  });
 }
