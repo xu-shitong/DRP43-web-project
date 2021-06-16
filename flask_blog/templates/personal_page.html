@@ -27,12 +27,15 @@
     <p id="t" class="fw-lighter" align="center">There are in total {{ favourite_notes | length }} notes</p>
     <ul class="list-group">
     {% for _note in favourite_notes %}
-      <li class="list-group-item">
-        <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">
-          {{ _note['note_name'] }}
-        </a>
-        create by  {{ _note['create_date'] }}
-      </li>
+      <div>
+        <li class="list-group-item">
+          <b>{{ _note['note_name'] }}</b>
+          <p><a href="/main/{{ _note['id'] }}">view</a></p>
+          <span>{{ _note['create_date'] }}</span>
+          <span>&nbsp;&nbsp;Created by: {{ _note['username'] }}</span>
+          <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+        </li>
+      </div>
     {% endfor %}
     </ul>
   </div>
