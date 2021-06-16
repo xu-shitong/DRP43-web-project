@@ -5,7 +5,7 @@ const HOVER_TITLE_SIZE = 14;
 const HOVER_DIV_WIDTH = 150;
 const NODE_HEIGHT = 15; // each node in timeline take up 15px height
 const TIMELINE_HEIGHT = 20; // height of arrow line and scale 
-const NUM_OF_YEAR_POINTS = 11; // Number of year points appearing on the timeline.
+const MAX_YEAR_POINTS_NUM = 11;
 const TIMELINE_BLANK = 25; // pixel of length to the left of timeline, where nothing is displayed
 const UNIT_SCALE_LIST = [1,2,5,10,20,50,100,200,500,1000]  // scales that will be displayed on timeline
 let CANVAS_WIDTH; // pixel of width nodes and singles actually take
@@ -16,14 +16,14 @@ let total_height;  // pixel of total height of displaying node part
 let originTime;  // year number of the first year point on timeline
 let unitScale;  // year interval between year point
 let numOfPixelsShifted; // pixel from first year point to start of first event
-
+let yearPointNum;  // number of year point on timeline
 
 // translate year number to AD/BC
 function trans(num) {
   if (num < 0) {
-    return "BC " + Math.abs(num)
+    return "B.C." + Math.abs(num)
   }
-  return "AD " + num
+  return "A.D." + num
 }
 
 class HNode {
@@ -190,6 +190,17 @@ function initSelectBox() {
 
 let nodeCollections = []; // collection of nodes displayed in canvas
 
+//Set Canvas' width so that the length of history nodes is to scale.
+function setCanvasWidth() {
+  note = JSON.parse(note_temp);
+  setScales(note["start"], note["end"]);
+  console.log(unitScale)
+  console.log(originTime)
+  console.log(yearPointNum)
+  
+  CANVAS_WIDTH = round(((note["end"] - note["start"]) * TIMELINE_WIDTH) / ((yearPointNum - 1) * unitScale));
+}
+
 /* generate a list of integer, represent what level each corrisponding element in LIST should be */
 function nonOverlapNodeGenerator(list) {
   let layers = [];
@@ -248,7 +259,7 @@ function nonOverlapSinglesGenerator(list, totPeriodSpan) {
   return result;
 }
 
-
+// add node of one layer to nodeCollection, 
 function addAllNodes(nodes, sublayerAlloc) {
   if (sublayerAlloc.length == 0) {
     return 0;
@@ -282,6 +293,7 @@ function addAllNodes(nodes, sublayerAlloc) {
   return maxLayerNum;
 }
 
+// fetch note from html, add to nodeCollection
 function initialiseNote(note_temp) {
   note = JSON.parse(note_temp); // note is dictionary containing {"start" "end" "nodes"}
   note_start = note["start"];
@@ -291,11 +303,8 @@ function initialiseNote(note_temp) {
 
   let totPeriodSpan = note["end"] - note["start"];
 
-  //Round the start time to the smallest sacle
-  originTime = Math.floor(note["start"]/unitScale)*unitScale;
-
   // Calculate how many pixels should be shifted.
-  numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale);
+  numOfPixelsShifted = ((note_start - originTime) * TIMELINE_WIDTH) / ((yearPointNum - 1) * unitScale);
 
   total_height = 0; // record total height of timeline, if greater than MAX_WIN_HEIGHT, stop adding node of higher level
   /* generate alloc for single nodes */
@@ -312,7 +321,40 @@ function initialiseNote(note_temp) {
   total_height -= NODE_HEIGHT; // leave only one interval at bottum of timeline
 }
 
-/* initialise canvas */
+// draw line with year points below nodes
+function drawTimeline(originX, originY) {
+
+  // pixel interval between year point on timeline
+  const unitLength = TIMELINE_WIDTH / (yearPointNum - 1);
+
+  // main timeline
+  line(originX, originY, originX + WIN_WIDTH, originY);
+  // arrow to the right side of the line
+  line(WIN_WIDTH - 10, originY + 5, WIN_WIDTH, originY);
+  line(WIN_WIDTH - 10, originY - 5, WIN_WIDTH, originY);
+
+  // the first time scale start with AD/BC
+  let coordX =originX + TIMELINE_BLANK;
+  line(coordX, originY, coordX, originY + 10);
+  textFont("Georgia", 15);
+  textAlign(LEFT);
+  text(trans(originTime), coordX, originY+7);
+
+  for (var i = 1; i < yearPointNum; i++) {
+    coordX =originX + i*unitLength + TIMELINE_BLANK;
+    line(coordX, originY, coordX, originY + 10);
+    textFont("Georgia", 15);
+    textAlign(CENTER, TOP);
+    text(originTime + i * unitScale, coordX, originY+7);
+  }
+
+  // print "year" at start of timeline
+  textFont("Georgia", 15);
+  textAlign(LEFT);
+  text("Common Era:", originX, originY - 15);
+}
+
+/* p5 create canvas */
 function setup() {
   /** STEP1: deciding metadata of timeline */
   note_temp = document.getElementById("canvas").getAttribute('note');
@@ -322,6 +364,7 @@ function setup() {
   cnv.parent("canvas");
 }
 
+// p5 update canvas
 function draw() {
   // refresh page every 1 second
   if(frameCount % 30 == 0){
@@ -334,53 +377,43 @@ function draw() {
   }
 }
 
+// p5 detect mouse pressed
 function mousePressed() {
   Array.prototype.forEach.call(nodeCollections, node => {
     node.clicked();
   });
 }
 
-function drawTimeline(originX, originY) {
-
-  // pixel interval between year point on timeline
-  const unitLength = TIMELINE_WIDTH / (NUM_OF_YEAR_POINTS - 1);
-
-  // main timeline
-  line(originX, originY, originX + WIN_WIDTH, originY);
-  // arrow to the right side of the line
-  line(WIN_WIDTH - 10, originY + 5, WIN_WIDTH, originY);
-  line(WIN_WIDTH - 10, originY - 5, WIN_WIDTH, originY);
-
-  for (var i = 0; i < NUM_OF_YEAR_POINTS; i++) {
-    var coordX =originX + i*unitLength + TIMELINE_BLANK;
-    line(coordX, originY, coordX, originY + 10);
-    textFont("Georgia", 15);
-    text(originTime + i * unitScale, coordX, originY+7);
-  }
-}
-
-//Set Canvas' width so that the length of history nodes is to scale.
-function setCanvasWidth() {
-  note = JSON.parse(note_temp);
-  unitScale = setUnitScale(note["start"], note["end"]);
-  CANVAS_WIDTH = round(((note["end"] - note["start"]) * TIMELINE_WIDTH) / ((NUM_OF_YEAR_POINTS - 1) * unitScale));
-}
-
-//Set unit scale according to the largest time difference.
-function setUnitScale(start, end) {
+// Set unitScale, originTime, yearPointNum according to the start and end of timeline
+function setScales(start, end) {
   let totalTime = end - start;
 
   // if total time is 0, either only have one single event, or no note is given, return 1 prevent divide by 0
   if (totalTime <= 0) {
-    return 1;
+    originTime = start;
+    yearPointNum = 2;
+    unitScale = 1
+    return ;
   }
-  
+
+  // 1 determine bestfit year point point
   for (i in UNIT_SCALE_LIST) {
-    // minus 2: the worst case for fit is the event just touch 2 scales, so in total 8 scales are used 
-    if (UNIT_SCALE_LIST[i] * (NUM_OF_YEAR_POINTS - 3) >= totalTime) {
-      return UNIT_SCALE_LIST[i];
+    unitScale = UNIT_SCALE_LIST[i];
+    //Round the start time to the smallest sacle
+    originTime = Math.floor(start / unitScale) * unitScale;
+
+    let scaleEndTime = Math.ceil(end / unitScale) * unitScale;
+
+    // Plus 1: n interval, n+1 year point
+    yearPointNum = (scaleEndTime - originTime) / unitScale + 1;
+
+    if (yearPointNum <= MAX_YEAR_POINTS_NUM) {
+      // if year number is in acceptable range, return 
+      return ;
     }
   }
+  
   // time too long, return 1000 anyway, total history cannot be longer than 10000 years
-  return 1000;
+  unitScale = 1000;
+  return ;
 }
