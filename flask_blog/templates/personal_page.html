@@ -1,5 +1,9 @@
 {% extends "history_base.html" %}
 {% block content %}
+  <title>personal page</title>
+{% endblock %}
+
+{% block content %}
   <script>
     function add_to_favourite(id) {
       $.post("/search/"+id, {}, function(data,status){

@@ -1,5 +1,9 @@
 {% extends "history_base.html" %}
 {% block content %}
+  <title>search</title>
+{% endblock %}
+
+{% block content %}
   <script>
     function change_favourite(id) {
       $.post("/search/"+id, {}, function(data,status){
