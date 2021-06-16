@@ -1,5 +1,17 @@
 {% extends "history_base.html" %}
 {% block content %}
+  <script>
+    function add_to_favourite(id) {
+      $.post("/search/"+id, {}, function(data,status){
+        button_colour = "white"
+        if (data.like) {
+          button_colour = "yellow"
+        }
+        document.getElementById(id+"like").style.backgroundColor = button_colour;
+        alert(data.message_);
+      })
+    }
+  </script>
 
   <div class="container">
     <h1>Hello {{ name }}!</h1>
@@ -32,6 +44,10 @@
           {{ _note['note_name'] }}
         </a>
         create by  {{ _note['create_date'] }}
+        <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary"
+                      onclick="add_to_favourite({{ _note['id'] }})" style="background-color: yellow">
+            like
+        </button>
       </li>
     {% endfor %}
     </ul>

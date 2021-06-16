@@ -3,12 +3,12 @@
   <script>
     function add_to_favourite(id) {
       $.post("/search/"+id, {}, function(data,status){
-        // alert(data.message_);
         button_colour = "white"
         if (data.like) {
           button_colour = "yellow"
         }
         document.getElementById(id+"like").style.backgroundColor = button_colour;
+        alert(data.message_);
       })
     }
   </script>

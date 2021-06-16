@@ -1,7 +1,7 @@
 from re import U
 from flask_blog.utils import get_note_with_publicity, private_note_sql
 from os import write
-from flask_blog.db import UserFavour
+from flask_blog.db import UserFavour, Note
 from flask.globals import session
 from flask_blog.auth import login_required
 from flask import Blueprint, flash, request, jsonify, session
@@ -79,10 +79,20 @@ def add_favourite(note_id):
     new_favour = UserFavour(user_id=session["user_id"], note_id=note_id)
     if record is None:
         db.session.add(new_favour)
+        old_note = Note.query.filter_by(id=note_id).first()
+        refs = max(old_note.refs + 1, 0)
+        sql_query = f"UPDATE note SET refs={refs} WHERE id = {note_id}"
+        db.session.execute(sql_query)
         db.session.commit()
+        # flash("success on delete favour", "success")
         return jsonify(message_="success on add favour " + str(note_id), like=1)
     else:
         db.session.delete(record)
+        old_note = Note.query.filter_by(id=note_id).first()
+        refs = max(old_note.refs - 1, 0)
+        sql_query = f"UPDATE note SET refs={refs} WHERE id = {note_id}"
+        db.session.execute(sql_query)
         db.session.commit()
-        return jsonify(message_="success on delete favour " + str(note_id), like=0)
+        # flash("success on delete favour", "success")
+        return jsonify(message_="success on delete favour" + str(note_id), like=0)
 
