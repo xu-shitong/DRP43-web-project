@@ -1,5 +1,5 @@
 from re import U
-from flask_blog.utils import get_note_with_publicity, private_note_sql
+from flask_blog.utils import getName, get_note_with_publicity, private_note_sql
 from os import write
 from flask_blog.db import UserFavour, Note
 from flask.globals import session
@@ -38,11 +38,16 @@ def search():
             sql_query = private_note_sql(session["user_id"]) + f' AND note_name LIKE "%{info}%"'
             private_notes = db.session.execute(sql_query).fetchall()
 
+
             sql_query = get_note_with_publicity(user_id=user_id, is_favour=True, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
             favour_notes = db.session.execute(sql_query).fetchall()
+            favour_notes = ([(dict(zip(fields, note))) for note in favour_notes])
+
 
             sql_query = get_note_with_publicity(user_id=user_id, is_favour=False, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
             non_favour_notes = db.session.execute(sql_query).fetchall()
+            non_favour_notes = ([(dict(zip(fields, note))) for note in non_favour_notes])
+
         else :
             user_id = None
             private_notes = []
@@ -55,10 +60,23 @@ def search():
         non_favour_notes = []
         private_notes = []
 
+    hot_notes = [ add_user_name(note) for note in hot_notes]
+    print(favour_notes)
+    favour_notes = [ add_user_name(note) for note in favour_notes]
+    non_favour_notes = [ add_user_name(note) for note in non_favour_notes]
+    print(hot_notes)
+
+
     # notes are ones displaied in menu dropdown box, favour_notes, non_favour_notes, private notes are notes containing the keyword
     return render_template("search_page.html", private_notes=private_notes, favour_notes=favour_notes, non_favour_notes=non_favour_notes, hot_notes=hot_notes, 
                            base_note=get_my_note(session))
 
+def add_user_name(note):
+    print(note["id"])
+    print(type(note))
+    note["user_name"] = getName(note["author_id"])
+    print(note["user_name"])
+    return note
 
 def get_popular_note():
     # user is looking at notes not added to favourate before, no need to include notes visible to user

@@ -28,7 +28,7 @@
               <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">
                   {{ _note['note_name'] }}
               </a>
-            created on {{ _note['create_date'] }}
+            created on {{ _note['create_date'] }} &nbsp;&nbsp; Cited Times: {{ _note['refs'] }}
           </li>
         {% endfor %}
     </ul>
@@ -39,16 +39,15 @@
     <p id="t" class="fw-lighter" align="center">There are in total {{ favourite_notes | length }} notes</p>
     <ul class="list-group">
     {% for _note in favourite_notes %}
-      <li class="list-group-item">
-        <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">
-          {{ _note['note_name'] }}
-        </a>
-        create by  {{ _note['create_date'] }}
-        <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary"
-                      onclick="add_to_favourite({{ _note['id'] }})" style="background-color: yellow">
-            like
-        </button>
-      </li>
+      <div>
+        <li class="list-group-item">
+          <b>{{ _note['note_name'] }}</b>
+          <p><a href="/main/{{ _note['id'] }}">view</a></p>
+          <span>{{ _note['create_date'] }}</span>
+          <span>&nbsp;&nbsp;Created by: {{ _note['username'] }}</span>
+          <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+        </li>
+      </div>
     {% endfor %}
     </ul>
   </div>
