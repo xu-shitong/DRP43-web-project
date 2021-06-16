@@ -28,7 +28,7 @@ def register():
             db.session.commit()
             flash(f"Account created for {username}! You are now able to log in!", "success")
             return redirect(url_for('auth.login'))
-        flash(error, "danger")
+        flash(error, "warning")
     return render_template('register.html')
 
 
@@ -50,7 +50,7 @@ def login():
             session.clear()
             session['user_id'] = record_user.id
             return redirect(url_for('main_page.main'))
-        flash(error, "danger")
+        flash(error, "warning")
 
     return render_template('login.html')
 
