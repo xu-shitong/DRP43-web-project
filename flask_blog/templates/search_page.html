@@ -1,6 +1,17 @@
 {% extends "history_base.html" %}
 {% block content %}
-  <script src="/static/timeline.js"></script>
+  <script>
+    function add_to_favourite(id) {
+      $.post("/search/"+id, {}, function(data,status){
+        // alert(data.message_);
+        button_colour = "white"
+        if (data.like) {
+          button_colour = "yellow"
+        }
+        document.getElementById(id+"like").style.backgroundColor = button_colour;
+      })
+    }
+  </script>
   <!-- display available notes containing search keyword -->
   <hr>
   <div class="container">
