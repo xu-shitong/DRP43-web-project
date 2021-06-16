@@ -1,14 +1,17 @@
 {% extends "history_base.html" %}
 {% block content %}
   <script>
-    function add_to_favourite(id) {
+    function change_favourite(id) {
       $.post("/search/"+id, {}, function(data,status){
         // alert(data.message_);
-        button_colour = "white"
+        button = document.getElementById(id+"like")
         if (data.like) {
-          button_colour = "yellow"
+          button.style.backgroundColor = "yellow"
+          button.innerHTML = "remove favourite"
+        } else {
+          button.style.backgroundColor = "white"
+          button.innerHTML = "add favourite"
         }
-        document.getElementById(id+"like").style.backgroundColor = button_colour;
       })
     }
   </script>
@@ -24,15 +27,14 @@
         <p id="t" class="fw-lighter" align="center">There are in total {{ private_notes | length }} private notes</p>
         <ul id="notes list" class="list-group">
         {% for _note in private_notes %}
-            <li class="list-group-item" align="center">
-                <a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}"> {{ _note['note_name'] }}</a>
-{#                <form action="/search/{{ _note['id'] }}" method="POST">#}
-{#                    <button type="submit" name=""#}
-{#                </form>#}
-{#                {% if  %}#}
-{#                <button id="like" type="button" class="btn btn-outline-primary" onclick="add_to_favourite({{ _note['id'] }})">#}
-{#                    like</button>#}
+          <div>
+            <li class="list-group-item">
+              <b>{{ _note['note_name'] }}</b>
+              <p><a href="/main/{{ _note['id'] }}">view</a></p>
+              <span>{{ _note['create_date'] }}</span>
+              <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
             </li>
+          </div>
         {% endfor %}
         </ul>
       </div>
@@ -45,14 +47,20 @@
         <p id="t" class="fw-lighter" align="center">There are in total {{ favour_notes | length }} your favourite notes</p>
         <ul class="list-group">
         {% for _note in favour_notes %}
-          <li class="list-group-item" align="center">
-              <a id="{{ loop.index }}" class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" >
-                  {{ _note['note_name'] }}
-              </a>
-              <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary"
-                      onclick="add_to_favourite({{ _note['id'] }})" style="background-color: yellow">
-                    like</button>
-          </li>
+            <div>
+              <li class="list-group-item">
+                <b>{{ _note['note_name'] }}</b>
+                <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary float-end"
+                      onclick="change_favourite({{ _note['id'] }})" style="background-color: yellow">
+                    remove favourite
+                </button>
+                <p><a href="/main/{{ _note['id'] }}">view</a></p>
+                <span>{{ _note['create_date'] }}</span>
+                <span>&nbsp;&nbsp;Created by: {{ _note['user_name'] }}</span>
+                <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+                
+              </li>
+            </div>
         {% endfor %}
         </ul>
       </div>
@@ -64,15 +72,19 @@
         <p id="t" class="fw-lighter" align="center">There are in total {{ non_favour_notes | length }} non favourite notes</p>
         <ul class="list-group">
         {% for _note in non_favour_notes %}
-          <li class="list-group-item" align="center">
-              <a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" >
-                {{ _note['note_name'] }}
-              </a>
-              <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary"
-                      onclick="add_to_favourite({{ _note['id'] }})">
-                  like
-              </button>
-          </li>
+            <div>
+              <li class="list-group-item">
+                <b>{{ _note['note_name'] }}</b>
+                <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary float-end"
+                      onclick="change_favourite({{ _note['id'] }})" >
+                    add favourite
+                </button>
+                <p><a href="/main/{{ _note['id'] }}">view</a></p>
+                <span>{{ _note['create_date'] }}</span>
+                <span>&nbsp;&nbsp;Created by: {{ _note['user_name'] }}</span>
+                <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+              </li>
+            </div>
         {% endfor %}
         </ul>
       </div>
@@ -90,9 +102,17 @@
         <div id="length" value="{{ length }}"></div>
     </div>
     <div class="container">
-        <ul class="list-unstyled list-inline d-flex justify-content-center">
+        <ul class="list-unstyled list-group">
         {% for _note in hot_notes %}
-          <li class="list-inline-item" align="center"><a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-primary"> {{ _note['note_name'] }}</a></li>
+          <div>
+            <li class="list-group-item">
+              <b>{{ _note['note_name'] }}</b>
+              <p><a href="/main/{{ _note['id'] }}">view</a></p>
+              <span>{{ _note['create_date'] }}</span>
+              <span>&nbsp;&nbsp;Created by: {{ _note['user_name'] }}</span>
+              <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+            </li>
+          </div>
         {% endfor %}
         </ul>
     </div>
