@@ -19,21 +19,39 @@ class TreeNode {
     }
 
     toHTML(str, count, layer) {
-        var html = '<div style="font-size:' + (25-layer*5) + 'px">' + str + count + '. ' + this.title + '</div>';
         var newCount = 1;
         var newHead = str + count + '.';
+
+        var html = '<div class="small " >';
+        for (var i = 0; i < layer; i++) {
+            html += '&nbsp;&nbsp;';
+        }
+        if (layer == 1) {
+            html += '<strong>> ' + str + count + '- ' + this.title + '</strong>';
+        } else {
+            html += '> ' + str + count + '- ' + this.title;
+        }
+        
         Array.prototype.forEach.call(this.children, child => {
             html += child.toHTML(newHead, newCount, layer+1);
             newCount += 1;
         });
+        html += '</div>'
         return html;
     }
 }
 
 
-
 var rootNode = new TreeNode('0', dict['0'].title);
 rootNode.addChildren();
 
-document.getElementById('note structure').innerHTML = rootNode.toHTML('', 1, 1);
+var html = '';
+var count = 1;
+Array.prototype.forEach.call(rootNode.children, child => {
+    html += child.toHTML('',count, 1);
+    count += 1;
+})
+
+document.getElementById('note structure').innerHTML = html;
+
 
