@@ -30,7 +30,7 @@ def display_notes(note_id=None):
 
             # check if user has permission to write to note
             if "user_id" in session :
-                edit_permission = (session["user_id"] == note_info["author_id"]) or (note_info["is_public"][0] == '2')
+                edit_permission = (session["user_id"] == note_info["author_id"]) or (note_info["is_public"][1] == '2')
             else :
                 # user not logged in, permission is false
                 edit_permission = False 
