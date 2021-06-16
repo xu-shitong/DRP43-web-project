@@ -1,6 +1,6 @@
 {% extends "history_base.html" %}
 {% block content %}
-
+  <script src="/static/timeline.js"></script>
   <!-- display available notes containing search keyword -->
   <hr>
   <div class="container">
@@ -9,10 +9,19 @@
       <!-- private notes, do not allow add private note as favourite note -->
       {% if private_notes %}
       <div class="bg-muted">
+
         <p id="t" class="fw-lighter" align="center">There are in total {{ private_notes | length }} private notes</p>
         <ul id="notes list" class="list-group">
         {% for _note in private_notes %}
-          <li class="list-group-item" align="center"><a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+            <li class="list-group-item" align="center">
+                <a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}"> {{ _note['note_name'] }}</a>
+{#                <form action="/search/{{ _note['id'] }}" method="POST">#}
+{#                    <button type="submit" name=""#}
+{#                </form>#}
+{#                {% if  %}#}
+{#                <button id="like" type="button" class="btn btn-outline-primary" onclick="add_to_favourite({{ _note['id'] }})">#}
+{#                    like</button>#}
+            </li>
         {% endfor %}
         </ul>
       </div>
@@ -25,7 +34,14 @@
         <p id="t" class="fw-lighter" align="center">There are in total {{ favour_notes | length }} your favourite notes</p>
         <ul class="list-group">
         {% for _note in favour_notes %}
-          <li class="list-group-item" align="center"><a id="{{ loop.index }}" class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+          <li class="list-group-item" align="center">
+              <a id="{{ loop.index }}" class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" >
+                  {{ _note['note_name'] }}
+              </a>
+              <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary"
+                      onclick="add_to_favourite({{ _note['id'] }})" style="background-color: yellow">
+                    like</button>
+          </li>
         {% endfor %}
         </ul>
       </div>
@@ -37,7 +53,15 @@
         <p id="t" class="fw-lighter" align="center">There are in total {{ non_favour_notes | length }} non favourite notes</p>
         <ul class="list-group">
         {% for _note in non_favour_notes %}
-          <li class="list-group-item" align="center"><a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" > {{ _note['note_name'] }}</a></li>
+          <li class="list-group-item" align="center">
+              <a class="btn btn-outline-primary" href="/main/{{ _note['id'] }}" >
+                {{ _note['note_name'] }}
+              </a>
+              <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary"
+                      onclick="add_to_favourite({{ _note['id'] }})">
+                  like
+              </button>
+          </li>
         {% endfor %}
         </ul>
       </div>

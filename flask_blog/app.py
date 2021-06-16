@@ -53,6 +53,16 @@ db = initDatabase()
 #              "VALUES ('2', 'Building Great Wall', '-214', '-170', 'large labour force to build Great World', 0)"
 # sql_query7 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
 #              "VALUES ('1', 'The Tang Dynasty establishment and destory', '618', '907', 'content', 1)"
+# sql_query8 = "INSERT INTO account (create_date, username, password) " \
+#              "VALUES ('2021-6-3 10:00:00', 'Bob', 'Bob')"
+# sql_query9 = "INSERT INTO note (author_id, note_name, create_date, refs, is_public)" \
+#              "VALUES ('2', 'The Song Dynasty', '2021-6-3 10:00:00', 2, '22')"
+# sql_query10 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
+#               "VALUES ('2', 'Release for a cup of wine', '961', '961', 'military power is released', 0)"
+# sql_query11 = "INSERT INTO history_node (note_id, title, start_date, end_date, content, parent_node_id) " \
+#               "VALUES ('2', 'Song Dynasty establishment and destroy', '960', '1279', 'last for 319 years', 0)"
+# sql_query12 = "INSERT INTO note (author_id, note_name, create_date, refs, is_public)" \
+#              "VALUES ('2', 'The Yuan Dynasty', '2021-6-3 10:00:00', 2, '22')"
 # db.session.execute(sql_query1)
 # db.session.execute(sql_query2)
 # db.session.execute(sql_query3)
@@ -60,6 +70,11 @@ db = initDatabase()
 # db.session.execute(sql_query5)
 # db.session.execute(sql_query6)
 # db.session.execute(sql_query7)
+# db.session.execute(sql_query8)
+# db.session.execute(sql_query9)
+# db.session.execute(sql_query10)
+# db.session.execute(sql_query11)
+# db.session.execute(sql_query12)
 # db.session.commit()
 
  

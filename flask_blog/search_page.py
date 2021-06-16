@@ -66,6 +66,7 @@ def get_popular_note():
     notes = db.session.execute(sql_query).fetchall()
     return notes[:10]
 
+
 @bp.route("/search/<int:note_id>", methods=["POST"])
 def add_favourite(note_id):
     # if not logged in, redirect to login page
@@ -74,7 +75,14 @@ def add_favourite(note_id):
         return "failed to add favourite, you need to login first"
 
     # add entity in favourite database
+    record = UserFavour.query.filter_by(user_id=session["user_id"], note_id=note_id).first()
     new_favour = UserFavour(user_id=session["user_id"], note_id=note_id)
-    db.session.add(new_favour)
-    db.session.commit()
-    return "success on add favour " + str(note_id)
+    if record is None:
+        db.session.add(new_favour)
+        db.session.commit()
+        return jsonify(message_="success on add favour " + str(note_id), like=1)
+    else:
+        db.session.delete(record)
+        db.session.commit()
+        return jsonify(message_="success on delete favour " + str(note_id), like=0)
+

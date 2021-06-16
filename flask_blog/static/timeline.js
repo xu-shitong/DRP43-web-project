@@ -387,3 +387,15 @@ function setUnitScale(start, end) {
   // time too long, return 1000 anyway, total history cannot be longer than 10000 years
   return 1000;
 }
+
+
+function add_to_favourite(id) {
+      $.post("/search/"+id, {}, function(data,status){
+        // alert(data.message_);
+        button_colour = "white"
+        if (data.like) {
+          button_colour = "yellow"
+        }
+        document.getElementById(id+"like").style.backgroundColor = button_colour;
+      })
+}

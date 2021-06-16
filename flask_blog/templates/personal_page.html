@@ -26,9 +26,9 @@
     <h1>My favourite</h1>
     <p id="t" class="fw-lighter" align="center">There are in total {{ favourite_notes | length }} notes</p>
     <ul class="list-group">
-    {% for _note in favourites_notes %}
+    {% for _note in favourite_notes %}
       <li class="list-group-item">
-        <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-primary">
+        <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">
           {{ _note['note_name'] }}
         </a>
         create by  {{ _note['create_date'] }}

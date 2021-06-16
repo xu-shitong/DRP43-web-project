@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, request, jsonify, url_for, render_template, session
+from flask import Blueprint, flash, request, jsonify, url_for, render_template, session, redirect
 from flask_blog.app import db
 from flask_blog.db import Note, HistoryNode
 from flask_blog.utils import get_my_note, get_note_with_publicity
@@ -63,6 +63,7 @@ def merge():
             db.session.execute(sql_query)
             db.session.commit()
 
+        return redirect(url_for("main_page.main", base_note=get_my_note(session), edit_permissio=True))
     return render_template("merge.html", notes=notes, base_note=get_my_note(session))
 
 

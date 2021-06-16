@@ -13,8 +13,15 @@ import json
 bp = Blueprint("person", __name__)
 
 
-@bp.route("/personal/<int:id>", methods=['GET', 'POST'])
+@bp.route("/personal/<int:id>")
 def person(id):
     notes = get_my_note(session)
     name = getName(id)
-    return render_template('personal_page.html', name=name, notes=notes, base_note=notes)
+    sql_query = f"SELECT id, note_name, create_date " \
+                f"FROM user_favour JOIN note ON note.id = note_id " \
+                f"WHERE user_id = {id}"
+    favour_notes = db.session.execute(sql_query).fetchall()
+    fields = ["id", "note_name", "create_date"]
+    favour_notes = [dict(zip(fields, favour_note)) for favour_note in favour_notes]
+    return render_template('personal_page.html', name=name, notes=notes, base_note=get_my_note(session),
+                           favourite_notes=favour_notes)
