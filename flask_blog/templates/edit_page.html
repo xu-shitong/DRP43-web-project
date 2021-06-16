@@ -26,16 +26,16 @@
     <button class="btn btn-outline-primary" id="event-edit-button">Add an event</button>
 
     <!-- button for change note name publicity -->
-    <button class="btn btn-outline-primary" id="title-edit-button">Note configuration</button>
+    <button class="btn btn-outline-primary mx-2" id="title-edit-button">Note configuration</button>
 
     <!-- back to main page -->
     <a href="/main/{{ note_id }}" class="btn btn-outline-primary">Save changes</a>
 
     {% if is_owner %}
       <!-- delete note -->
-      <button class="btn btn-outline-primary float-end" id="delete_note_id" onclick="delete_note()">Delete this note</button>
+      <button class="btn btn-outline-danger float-end" id="delete_note_id" onclick="delete_note()">Delete this note</button>
     {% else %}
-      <button class="btn btn-outline-primary float-end" onclick="invalid_delete()">Delete this note</button>
+      <button class="btn btn-outline-danger float-end" onclick="invalid_delete()">Delete this note</button>
     {% endif %}
   </div>
 
@@ -135,32 +135,30 @@
       </div>
 
       <!-- description input box -->
-      <div class="input-group">
+      <div class="input-group mb-3">
         <span class="input-group-text">Description:</span>
           <textarea name="body" id="body" class="form-control" required></textarea>
       </div>
 
-      <br>
       <!-- upload picture box -->
-      <div class="input-group">
-          <input type="file" size="30" name="pic"/>
-          <span class="input-group-text">picture title</span>
-          <input type="text" name="pic_name" class="form-control"/>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Picture title</span>
+        <input type="text" name="pic_name" class="form-control" placeholder="This is optional"/>
+        <input type="file" class="form-control" size="30" name="pic"/>
       </div>
 
-      <!-- submit button -->
-      <br>
-        <input type="submit" name="submit" value="Add this event" class="btn btn-outline-primary">
+        <!-- submit button -->
+        <input type="submit" name="submit" value="Add this event" class="btn btn-outline-primary" id="save-event-button">
         <!-- clear button -->
-        <button type="button" class="btn btn-outline-primary" onclick="clearInputs()">Reset edit</button>
+        <button type="button" class="btn btn-outline-secondary mx-2" id="reset-button" onclick="clearInputs()">Reset edit</button>
+
     </form>
 
     <!-- delete history event -->
     <form action="/delete_event" method="POST">
       <input id="node_id_copy" type="text" name="node_id" class="form-control" readonly style="display:none">
-      <input type="submit" name="submit" value="Delete this event" class="btn btn-outline-primary">
+      <input type="submit" name="submit" value="Delete this event" class="btn btn-outline-danger my-2" id="delete-event-button">
     </form>
-
   </div>
 
   <script>
@@ -184,9 +182,13 @@
     }
     $("#event-edit").hide();
     $("#title-edit").hide();
+    $("#delete-event-button").hide();
     $("#event-edit-button").click(function (){
         $("#event-edit").show();
         $("#title-edit").hide();
+        $("#delete-event-button").hide();
+        $("#reset-button").click();
+        $("#reset-button").show();
     })
     $("#title-edit-button").click(function (){
         $("#title-edit").show();

@@ -131,6 +131,9 @@ class HNode {
             </div>`;
       } else {
         $("#event-edit").show();
+        $("#delete-event-button").show();
+        $("#reset-button").hide();
+        $("#save-event-button").prop("value", "Apply");
         $("#title-edit").hide();
         // render input boxes with previous information of history note
         document.getElementById("node_id").value = this.node_id;
