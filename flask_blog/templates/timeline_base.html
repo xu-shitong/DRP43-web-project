@@ -11,13 +11,13 @@
 
   <br>
   <div class="container">
-    <div id="canvas" note="{{ note }}" align="center"></div>
-
     {% if note_id %}
       <!-- displaying name and id of note -->
-      <div id="note_name">showing note: {{ note_name }}</div>
+      <div id="note_name">showing note: <b>{{ note_name }}</b></div>
       <!-- <div id="note_id">id: {{ note_id }}</div> -->
     {% endif %}
+
+    <div id="canvas" note="{{ note }}" align="center"></div>
 
   </div>
 

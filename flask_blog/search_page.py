@@ -55,6 +55,8 @@ def search():
 
             sql_query = get_note_with_publicity(user_id=None, is_favour=False, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
             non_favour_notes = db.session.execute(sql_query).fetchall()
+            non_favour_notes = ([(dict(zip(fields, note))) for note in non_favour_notes])
+
     else:
         favour_notes = []
         non_favour_notes = []

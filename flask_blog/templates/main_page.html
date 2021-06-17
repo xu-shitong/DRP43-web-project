@@ -5,6 +5,14 @@
 
 {% block content %}
 
+  {% if g.user %}
+    <div class="container btn-toolbar">
+
+      <a href="/create_note" class="btn btn-outline-primary">create note</a>
+      <a href="/merge" class="btn btn-outline-primary">merge notes</a>
+    </div>
+  {% endif %}
+
   {# display timeline. #}
   {% include "timeline_base.html" %}
 
@@ -68,9 +76,6 @@
     <hr> -->
 
     <div class="container btn-toolbar">
-      <!-- pop up input window for input new note name -->
-      <a href="/create_note" class="btn btn-outline-primary">create note</a>
-
       <!-- button redirect to edit page -->
       {% if note_id %}
         {% if edit_permission == True %}
@@ -79,8 +84,6 @@
           <p>you have no permission to edit the note, consult owner of note to get access</p>
         {% endif %}
       {% endif %}
-
-        <a href="/merge" class="btn btn-outline-primary">merge notes</a>
     </div>
   {% endif %}
 
