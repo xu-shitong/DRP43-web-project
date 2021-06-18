@@ -1,5 +1,5 @@
-const WIN_WIDTH = 780; // width of the whole timeline section
-const TIMELINE_WIDTH = 720;  // pixel of part actually displaying year, i.e from the first year point to the last
+const WIN_WIDTH = 1200; // width of the whole timeline section
+const TIMELINE_WIDTH = 1000;  // pixel of part actually displaying year, i.e from the first year point to the last
 const MAX_WIN_HEIGHT = 600;
 const HOVER_TITLE_SIZE = 14;
 const HOVER_DIV_WIDTH = 150;
