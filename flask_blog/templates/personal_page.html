@@ -19,6 +19,7 @@
 
   <div class="container">
     <h1>Hello {{ name }}!</h1>
+    <p>User ID: {{ user_id }}</p>
   </div>
   <hr>
   <div class="container">
@@ -43,6 +44,24 @@
     <p id="t" class="fw-lighter" align="center">There are in total {{ favourite_notes | length }} notes</p>
     <ul class="list-group">
     {% for _note in favourite_notes %}
+      <div>
+        <li class="list-group-item">
+          <b>{{ _note['note_name'] }}</b>
+          <p><a href="/main/{{ _note['id'] }}">view</a></p>
+          <span>{{ _note['create_date'] }}</span>
+          <span>&nbsp;&nbsp;Created by: {{ _note['username'] }}</span>
+          <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+        </li>
+      </div>
+    {% endfor %}
+    </ul>
+  </div>
+  <hr>
+  <div class="container">
+    <h1>cooperative notes</h1>
+    <p id="t" class="fw-lighter" align="center">There are in total {{ invited_note | length }} notes</p>
+    <ul class="list-group">
+    {% for _note in invited_note %}
       <div>
         <li class="list-group-item">
           <b>{{ _note['note_name'] }}</b>

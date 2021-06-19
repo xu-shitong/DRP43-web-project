@@ -230,6 +230,19 @@ def getName(id):
     (name,) = db.session.execute(sql_query).fetchone()
     return name
 
+# check if user is invited editor of note
+def is_invited_user(user_id, note_id):
+    sql_query = f"SELECT * FROM invite_record WHERE invited_user_id={user_id} AND note_id={note_id}"
+    hasInviteRecord = db.session.execute(sql_query)
+    print(list(hasInviteRecord))
+    return hasInviteRecord
+
+# return list of note user invited to edit, may overlap with public notes
+def get_invited_note(user_id):
+    return "SELECT note.id, author_id, note_name, create_date, refs, is_public FROM note " \
+           "JOIN invite_record ON note_id=note.id " \
+          f"WHERE invited_user_id={user_id}"
+
 ## following variables and functions are for develop/test propose
 # note = {"is_main_page": True,
 #           "start": 100, "end": 150,

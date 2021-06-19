@@ -8,7 +8,7 @@ from flask_blog.db import Note
 from flask import Blueprint, flash, request, jsonify, url_for, make_response
 from flask.templating import render_template
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, defaultNote, getNoteInfo, get_my_note, get_note_with_publicity
+from flask_blog.utils import fetchNote, defaultNote, getNoteInfo, get_my_note, get_note_with_publicity, is_invited_user
 import json
 bp = Blueprint("main_page", __name__)
 
@@ -30,7 +30,7 @@ def display_notes(note_id=None):
 
             # check if user has permission to write to note
             if "user_id" in session :
-                edit_permission = (session["user_id"] == note_info["author_id"]) or (note_info["is_public"][1] == '2')
+                edit_permission = (session["user_id"] == note_info["author_id"]) or (note_info["is_public"][1] == '2') or is_invited_user(user_id=session["user_id"], note_id=note_id)
             else :
                 # user not logged in, permission is false
                 edit_permission = False 

@@ -4,14 +4,14 @@ from posixpath import abspath
 from flask.helpers import url_for
 
 from sqlalchemy import sql
-from flask_blog.db import Account, HistoryNode, Note
+from flask_blog.db import Account, HistoryNode, InviteRecord, Note
 from html import entities
 import re
 from flask import (Blueprint, g, flash, request, session, url_for)
 from flask.templating import render_template
 from werkzeug.utils import redirect
 from flask_blog.app import db
-from flask_blog.utils import fetchNote, getNoteInfo, get_my_note, get_note_with_publicity
+from flask_blog.utils import fetchNote, getNoteInfo, get_my_note, get_note_with_publicity, is_invited_user
 from flask_blog.auth import login_required
 from flask_blog.db import PicAndName
 import json
@@ -31,7 +31,7 @@ def check_edit_priviledge():
     note = db.session.execute(sql_query).fetchone()
     # TODO: index 1 here indicate priority for other user
     url = None
-    if (not user_id == note["author_id"]) and (note["is_public"][1] == "0"):
+    if (not user_id == note["author_id"]) and (note["is_public"][1] == "0") and (not is_invited_user(user_id, note["id"])):
         flash("you cannot edit this note, report how you enter this website")
         url = url_for("edit_page.edit_page", id=session["note_id"])
           
@@ -188,3 +188,32 @@ def delete_note():
 
     # return no error message
     return ""
+
+@bp.route("/invite_user", methods=["POST"])
+def invite_user():
+    invited_user_id = request.form["invited_user_id"]
+    if not invited_user_id:
+        flash("you didn't provide an invited user name")
+        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
+
+    print("user id is " + str(session["user_id"]) + " inviting " + str(invited_user_id) + " equal " + str(invited_user_id == session["user_id"]))
+    print(type(invited_user_id))
+    print(type(session["user_id"]))
+    if int(invited_user_id) == session["user_id"]:
+        # check user didn't invite himself as new editor
+        flash("you cannot invite yourself as editor")
+        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
+
+    sql_query = "SELECT * FROM invite_record "\
+               f"WHERE invited_user_id = {invited_user_id} AND note_id = {session['note_id']}" 
+    prevRecord = db.session.execute(sql_query).fetchone()
+    if prevRecord:
+        # check user did not invite an editor again
+        flash("user has already be invited")
+        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
+    
+    invite_record = InviteRecord(invited_user_id=invited_user_id, note_id=session["note_id"])
+    db.session.add(invite_record)
+    db.session.commit()
+    flash("invited cooperator successfully!")
+    return redirect(url_for("edit_page.edit_page", id=session["note_id"]))

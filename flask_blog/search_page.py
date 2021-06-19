@@ -1,6 +1,6 @@
 from re import U
-from flask_blog.utils import getName, get_note_with_publicity, private_note_sql
-from os import write
+from flask_blog.utils import getName, get_invited_note, get_note_with_publicity, private_note_sql
+from os import get_inheritable, write
 from flask_blog.db import UserFavour, Note
 from flask.globals import session
 from flask_blog.auth import login_required
@@ -48,10 +48,15 @@ def search():
             non_favour_notes = db.session.execute(sql_query).fetchall()
             non_favour_notes = ([(dict(zip(fields, note))) for note in non_favour_notes])
 
+            sql_query = get_invited_note(user_id=user_id)
+            invited_note = db.session.execute(sql_query).fetchall()
+            invited_note = ([(dict(zip(fields, note))) for note in invited_note])
+
         else :
             user_id = None
             private_notes = []
             favour_notes = []
+            invited_note = []
 
             sql_query = get_note_with_publicity(user_id=None, is_favour=False, read='2', write='0') + f" AND note_name LIKE '%{info}%'"
             non_favour_notes = db.session.execute(sql_query).fetchall()
@@ -61,17 +66,17 @@ def search():
         favour_notes = []
         non_favour_notes = []
         private_notes = []
+        invited_note = []
 
     hot_notes = [ add_user_name(note) for note in hot_notes]
-    print(favour_notes)
     favour_notes = [ add_user_name(note) for note in favour_notes]
     non_favour_notes = [ add_user_name(note) for note in non_favour_notes]
-    print(hot_notes)
+    invited_note = [ add_user_name(note) for note in invited_note]
 
 
     # notes are ones displaied in menu dropdown box, favour_notes, non_favour_notes, private notes are notes containing the keyword
     return render_template("search_page.html", private_notes=private_notes, favour_notes=favour_notes, non_favour_notes=non_favour_notes, hot_notes=hot_notes, 
-                           base_note=get_my_note(session))
+                           invited_note=invited_note, base_note=get_my_note(session))
 
 def add_user_name(note):
     print(note["id"])
