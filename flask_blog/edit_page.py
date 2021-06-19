@@ -31,8 +31,8 @@ def check_edit_priviledge():
     note = db.session.execute(sql_query).fetchone()
     # TODO: index 1 here indicate priority for other user
     url = None
-    if (not user_id == note["author_id"]) and (note["is_public"][1] == "0") and (not is_invited_user(user_id, note["id"])):
-        flash("you cannot edit this note, report how you enter this website")
+    if (not user_id == note["author_id"]) and (not note["is_public"][1] == "2") and (not is_invited_user(user_id, note["id"])):
+        flash("you cannot edit this note, report how you enter this website", "warning")
         url = url_for("edit_page.edit_page", id=session["note_id"])
           
     return url
@@ -55,8 +55,12 @@ def edit_page(id):
     # fetch note data from database, render edit page
     note = fetchNote(noteId=id, is_in_main=False)
 
+    # fetch all cooperators' user name
+    sql_query = "SELECT username FROM account JOIN invite_record ON invited_user_id = account.id"
+    cooperators = db.session.execute(sql_query).fetchall()
+
     return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"], read=session["is_public"][0], write=session["is_public"][1], 
-                           base_note=get_my_note(session), is_owner=(session["user_id"]==note_info["author_id"]))
+                           base_note=get_my_note(session), is_owner=(session["user_id"]==note_info["author_id"]), cooperators=cooperators)
 
 
 
@@ -66,7 +70,18 @@ def change_note_name():
     new_name = request.form["new_note_name"]
     read = request.form["read"]
     write = request.form["write"]
+    if read < write:
+        # check read publicity higher or equal to write publicity
+        flash("change publicity failed, read publicity cannot be lower than write publicity", "warning")
+        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
+
     isPublic = read + write
+    sql_query = f"SELECT * FROM invite_record WHERE note_id = {session['note_id']}"
+    publicity = db.session.execute(sql_query).fetchone()
+    if publicity and (read < '1' or write < '1'):
+        # note was shared with other user, flash user that note will not be shared anymore
+        flash("publicity changed to private, note no longer shared", "warning")
+
     note_id = session["note_id"]
     sql_query = f'UPDATE note SET note_name="{new_name}", is_public="{isPublic}" ' \
                 f"WHERE id = '{note_id}'"
@@ -77,6 +92,8 @@ def change_note_name():
     sql_query_2 = f'SELECT id FROM note WHERE note_name = "{new_name}"'
     (id,) = db.session.execute(sql_query_2).fetchone()
     session['note_name'] = new_name
+
+    flash("publicity successfully updated!", "success")
     return redirect(url_for("edit_page.edit_page", id=note_id))
 
 
@@ -99,7 +116,7 @@ def update_event():
         endTime = int(endTime_temp)
     
     if endTime < startTime:
-        flash("invalid end time, should be at least equal to start time")
+        flash("invalid end time, should be at least equal to start time", "warning")
         url = url_for("edit_page.edit_page", id=session["note_id"])
         return redirect(url)
 
@@ -165,7 +182,7 @@ def delete_event():
       db.session.execute(sql_query)
       db.session.commit()
     else:
-      flash("you didn't select a node to delete")
+      flash("you didn't select a node to delete", "warning")
 
     url = url_for("edit_page.edit_page", id=session["note_id"])
     return redirect(url)
@@ -192,16 +209,10 @@ def delete_note():
 @bp.route("/invite_user", methods=["POST"])
 def invite_user():
     invited_user_id = request.form["invited_user_id"]
-    if not invited_user_id:
-        flash("you didn't provide an invited user name")
-        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
 
-    print("user id is " + str(session["user_id"]) + " inviting " + str(invited_user_id) + " equal " + str(invited_user_id == session["user_id"]))
-    print(type(invited_user_id))
-    print(type(session["user_id"]))
     if int(invited_user_id) == session["user_id"]:
         # check user didn't invite himself as new editor
-        flash("you cannot invite yourself as editor")
+        flash("you cannot invite yourself as editor", "warning")
         return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
 
     sql_query = "SELECT * FROM invite_record "\
@@ -209,11 +220,24 @@ def invite_user():
     prevRecord = db.session.execute(sql_query).fetchone()
     if prevRecord:
         # check user did not invite an editor again
-        flash("user has already be invited")
+        flash("user has already been invited", "warning")
+        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
+
+    note = getNoteInfo(session["note_id"])
+    if note["is_public"][1] == '0' or note["is_public"][0] == '0':
+        # write or read publicity is private
+        flash("read or write publicity is private, cannot invite user edit private note", "warning")
+        return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
+
+    sql_query = f"SELECT * FROM account WHERE id = {invited_user_id}"
+    invited_user = db.session.execute(sql_query).fetchone()
+    if not invited_user:
+        # invited user does not exist
+        flash(f"no user with id {invited_user_id}, invite failed", "warning")
         return redirect(url_for("edit_page.edit_page", id=session["note_id"]))
     
     invite_record = InviteRecord(invited_user_id=invited_user_id, note_id=session["note_id"])
     db.session.add(invite_record)
     db.session.commit()
-    flash("invited cooperator successfully!")
+    flash("invited cooperator successfully!", "success")
     return redirect(url_for("edit_page.edit_page", id=session["note_id"]))

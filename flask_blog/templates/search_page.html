@@ -39,27 +39,27 @@
   <!-- display available notes containing search keyword -->
   <hr>
   <div class="container">
-    {% if invited_note %}
-      <div class="bg-muted">
+    
+    {% if private_notes or favour_notes or non_favour_notes or invited_note %}
+      {% if invited_note %}
+        <div class="bg-muted">
 
-        <p id="t" class="fw-lighter" align="center">There are in total {{ invited_note | length }} cooperative notes</p>
-        <ul id="notes list" class="list-group">
-        {% for _note in invited_note %}
-          <div>
-            <li class="list-group-item">
-              <b>{{ _note['note_name'] }}</b>
-              <p><a href="/main/{{ _note['id'] }}">view</a></p>
-              <span>{{ _note['create_date'] }}</span>
-              <span>&nbsp;&nbsp;Created by: {{ _note['user_name'] }}</span>
-              <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
-            </li>
-          </div>
-        {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
-
-    {% if private_notes or favour_notes or non_favour_notes %}
+          <p id="t" class="fw-lighter" align="center">There are in total {{ invited_note | length }} cooperative notes</p>
+          <ul id="notes list" class="list-group">
+          {% for _note in invited_note %}
+            <div>
+              <li class="list-group-item">
+                <b>{{ _note['note_name'] }}</b>
+                <p><a href="/main/{{ _note['id'] }}">view</a></p>
+                <span>{{ _note['create_date'] }}</span>
+                <span>&nbsp;&nbsp;Created by: {{ _note['user_name'] }}</span>
+                <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+              </li>
+            </div>
+          {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
 
       <!-- private notes, do not allow add private note as favourite note -->
       {% if private_notes %}

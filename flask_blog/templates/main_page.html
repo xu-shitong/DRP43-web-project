@@ -28,7 +28,7 @@
 
     <!-- indication on how to edit note -->
     {% if not g.user %}
-      <div class="thang">
+      <div class="container btn-toolbar">
         <a href="/auth/login">login</a>
         <p>&nbsp;to edit notes</p>
       </div>
@@ -37,7 +37,7 @@
 
   <!-- indication on how to open note -->
   {% if not (note_id or g.user) %}
-    <div class="thang">
+    <div class="container btn-toolbar">
       <p>open a note by&nbsp;</p>
       <a href="/search">search public notes</a>
       <p>&nbsp;or&nbsp;</p>
@@ -78,13 +78,18 @@
     <div class="container btn-toolbar">
       <!-- button redirect to edit page -->
       {% if note_id %}
+        <a href="/forum/{{ note_id }}" class="btn btn-outline-primary mx-4">forum</a>
+        <br>
         {% if edit_permission == True %}
           <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
         {% else %}
-          <p>you have no permission to edit the note, consult owner of note to get access</p>
+          <button class="btn btn-outline-primary mx-4" onclick="invalid_edit()">edit this note</button>
+          <script>
+            function invalid_edit() {
+              alert("you have no permission to edit the note, consult owner of note to get access")
+            }
+          </script>
         {% endif %}
-        <br>
-        <a href="/forum/{{ note_id }}" class="btn btn-outline-primary mx-4">forum</a>
       {% endif %}
     </div>
   {% endif %}

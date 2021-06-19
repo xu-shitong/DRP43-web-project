@@ -235,7 +235,7 @@ def is_invited_user(user_id, note_id):
     sql_query = f"SELECT * FROM invite_record WHERE invited_user_id={user_id} AND note_id={note_id}"
     hasInviteRecord = db.session.execute(sql_query)
     print(list(hasInviteRecord))
-    return hasInviteRecord
+    return not (hasInviteRecord == NULL)
 
 # return list of note user invited to edit, may overlap with favourite notes
 def get_invited_note(user_id):

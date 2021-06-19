@@ -24,6 +24,17 @@
     }
 
     window.onload = clearInputs;
+
+    // display translated year near input box
+    $(document).ready(function(){
+      $("#start").on("input", function(){
+        $("#trans_start").val(trans(parseInt($(this).val())));
+      });
+
+      $("#end").on("input", function(){
+        $("#trans_end").val(trans(parseInt($(this).val())));
+      });
+    });
   </script>
 
   <div class="container">
@@ -67,7 +78,14 @@
               </div>
               <input type="submit" name="submit" value="Apply" class="btn btn-outline-primary">
           </form>
+          <br>
           <form action="/invite_user" method="POST">
+            Invited cooperators: 
+            <div class="input-group mb-3">
+              {% for elem in cooperators %}
+                {{ elem["username"] }}, 
+              {% endfor %}
+            </div>
             <div class="input-group mb-3">
               <span class="input-group-text">Invite user to cooperate</span>
               <input type="number" name="invited_user_id" class="form-control" placeholder="user id" required>
@@ -118,9 +136,11 @@
       <!-- time period input box -->
       <div class="input-group mb-3">
         <span class="input-group-text">From</span>
+        <input class="form-control" id="trans_start" readonly></input>
         <input id="start" type="number" name="start" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" 
                oninput="if(value>2021)value=2021;if(value<-5000)value=-5000" required>
         <span class="input-group-text">To</span>
+        <input class="form-control" id="trans_end" readonly></input>
         <input id="end" type="number" name="end" class="form-control" placeholder="e.g. 20 for AD 20, -100 for BC 100" 
                oninput="if(value>2021)value=2021;if(value<-5000)value=-5000" >
       </div>
@@ -148,7 +168,7 @@
       <!-- description input box -->
       <div class="input-group mb-3">
         <span class="input-group-text">Description:</span>
-          <textarea name="body" id="body" class="form-control" required></textarea>
+          <textarea name="body" id="body" class="form-control" rows="10" placeholder="description of the event" required></textarea>
       </div>
 
       

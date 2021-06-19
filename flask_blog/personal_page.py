@@ -17,7 +17,7 @@ bp = Blueprint("person", __name__)
 def person(id):
     notes = get_my_note(session)
     name = getName(id)
-    sql_query = get_note_with_publicity(user_id=id, is_favour=True, read='1', write='0')
+    sql_query = get_note_with_publicity(user_id=id, is_favour=True, read='2', write='0')
     favour_notes = db.session.execute(sql_query).fetchall()
     fields = ["id", "author_id", "note_name", "create_date", "refs", "is_public"]
     favour_notes = [dict(zip(fields, favour_note)) for favour_note in favour_notes]

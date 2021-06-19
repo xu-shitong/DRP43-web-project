@@ -24,20 +24,11 @@
   <div class="container">
     <h2>{{ note_name }}</h2>
     <h3> forum </h3>
-{#    <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>#}
-    <div id="content" class="container">
+    <div id="content" class="container" style="overflow:auto; height: 300px;" >
         {% for record in records %}
-{#          <li class="list-group-item">#}
-{#              <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">#}
-{#                  {{ _note['note_name'] }}#}
-{#              </a>#}
-              <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
-{#          </li>#}
+          <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
         {% endfor %}
     </div>
-{#    <div id="content" class="container">#}
-{##}
-{#    </div>#}
   </div>
 
 

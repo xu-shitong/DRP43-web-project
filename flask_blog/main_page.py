@@ -2,6 +2,7 @@ from os import write
 import re
 from flask.globals import session
 from flask_sqlalchemy.utils import sqlalchemy_version
+from pymysql import NULL
 from werkzeug.utils import redirect
 from flask_blog.auth import login_required
 from flask_blog.db import Note
