@@ -237,11 +237,13 @@ def is_invited_user(user_id, note_id):
     print(list(hasInviteRecord))
     return hasInviteRecord
 
-# return list of note user invited to edit, may overlap with public notes
+# return list of note user invited to edit, may overlap with favourite notes
 def get_invited_note(user_id):
     return "SELECT note.id, author_id, note_name, create_date, refs, is_public FROM note " \
            "JOIN invite_record ON note_id=note.id " \
-          f"WHERE invited_user_id={user_id}"
+          f"WHERE invited_user_id={user_id} " \
+           "AND SUBSTRING(note.is_public, -1, 1)>='1' "
+
 
 ## following variables and functions are for develop/test propose
 # note = {"is_main_page": True,
