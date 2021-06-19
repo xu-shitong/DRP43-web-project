@@ -59,7 +59,7 @@ class ForumRecords(db.Model):
     note_id = db.Column(db.INT, db.ForeignKey('note.id'), nullable=False)
     user_id = db.Column(db.INT, db.ForeignKey('account.id'), nullable=False)
     content = db.Column(db.TEXT, nullable=False)
-    create_date = db.Column(db.DATETIME, nullable=False, default=datetime.utcnow())
+    create_date = db.Column(db.VARCHAR(50), nullable=False)
 
 
 def completeClassInit():

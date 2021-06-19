@@ -4,21 +4,40 @@
 {% endblock %}
 
 {% block content %}
+  <script>
+    function refresh() {
+        $.post("/forum/" + {{ note_id }} + "/refresh", {}, function(data) {
+            {#document.getElementById("content").append('<p>hello</p>')#}
+            {#alert("<p></p>" + data.records + "<p>hello</p>");#}
+            {#$("#content").append('<p>hello</p>')#}
+            for (let i = 0; i < data.records_.length; i++) {
+                $("#content").append('<p>'+data.records_[i]['content'] + '<br>'
+                    + data.records_[i]['username'] + ' '
+                    + data.records_[i]['time'].substring(0, 19)+'</p>')
+
+            }
+        } );
+    }
+    setInterval(refresh, 5000)
+  </script>
 
   <div class="container">
     <h2>{{ note_name }}</h2>
     <h3> forum </h3>
 {#    <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>#}
-    <ul class="list-group">
+    <div id="content" class="container">
         {% for record in records %}
 {#          <li class="list-group-item">#}
 {#              <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">#}
 {#                  {{ _note['note_name'] }}#}
 {#              </a>#}
-              <p>{{ record['content'] }} <br> {{ record['username'] }} edit {{ record['time'] }} </p>
+              <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
 {#          </li>#}
         {% endfor %}
-    </ul>
+    </div>
+{#    <div id="content" class="container">#}
+{##}
+{#    </div>#}
   </div>
 
 
