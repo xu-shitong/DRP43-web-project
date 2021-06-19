@@ -79,10 +79,7 @@ def search():
                            invited_note=invited_note, base_note=get_my_note(session))
 
 def add_user_name(note):
-    print(note["id"])
-    print(type(note))
     note["user_name"] = getName(note["author_id"])
-    print(note["user_name"])
     return note
 
 def get_popular_note():

@@ -26,7 +26,11 @@
     <h3> forum </h3>
     <div id="content" class="container" style="overflow:auto; height: 300px;" >
         {% for record in records %}
-          <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
+          {% if record["of_curr_user"] %}
+            <p align="right">{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
+          {% else %}
+            <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
+          {% endif %}
         {% endfor %}
     </div>
   </div>
