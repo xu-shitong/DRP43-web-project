@@ -1,0 +1,33 @@
+{% extends "history_base.html" %}
+{% block title %}
+  <title>discussion board</title>
+{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+    <h2>{{ note_name }}</h2>
+    <h3> forum </h3>
+{#    <p id="t" class="fw-lighter" align="center">There are in total {{ notes | length }} notes</p>#}
+    <ul class="list-group">
+        {% for record in records %}
+{#          <li class="list-group-item">#}
+{#              <a id="{{ loop.index }}" href="/main/{{ _note['id'] }}" class="btn btn-outline-primary btn-sm mx-2">#}
+{#                  {{ _note['note_name'] }}#}
+{#              </a>#}
+              <p>{{ record['content'] }} <br> {{ record['username'] }} edit {{ record['time'] }} </p>
+{#          </li>#}
+        {% endfor %}
+    </ul>
+  </div>
+
+
+  <div class="container">
+    <form action="{{ note_id }}/add" method="POST">
+        <input id="add" name="content" required>
+        <input type="submit" value="submit">
+
+    </form>
+  </div>
+
+{% endblock %}

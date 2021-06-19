@@ -54,5 +54,13 @@ class InviteRecord(db.Model):
     note_id = db.Column(db.INT, db.ForeignKey('account.id'), primary_key=True, nullable=False)
 
 
+class ForumRecords(db.Model):
+    id = db.Column(db.INT, primary_key=True, nullable=False)
+    note_id = db.Column(db.INT, db.ForeignKey('note.id'), nullable=False)
+    user_id = db.Column(db.INT, db.ForeignKey('account.id'), nullable=False)
+    content = db.Column(db.TEXT, nullable=False)
+    create_date = db.Column(db.DATETIME, nullable=False, default=datetime.utcnow())
+
+
 def completeClassInit():
     return db

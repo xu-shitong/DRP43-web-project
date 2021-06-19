@@ -83,6 +83,8 @@
         {% else %}
           <p>you have no permission to edit the note, consult owner of note to get access</p>
         {% endif %}
+        <br>
+        <a href="/forum/{{ note_id }}" class="btn btn-outline-primary mx-4">forum</a>
       {% endif %}
     </div>
   {% endif %}

@@ -99,6 +99,8 @@ import flask_blog.create_page as create
 app.register_blueprint(create.bp)
 import flask_blog.merge as merge
 app.register_blueprint(merge.bp)
+import flask_blog.forum as forum
+app.register_blueprint(forum.bp)
 app.add_url_rule('/', endpoint='index')
 
 
