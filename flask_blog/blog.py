@@ -11,13 +11,13 @@ from werkzeug.exceptions import abort
 bp = Blueprint('blog', __name__)
 
 
-@bp.route('/')
-def index():
-    sql_query = "SELECT blog.id, author_id, title, postDate, content " \
-                "FROM blog JOIN account ON blog.author_id = account.id"
-                # "ORDER BY postDate DESC"
-    posts = db.session.execute(sql_query).fetchall()
-    return render_template('index.html', posts=posts)
+# @bp.route('/')
+# def index():
+#     sql_query = "SELECT blog.id, author_id, title, postDate, content " \
+#                 "FROM blog JOIN account ON blog.author_id = account.id"
+#                 # "ORDER BY postDate DESC"
+#     posts = db.session.execute(sql_query).fetchall()
+#     return render_template('index.html', posts=posts)
 
 
 @bp.route('/create', methods=['GET', 'POST'])

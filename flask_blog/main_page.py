@@ -47,7 +47,11 @@ def display_notes(note_id=None):
                            base_note=get_my_note(session), edit_permission=edit_permission)
 
 
-# first enter of main page, no note displaying 
+@bp.route("/")
+def index():
+    return redirect(url_for("main_page.main"))
+
+# first enter of main page, no note displaying
 @bp.route("/main", methods=['GET', 'POST'])
 def main():
     return display_notes()

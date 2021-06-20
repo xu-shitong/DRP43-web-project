@@ -8,8 +8,8 @@
   {% if g.user %}
     <div class="container btn-toolbar">
 
-      <a href="/create_note" class="btn btn-outline-primary">create note</a>
-      <a href="/merge" class="btn btn-outline-primary">merge notes</a>
+      <a href="/create_note" class="btn btn-outline-primary">Create note</a>
+      <a href="/merge" class="btn btn-outline-primary mx-4">Merge notes</a>
     </div>
   {% endif %}
 
@@ -78,12 +78,12 @@
     <div class="container btn-toolbar">
       <!-- button redirect to edit page -->
       {% if note_id %}
-        <a href="/forum/{{ note_id }}" class="btn btn-outline-primary mx-4">forum</a>
+        <a href="/forum/{{ note_id }}" class="btn btn-outline-primary">Forum</a>
         <br>
         {% if edit_permission == True %}
-          <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">edit this note</a>
+          <a href="/edit/{{ note_id }}" class="btn btn-outline-primary mx-4">Edit this note</a>
         {% else %}
-          <button class="btn btn-outline-primary mx-4" onclick="invalid_edit()">edit this note</button>
+          <button class="btn btn-outline-primary mx-4" onclick="invalid_edit()">Edit this note</button>
           <script>
             function invalid_edit() {
               alert("you have no permission to edit the note, consult owner of note to get access")

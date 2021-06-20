@@ -11,37 +11,58 @@
             {#alert("<p></p>" + data.records + "<p>hello</p>");#}
             {#$("#content").append('<p>hello</p>')#}
             for (let i = 0; i < data.records_.length; i++) {
-                $("#content").append('<p>'+data.records_[i]['content'] + '<br>'
-                    + data.records_[i]['username'] + ' '
-                    + data.records_[i]['time'].substring(0, 19)+'</p>')
-
+                {#$("#content").append('<p>'+data.records_[i]["content"] + '<br>'#}
+                {#    + data.records_[i]["username"] + ' '#}
+                {#    + data.records_[i]["time"].substring(0, 19)+'</p>')#}
+                $("#content").append('<div class="container" style="border: 1px solid silver">'
+                    + '<span class="fw-bold fs-5">' + data.records_[i]["username"] + ':</span>'
+                    + '<span class="fs-6">' + data.records_[i]["time"].substring(0, 19) + '</span>'
+                    + '<p class="fw-bold fs-5">'
+                    + '<p class="fs-5">' + data.records_[i]["content"] + '</p>'
+                    + '</div> <p></p>');
             }
         } );
+        scrollDown();
     }
-    setInterval(refresh, 5000)
+    function scrollDown() {
+      var objDiv = document.getElementById("content");
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }
+    setInterval(refresh, 1000)
   </script>
 
   <div class="container">
     <h2>{{ note_name }}</h2>
-    <h3> forum </h3>
-    <div id="content" class="container" style="overflow:auto; height: 300px;" >
+    <h3> Forum </h3>
+    <div id="content" class="container" style="overflow-y:scroll; height: 300px;" >
         {% for record in records %}
-          {% if record["of_curr_user"] %}
-            <p align="right">{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
-          {% else %}
-            <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>
-          {% endif %}
+{#          {% if record["of_curr_user"] %}#}
+
+            <div class="container" style="border: 1px solid silver">
+              <span class="fw-bold fs-5">{{ record['username'] }}:</span>
+              <span class="fs-6">{{ record['time'] }} </span>
+              <p class="fw-bold fs-5">
+              <p class="fs-5">{{ record['content'] }}</p>
+            </div>
+{#          {% else %}#}
+{#            <p>{{ record['content'] }} <br> {{ record['username'] }} {{ record['time'] }} </p>#}
+{#          {% endif %}#}
+          <br>
         {% endfor %}
     </div>
   </div>
 
-
   <div class="container">
     <form action="{{ note_id }}/add" method="POST">
-        <input id="add" name="content" required>
-        <input type="submit" value="submit">
-
+      <div class="input-group mb-3">
+        <textarea class="form-control" name="content" id="add" rows="5" required></textarea>
+{#        <input id="add" name="content" required>#}
+      </div>
+        <input class="btn btn-outline-primary" type="submit" value="Post message">
     </form>
   </div>
 
+  <script>
+      scrollDown();
+  </script>
 {% endblock %}
