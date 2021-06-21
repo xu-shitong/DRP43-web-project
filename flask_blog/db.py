@@ -51,7 +51,7 @@ class UserFavour(db.Model):
 
 class InviteRecord(db.Model):
     invited_user_id = db.Column(db.INT, db.ForeignKey('account.id'), primary_key=True, nullable=False)
-    note_id = db.Column(db.INT, db.ForeignKey('account.id'), primary_key=True, nullable=False)
+    note_id = db.Column(db.INT, db.ForeignKey('note.id'), primary_key=True, nullable=False)
 
 
 class ForumRecords(db.Model):
