@@ -56,7 +56,7 @@ def edit_page(id):
     note = fetchNote(noteId=id, is_in_main=False)
 
     # fetch all cooperators' user name
-    sql_query = "SELECT username FROM account JOIN invite_record ON invited_user_id = account.id"
+    sql_query = f"SELECT username FROM account JOIN invite_record ON invited_user_id = account.id AND note_id={id}"
     cooperators = db.session.execute(sql_query).fetchall()
 
     return render_template("edit_page.html", note=json.dumps(note), note_id=id, note_name=session["note_name"], read=session["is_public"][0], write=session["is_public"][1], 
