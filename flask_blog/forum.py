@@ -84,6 +84,6 @@ def separate_user_message(records):
 def formal_time(record):
     if len(record) == 0:
         return record
-    return [(a, b[0:19], c, d) for (a, b, c, d) in record]
+    return [(a, str(b)[0:19], c, d) for (a, b, c, d) in record]
     # a, b, c = record
     # return a, b, c[0:19]
