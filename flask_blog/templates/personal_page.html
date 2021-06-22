@@ -68,14 +68,14 @@
       <div>
         <li class="list-group-item">
           <b>{{ _note['note_name'] }}</b>
-          <p><a href="/main/{{ _note['id'] }}">view</a></p>
-          <span>{{ _note['create_date'] }}</span>
-          <!-- <span>&nbsp;&nbsp;Created by: {{ _note['username'] }}</span> -->
-          <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
           <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary float-end"
                       onclick="change_favourite({{ _note['id'] }})" style="background-color: yellow">
                     remove favourite
           </button>
+          <p><a href="/main/{{ _note['id'] }}">view</a></p>
+          <span>{{ _note['create_date'] }}</span>
+          <!-- <span>&nbsp;&nbsp;Created by: {{ _note['username'] }}</span> -->
+          <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
         </li>
       </div>
     {% endfor %}

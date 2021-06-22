@@ -8,23 +8,23 @@
   <div class="container">
     <form method="POST">
 
-      <div>
-        <label for="new_note_name">note name:</label>
-        <input name="new_note_name" id="note_name_id" required>
+      <div class="input-group mb-3">
+        <span class="input-group-text" for="new_note_name">Note name</span>
+        <input class="form-control" name="new_note_name" id="note_name_id" required>
       </div>
 
-      <div>
-        <span>who can read: </span>
-        <select id="read" name="read" required>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Who can read</span>
+        <select class="form-select" id="read" name="read" required>
           <option value='0'>only me</option>
           <option value='1'>invited user</option>
           <option value="2">all user</option>
         </select>
       </div>
 
-      <div>
-        <span>who can write: </span>
-        <select id="write" name="write" required>
+      <div class="input-group mb-3">
+        <span class="input-group-text">Who can write</span>
+        <select class="form-select" id="write" name="write" required>
           <option value='0'>only me</option>
           <option value='1'>invited user</option>
           <option value="2">all user</option>
