@@ -5,16 +5,36 @@
 
 {% block content %}
   <script>
-    function add_to_favourite(id) {
+    function change_favourite(id) {
       $.post("/search/"+id, {}, function(data,status){
-        button_colour = "white"
+        button = document.getElementById(id+"like")
         if (data.like) {
-          button_colour = "yellow"
+          $("#like_action").text("adding to");
+          button.style.backgroundColor = "yellow"
+          button.innerHTML = "remove favourite"
+        } else {
+          $("#like_action").text("removing from");
+          button.style.backgroundColor = "white"
+          button.innerHTML = "add favourite"
         }
-        document.getElementById(id+"like").style.backgroundColor = button_colour;
-        alert(data.message_);
+        $("#alert_message").fadeTo(2000, 500).slideUp(500, function () {
+              $("#alert_message").slideUp(500);
+        });
       })
     }
+    $(document).ready(function () {
+        $("#alert_message").hide();
+    });
+    {#function add_to_favourite(id) {#}
+    {#  $.post("/search/"+id, {}, function(data,status){#}
+    {#    button_colour = "white"#}
+    {#    if (data.like) {#}
+    {#      button_colour = "yellow"#}
+    {#    }#}
+    {#    document.getElementById(id+"like").style.backgroundColor = button_colour;#}
+    {#    alert(data.message_);#}
+    {#  })#}
+    {#}#}
   </script>
 
   <div class="container">
@@ -52,6 +72,10 @@
           <span>{{ _note['create_date'] }}</span>
           <!-- <span>&nbsp;&nbsp;Created by: {{ _note['username'] }}</span> -->
           <span>&nbsp;&nbsp;Cited Times: {{ _note['refs'] }}</span>
+          <button id="{{ _note['id'] }}like" type="button" class="btn btn-outline-primary float-end"
+                      onclick="change_favourite({{ _note['id'] }})" style="background-color: yellow">
+                    remove favourite
+          </button>
         </li>
       </div>
     {% endfor %}
