@@ -24,7 +24,7 @@ def board(id):
 @login_required
 def refresh(id):
     records = find_new_records(id, session['last_time'])
-    records =  separate_user_message(records)
+    # records =  separate_user_message(records)
 
     session['last_time'] = str(datetime.datetime.now())
     # print(session['user_id'], session['last_time'])
@@ -39,7 +39,7 @@ def add(id):
     time = str(datetime.datetime.now())
     forum_record = ForumRecords(user_id=user_id, note_id=id, content=content,
                                 create_date=time)
-    session["last_time"] = time
+    session['last_time'] = time
     db.session.add(forum_record)
     db.session.commit()
     return redirect(url_for("forum.board", id=id))
