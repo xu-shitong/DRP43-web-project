@@ -8,7 +8,7 @@
     function refresh() {
         console.log("refreshing page")
         $.post("/forum/" + {{ note_id }} + "/refresh", {}, function(data) {
-            console.log("got info: " + data)
+            console.log("got info: " + data.records_)
             for (let i = 0; i < data.records_.length; i++) {
                 $("#content").append('<div class="container" style="border: 1px solid silver">'
                     + '<span class="fw-bold fs-5">' + data.records_[i]["username"] + ':</span>'
